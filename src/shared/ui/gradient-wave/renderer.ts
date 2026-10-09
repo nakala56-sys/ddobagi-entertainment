@@ -37,25 +37,61 @@ void main() {
     float aspect = u_resolution.x / u_resolution.y;
     vec2 center = vec2(0.5 * aspect, -0.6 * aspect);
     vec2 point = vec2(uv.x * aspect, uv.y) - center;
-    float distance = length(point);
-    float feather = 0.12;
+    // Soft radial wobble keeps the arc circular while giving it a fluid edge.
+    float angle = atan(point.y, point.x);
+    float wobble = sin(angle * 3.0 + u_time * 0.85) * 0.045
+        + sin(angle * 5.0 - u_time * 0.55) * 0.028
+        + sin(angle * 2.0 + u_time * 0.35) * 0.018;
+    float distance = length(point) + wobble;
+    // Wide feather so color bleeds into white instead of forming a hard rim.
+    float feather = 0.32;
     float startRadius = -center.y - feather * 2.0;
     float endRadius = length(vec2(0.5 * aspect, 1.0 - center.y)) + feather * 2.0;
-    // One color per cycle. Its trailing white circle always completes before the next.
-    float cycle = floor(u_time / 8.0);
-    float phase = mod(u_time, 8.0);
-    float colorRadius = mix(startRadius, endRadius, smoothstep(0.0, 4.5, phase));
-    float whiteRadius = mix(startRadius, endRadius, smoothstep(2.5, 7.0, phase));
-    float colorMask = 1.0 - smoothstep(colorRadius - feather, colorRadius + feather, distance);
-    float whiteMask = 1.0 - smoothstep(whiteRadius - feather, whiteRadius + feather, distance);
-    float fill = colorMask * (1.0 - whiteMask);
-    vec3 color = palette(cycle);
-    vec3 background = mix(vec3(1.0), color, fill);
-    float edgeWidth = feather * 0.35;
-    float colorEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - colorRadius));
-    float whiteEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - whiteRadius));
-    float crest = max(colorEdge, whiteEdge);
-    float edgeDistance = colorEdge > whiteEdge ? distance - colorRadius : distance - whiteRadius;
+    // Color every period; white trails shortly after. Several cycles overlap so
+    // the next color arrives before the previous white has finished clearing.
+    float period = 2.4;
+    float trail = 0.85;
+    float expand = 4.2;
+    vec3 background = vec3(1.0);
+    vec3 inkColor = u_colors[0];
+    float fill = 0.0;
+    float crest = 0.0;
+    float edgeDistance = 0.0;
+    float edgeWidth = feather * 0.55;
+
+    for (int i = 3; i >= 0; i--) {
+        float cycle = floor(u_time / period) - float(i);
+        if (cycle < 0.0) continue;
+        float localT = u_time - cycle * period;
+        if (localT > expand + trail + feather * 4.0) continue;
+
+        float colorProgress = smoothstep(0.0, expand, localT);
+        float colorRadius = mix(startRadius, endRadius, colorProgress);
+        float colorMask = 1.0 - smoothstep(colorRadius - feather, colorRadius + feather, distance);
+        vec3 waveColor = palette(cycle);
+        background = mix(background, waveColor, colorMask);
+        fill = mix(fill, 1.0, colorMask);
+        inkColor = mix(inkColor, waveColor, colorMask);
+
+        float colorEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - colorRadius));
+        if (colorEdge > crest) {
+            crest = colorEdge;
+            edgeDistance = distance - colorRadius;
+        }
+
+        if (localT <= trail) continue;
+        float whiteProgress = smoothstep(0.0, expand, localT - trail);
+        float whiteRadius = mix(startRadius, endRadius, whiteProgress);
+        float whiteMask = 1.0 - smoothstep(whiteRadius - feather, whiteRadius + feather, distance);
+        background = mix(background, vec3(1.0), whiteMask);
+        fill *= 1.0 - whiteMask;
+
+        float whiteEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - whiteRadius));
+        if (whiteEdge > crest) {
+            crest = whiteEdge;
+            edgeDistance = distance - whiteRadius;
+        }
+    }
 
     if (u_text < 0.5) {
         gl_FragColor = vec4(background, 1.0);
@@ -63,7 +99,7 @@ void main() {
     }
 
     // Refraction and chromatic separation are confined to the passing crest.
-    vec2 normal = point / max(distance, 0.001);
+    vec2 normal = point / max(length(point), 0.001);
     vec2 displacement = vec2(normal.x / aspect, normal.y);
     displacement *= sin(edgeDistance * 70.0) * crest * u_distortion * 0.003 / max(u_region.zw, vec2(0.001));
     vec2 sampleUV = local + displacement;
@@ -72,14 +108,14 @@ void main() {
     float green = texture2D(u_mask, sampleUV).a;
     float blue = texture2D(u_mask, sampleUV - vec2(split, 0.0)).a;
     float alpha = max(red, max(green, blue));
-    float lowest = min(color.r, min(color.g, color.b));
-    float chroma = max(color.r, max(color.g, color.b)) - lowest;
-    vec3 hue = (color - vec3(lowest)) / max(chroma, 0.001);
+    float lowest = min(inkColor.r, min(inkColor.g, inkColor.b));
+    float chroma = max(inkColor.r, max(inkColor.g, inkColor.b)) - lowest;
+    vec3 hue = (inkColor - vec3(lowest)) / max(chroma, 0.001);
     vec3 baseInk = vec3(0.09, 0.13, 0.17);
     vec3 coloredInk = mix(baseInk, hue * 0.55 + vec3(0.02), smoothstep(0.02, 0.18, chroma));
     vec3 ink = mix(baseInk, coloredInk, fill);
     float ribbon = sin(edgeDistance * 120.0) * 0.5 + 0.5;
-    ink = mix(ink, mix(coloredInk, color, ribbon), crest * 0.82);
+    ink = mix(ink, mix(coloredInk, inkColor, ribbon), crest * 0.82);
     vec3 channels = vec3(red, green, blue) / max(alpha, 0.001);
     gl_FragColor = vec4(ink * channels, alpha);
 }`;
@@ -151,8 +187,8 @@ export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
         },
         render(time: number) {
-            // Keep mediump shader precision stable across repeated four-color cycles.
-            gl.uniform1f(timeLocation, time % 32);
+            // Keep mediump precision stable; window covers several overlapping wave cycles.
+            gl.uniform1f(timeLocation, time % 48);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         },
     };
