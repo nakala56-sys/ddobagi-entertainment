@@ -120,41 +120,60 @@ function imageReveal(root: HTMLElement): Cleanup {
     });
 }
 
-/**
- * Fixed-viewport wobbly black ink covers the white page, then CTA copy appears.
- * Section itself stays transparent — no hard rectangular edge.
- */
+/** Cover the viewport first, hand off to solid black, then reveal the sticky CTA. */
 function finalCta(root: HTMLElement): Cleanup {
     return section(root, () => {
         const ink = root.querySelector<HTMLElement>("[data-cta-ink]");
+        const svg = root.querySelector<SVGSVGElement>("[data-cta-svg]");
         const circle = root.querySelector<SVGCircleElement>("[data-cta-circle]");
-        const fill = root.querySelector<HTMLElement>("[data-cta-fill]");
+        const filter = root.querySelector<SVGFilterElement>("[data-cta-filter]");
+        const noise = root.querySelector<SVGFETurbulenceElement>("[data-cta-noise]");
+        const displacement = root.querySelector<SVGFEDisplacementMapElement>("[data-cta-displacement]");
+        const blur = root.querySelector<SVGFEGaussianBlurElement>("[data-cta-blur]");
         const content = root.querySelector<HTMLElement>("[data-cta-content]");
-        if (!ink || !circle || !content) return;
+        if (!ink || !svg || !circle || !filter || !noise || !displacement || !blur || !content) return;
 
+        let startRadius = 0;
+        let endRadius = 0;
+        let frequency = 0;
+        const measure = () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const size = Math.min(width, height);
+            const grid = (value: number) => Math.max(4, Math.round(value / 4) * 4);
+            const drift = grid(size * 0.036);
+            const softness = grid(size * 0.008);
+            const margin = drift + softness * 4;
+            const centerY = height + width * 0.6;
+            startRadius = Math.max(0, centerY - height - margin);
+            endRadius = Math.hypot(width / 2, centerY) + margin * 2;
+            frequency = 1.8 / size;
+            svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+            circle.setAttribute("cx", String(width / 2));
+            circle.setAttribute("cy", String(centerY));
+            // Bound filter buffers to the viewport instead of the growing circle's huge box.
+            filter.setAttribute("x", String(-margin));
+            filter.setAttribute("y", String(-margin));
+            filter.setAttribute("width", String(width + margin * 2));
+            filter.setAttribute("height", String(height + margin * 2));
+            displacement.setAttribute("scale", String(drift));
+            blur.setAttribute("stdDeviation", String(softness));
+        };
+        measure();
+
+        gsap.set(root, { backgroundColor: "transparent" });
         gsap.set(ink, { autoAlpha: 1 });
-        gsap.set(circle, { attr: { r: 0 } });
-        gsap.set(content, { autoAlpha: 0, y: 36 });
-        if (fill) gsap.set(fill, { autoAlpha: 0 });
 
-        const wave = gsap.timeline({
-            defaults: { ease: "none" },
-            scrollTrigger: {
-                trigger: root,
-                start: "top bottom+=160",
-                end: "center center",
-                scrub: true,
-                invalidateOnRefresh: true,
-                onLeave: () => { gsap.set(ink, { autoAlpha: 0 }); },
-                onEnterBack: () => { gsap.set(ink, { autoAlpha: 1 }); },
-                onLeaveBack: () => { gsap.set(ink, { autoAlpha: 0 }); gsap.set(circle, { attr: { r: 0 } }); },
-            },
-        });
-
-        // r≈130 covers the 100×100 viewBox from a center just below the bottom edge.
-        wave.fromTo(circle, { attr: { r: 0 } }, { attr: { r: 130 }, duration: 0.7 }, 0);
-        if (fill) wave.fromTo(fill, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.48);
-        wave.fromTo(content, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: MOTION_EASE }, 0.55);
+        scrollTimeline(root, {
+            start: "top bottom", end: () => `+=${window.innerHeight * 1.5}`,
+            onRefreshInit: measure,
+        })
+            .fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0)
+            .fromTo(noise, { attr: { baseFrequency: () => frequency } }, { attr: { baseFrequency: () => frequency * 1.3 }, duration: 1, ease: SHIMMER_EASE }, 0)
+            // At time 1 the section fills the viewport; both backgrounds are already black.
+            .set(root, { backgroundColor: "#000000" }, 1)
+            .set(ink, { autoAlpha: 0 }, 1)
+            .fromTo(content, textFrom, { ...textTo, duration: 0.5 }, 1);
     });
 }
 

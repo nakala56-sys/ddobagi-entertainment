@@ -40,7 +40,7 @@ export function BeliefMoments() {
     return (
         <section
             ref={sectionRef}
-            className="belief-moments relative z-10 overflow-visible"
+            className="belief-moments relative z-10 overflow-x-clip"
             aria-labelledby="home-belief-moments-title"
         >
             <div className="sticky top-0 z-20 flex h-svh items-center justify-center pointer-events-none">
