@@ -18,7 +18,7 @@ export default function Panel() {
                 className="route-panel overflow-visible"
             >
                 <Layer.HeroIntro />
-                <Layer.BrandIntro />
+                {/* <Layer.BrandIntro /> */}
                 <Layer.BeliefMoments />
                 <Layer.SupportOverview />
                 <Layer.StudioPreview />

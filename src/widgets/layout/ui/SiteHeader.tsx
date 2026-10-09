@@ -29,7 +29,8 @@ export function SiteHeader() {
                 aria-label="또바기 엔터테인먼트 홈"
             >
                 <Image
-                    className={`logo-symbol w-12 h-auto shrink-0 object-contain max-site:w-10 ${isHome ? "brightness-0" : ""}`}
+                    className={`logo-symbol w-12 h-auto shrink-0 object-contain max-site:w-10 ${isHome ? "" : ""}`}
+                    // className={`logo-symbol w-12 h-auto shrink-0 object-contain max-site:w-10 ${isHome ? "brightness-0" : ""}`}
                     src="/images/common/tobbagi-logo.webp"
                     alt=""
                     width={48}
