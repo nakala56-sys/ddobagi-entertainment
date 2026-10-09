@@ -175,6 +175,7 @@ function finalCta(root: HTMLElement): Cleanup {
 
         scrollTimeline(root, {
             start: "top bottom", end: () => `+=${window.innerHeight * 1.5}`,
+            scrub: 1.6,
             onRefreshInit: measure,
         })
             .fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0)
