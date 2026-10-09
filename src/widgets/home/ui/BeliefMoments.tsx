@@ -30,7 +30,12 @@ export function BeliefMoments() {
         return Animation.landing.section.beliefMoments(sectionRef.current);
     }, []);
 
-    const trackHeight = `${MOMENT_IMAGES.length * 70 + 40}vh`;
+    const imageGap = 70;
+    const firstTop = 12;
+    // Extra room after the last image so it can fully exit above the viewport
+    // before sticky copy releases and the next section scrolls in.
+    const exitPad = 180;
+    const trackHeight = `${firstTop + (MOMENT_IMAGES.length - 1) * imageGap + exitPad}vh`;
 
     return (
         <section
@@ -80,7 +85,7 @@ export function BeliefMoments() {
                     <div
                         key={image.src}
                         className="absolute -translate-x-1/2"
-                        style={{ top: `${12 + index * 70}vh`, left: `${image.x}%` }}
+                        style={{ top: `${firstTop + index * imageGap}vh`, left: `${image.x}%` }}
                     >
                         <div
                             data-float-image
