@@ -80,16 +80,6 @@ function reveal(root: HTMLElement) {
 
 function intro(root: HTMLElement): Cleanup {
     return section(root, () => {
-        const timeline = scrollTimeline(root, { start: "top top", end: () => `+=${window.innerHeight * 0.55}`, pin: true });
-        timeline.fromTo(root.querySelectorAll("[data-line]"), textFrom, textTo, 0)
-            .fromTo(root.querySelectorAll("[data-reveal]"), textFrom, textTo, 0);
-        const image = root.querySelector<HTMLElement>("[data-image]");
-        if (image) timeline.to(image, { scale: 1.12 }, 0);
-    });
-}
-
-function homeIntro(root: HTMLElement): Cleanup {
-    return section(root, () => {
         const timeline = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 1.1 } })
             .fromTo(root.querySelectorAll("[data-line]"), textFrom, { ...textTo, stagger: 0.12 }, 0)
             .fromTo(root.querySelectorAll("[data-reveal]"), textFrom, textTo, 0.12);
@@ -325,7 +315,7 @@ function stacking(root: HTMLElement): Cleanup {
     });
 }
 
-function pageLoading(root: HTMLElement, onComplete: () => void, home = false): Cleanup {
+function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = false): Cleanup {
     const content = root.querySelector<HTMLElement>("[data-page-content]")!;
     const overlay = root.querySelector<HTMLElement>("[data-page-loader]")!;
     const text = root.querySelector<HTMLElement>("[data-loading-text]")!;
@@ -355,7 +345,7 @@ function pageLoading(root: HTMLElement, onComplete: () => void, home = false): C
     const context = gsap.context(() => {
         const reveal = () => { restoreScroll(); root.dispatchEvent(new Event("page:reveal")); ScrollTrigger.refresh(); };
         transition = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 0.45 }, onComplete });
-        if (home) {
+        if (waveIntro) {
             // Expose only the wave behind the loader; the rest of the page stays hidden.
             transition.set(content, { opacity: 1 }, 0)
                 .call(() => {
@@ -433,7 +423,7 @@ class Animation {
         },
     };
 
-    static landing = { section: { heroIntro: homeIntro, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta } };
+    static landing = { section: { heroIntro: intro, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta } };
     static about = { section: { hero: intro, brandPhilosophy: entrance, brandMessage: message, location: entrance } };
     static services = { section: { hero: intro, overview: serviceOverview, slider: horizontal, closing: imageReveal } };
     static equipment = { section: { hero: intro, showcase, grid: entrance, studioEnvironment: imageReveal } };

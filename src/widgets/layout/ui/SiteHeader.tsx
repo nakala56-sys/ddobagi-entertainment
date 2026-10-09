@@ -21,7 +21,7 @@ export function SiteHeader() {
     return (
         <header
             ref={headerRef}
-            className={`site-header ${isHome ? "[--accent:#17212b] [--header-ink:#17212b]" : "[--accent:#ffffff] [--header-ink:#ffffff]"} h-23 absolute top-0 left-0 w-full z-[20] flex items-center justify-between p-[0_4rem] text-[var(--header-ink)] max-wide:px-8 max-site:h-19 max-site:px-5`}
+            className={`site-header [--accent:#17212b] [--header-ink:#17212b] h-23 absolute top-0 left-0 w-full z-[20] flex items-center justify-between p-[0_4rem] text-[var(--header-ink)] max-wide:px-8 max-site:h-19 max-site:px-5`}
         >
             <Link
                 className="brand-logo flex items-center gap-3 text-lg font-[750] leading-[round(up,1.1em,0.4rem)] tracking-[round(nearest,0.07em,0.4rem)] [&_small]:block [&_small]:text-[0.8rem] [&_small]:tracking-[round(nearest,0.18em,0.4rem)] [&_small]:mt-1 [&_small]:font-[500] max-site:text-base"

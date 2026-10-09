@@ -16,7 +16,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
     const pathname = usePathname();
     useEffect(() => Animation.layout.common(), []);
     return (
-        <PageTransition key={pathname} home={pathname === "/"}>
+        <PageTransition key={pathname}>
             <a
                 className="skip-link fixed left-5 -top-20 z-[200] bg-[var(--paper)] text-[var(--ink)] p-[1.6rem_2rem] focus:top-3"
                 href="#main-content"
