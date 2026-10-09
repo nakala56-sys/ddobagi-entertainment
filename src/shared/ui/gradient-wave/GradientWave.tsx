@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createTextMask, createWaveRenderer, DEFAULT_WAVE_COLORS, type WaveColors } from "./renderer";
 
+/** Extra background height below the section, as a fraction of section height. */
+const WAVE_BLEED = 0.34;
+
 export type GradientWaveProps = {
     /** Newlines or an array define explicit lines; long lines also wrap naturally. */
     text: string | readonly string[];
@@ -28,6 +31,8 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
     const lines = typeof text === "string" ? text.split("\n") : text;
     const textKey = lines.join("\n");
     const colorKey = colors.join(",");
+    const bleedScale = 1 + WAVE_BLEED;
+    const bleedMaskStop = `${(100 / bleedScale).toFixed(2)}%`;
 
     useEffect(() => {
         const root = rootRef.current;
@@ -48,6 +53,7 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
         const playback = Math.max(0, Number.isFinite(speed) ? speed : 1);
         const strength = Math.min(2, Math.max(0, Number.isFinite(distortion) ? distortion : 1));
         const palette = colorKey.split(",") as unknown as WaveColors;
+        const canvasBleed = 1 + WAVE_BLEED;
 
         const stop = () => { cancelAnimationFrame(frame); frame = 0; previous = 0; };
         const draw = (time: number) => {
@@ -72,7 +78,9 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
             const y = heading.offsetTop;
             const headingWidth = heading.clientWidth;
             const headingHeight = heading.clientHeight;
-            background.resize(width, height, [0, 0, 1, 1], [width, height]);
+            // Background canvas is taller than the section so the wave can bleed into the next one.
+            const bleedHeight = Math.round(height * canvasBleed);
+            background.resize(width, bleedHeight, [0, 0, 1, canvasBleed], [width, height]);
             const ratio = foreground.resize(headingWidth, headingHeight, [x / width, y / height, headingWidth / width, headingHeight / height], [width, height]);
             const mask = createTextMask(heading, headingWidth, headingHeight, ratio);
             if (!mask) { stop(); setReady(false); return; }
@@ -138,14 +146,29 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
     }, [textKey, colorKey, speed, distortion, Heading, textClassName, className]);
 
     return (
-        <div ref={rootRef} data-gradient-wave data-wave-ready={ready} style={{ "--wave-color-0": colors[0] } as CSSProperties} className={`relative isolate overflow-hidden bg-[radial-gradient(ellipse_100%_140%_at_50%_-60%,var(--wave-color-0)_40%,white_75%)] text-[#17212b] ${className}`}>
-            <canvas ref={backgroundRef} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${ready ? "visible" : "invisible"}`} />
-            {before ? <div className="relative">{before}</div> : null}
-            <Heading ref={headingRef} id={id} aria-label={lines.join(" ")} data-line className={`relative ${textClassName}`}>
+        <div
+            ref={rootRef}
+            data-gradient-wave
+            data-wave-ready={ready}
+            style={{ "--wave-color-0": colors[0] } as CSSProperties}
+            className={`relative isolate overflow-visible bg-[radial-gradient(ellipse_100%_140%_at_50%_-60%,var(--wave-color-0)_40%,white_75%)] text-[#17212b] ${className}`}
+        >
+            <canvas
+                ref={backgroundRef}
+                aria-hidden="true"
+                style={{
+                    height: `${bleedScale * 100}%`,
+                    WebkitMaskImage: `linear-gradient(to bottom, #000 0%, #000 ${bleedMaskStop}, transparent 100%)`,
+                    maskImage: `linear-gradient(to bottom, #000 0%, #000 ${bleedMaskStop}, transparent 100%)`,
+                }}
+                className={`pointer-events-none absolute top-0 left-0 z-0 w-full ${ready ? "visible" : "invisible"}`}
+            />
+            {before ? <div className="relative z-10">{before}</div> : null}
+            <Heading ref={headingRef} id={id} aria-label={lines.join(" ")} data-line className={`relative z-10 ${textClassName}`}>
                 {lines.map((line, index) => <span key={index} data-wave-line className={`block whitespace-pre-wrap break-words ${ready ? "text-transparent" : ""}`}>{line || "\u00a0"}</span>)}
                 <canvas ref={textRef} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${ready ? "visible" : "invisible"}`} />
             </Heading>
-            {children ? <div className="relative">{children}</div> : null}
+            {children ? <div className="relative z-10">{children}</div> : null}
         </div>
     );
 }

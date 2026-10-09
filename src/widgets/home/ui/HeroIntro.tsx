@@ -15,7 +15,7 @@ export function HeroIntro() {
     return (
         <section
             ref={sectionRef}
-            className="hero relative"
+            className="hero relative overflow-visible"
             aria-labelledby="home-hero-title"
         >
             <GradientWave

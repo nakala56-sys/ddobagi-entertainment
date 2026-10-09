@@ -46,7 +46,9 @@ void main() {
     // Wide feather so color bleeds into white instead of forming a hard rim.
     float feather = 0.32;
     float startRadius = -center.y - feather * 2.0;
-    float endRadius = length(vec2(0.5 * aspect, 1.0 - center.y)) + feather * 2.0;
+    // Cover at least the hero (y=1); background may map past that into a bleed zone.
+    float extentY = max(1.0, u_region.y + u_region.w);
+    float endRadius = length(vec2(0.5 * aspect, extentY - center.y)) + feather * 2.0;
     // Color every period; white trails shortly after. Several cycles overlap so
     // the next color arrives before the previous white has finished clearing.
     float period = 2.4;
