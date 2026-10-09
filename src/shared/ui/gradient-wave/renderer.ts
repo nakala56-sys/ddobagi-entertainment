@@ -21,29 +21,41 @@ uniform float u_time;
 uniform float u_distortion;
 uniform float u_text;
 
-vec3 palette(float phase) {
-    float p = mod(phase, 4.0);
-    float blend = smoothstep(0.0, 1.0, fract(p));
-    if (p < 1.0) return mix(u_colors[0], u_colors[1], blend);
-    if (p < 2.0) return mix(u_colors[1], u_colors[2], blend);
-    if (p < 3.0) return mix(u_colors[2], u_colors[3], blend);
-    return mix(u_colors[3], u_colors[0], blend);
+vec3 palette(float step) {
+    float index = mod(step, 4.0);
+    if (index < 1.0) return u_colors[0];
+    if (index < 2.0) return u_colors[1];
+    if (index < 3.0) return u_colors[2];
+    return u_colors[3];
 }
 
 void main() {
     // Top-origin coordinates make the same wave descend across both canvases.
     vec2 local = vec2(v_uv.x, 1.0 - v_uv.y);
     vec2 uv = u_region.xy + local * u_region.zw;
-    float curve = 0.16 * sin(uv.x * 4.4 + u_time * 0.12)
-        + 0.06 * sin(uv.x * 9.0 - u_time * 0.18);
-    float phase = (uv.y + curve) * 5.8 - u_time * 0.52;
-    float wave = sin(phase);
-    float crest = exp(-pow(wave * 5.0, 2.0));
-    vec3 color = palette(u_time * 0.16 - uv.y * 0.65 + curve);
-    vec3 nextColor = palette(u_time * 0.16 - uv.y * 0.65 + curve + 0.8);
-    float wash = 0.42 + 0.32 * sin(phase + 0.5);
-    float basin = 1.0 - smoothstep(0.25, 0.98, uv.y + 0.20 * pow(abs(uv.x - 0.5) * 2.0, 2.0));
-    vec3 background = mix(vec3(0.98, 0.98, 0.995), mix(color, nextColor, wash), basin * 0.82);
+    // Measure a real circle in aspect-correct coordinates, centered above the view.
+    float aspect = u_resolution.x / u_resolution.y;
+    vec2 center = vec2(0.5 * aspect, -0.6 * aspect);
+    vec2 point = vec2(uv.x * aspect, uv.y) - center;
+    float distance = length(point);
+    float feather = 0.12;
+    float startRadius = -center.y - feather * 2.0;
+    float endRadius = length(vec2(0.5 * aspect, 1.0 - center.y)) + feather * 2.0;
+    // One color per cycle. Its trailing white circle always completes before the next.
+    float cycle = floor(u_time / 8.0);
+    float phase = mod(u_time, 8.0);
+    float colorRadius = mix(startRadius, endRadius, smoothstep(0.0, 4.5, phase));
+    float whiteRadius = mix(startRadius, endRadius, smoothstep(2.5, 7.0, phase));
+    float colorMask = 1.0 - smoothstep(colorRadius - feather, colorRadius + feather, distance);
+    float whiteMask = 1.0 - smoothstep(whiteRadius - feather, whiteRadius + feather, distance);
+    float fill = colorMask * (1.0 - whiteMask);
+    vec3 color = palette(cycle);
+    vec3 background = mix(vec3(1.0), color, fill);
+    float edgeWidth = feather * 0.35;
+    float colorEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - colorRadius));
+    float whiteEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - whiteRadius));
+    float crest = max(colorEdge, whiteEdge);
+    float edgeDistance = colorEdge > whiteEdge ? distance - colorRadius : distance - whiteRadius;
 
     if (u_text < 0.5) {
         gl_FragColor = vec4(background, 1.0);
@@ -51,17 +63,23 @@ void main() {
     }
 
     // Refraction and chromatic separation are confined to the passing crest.
-    vec2 displacement = vec2(sin(phase * 2.0 + uv.x * 11.0), cos(phase + uv.x * 7.0));
-    displacement *= crest * u_distortion * 0.003 / max(u_region.zw, vec2(0.001));
+    vec2 normal = point / max(distance, 0.001);
+    vec2 displacement = vec2(normal.x / aspect, normal.y);
+    displacement *= sin(edgeDistance * 70.0) * crest * u_distortion * 0.003 / max(u_region.zw, vec2(0.001));
     vec2 sampleUV = local + displacement;
     float split = crest * u_distortion * 1.8 / u_resolution.x / max(u_region.z, 0.001);
     float red = texture2D(u_mask, sampleUV + vec2(split, 0.0)).a;
     float green = texture2D(u_mask, sampleUV).a;
     float blue = texture2D(u_mask, sampleUV - vec2(split, 0.0)).a;
     float alpha = max(red, max(green, blue));
-    vec3 ink = mix(color * 0.34, nextColor * 0.55, 0.5 + wave * 0.5);
-    float ribbon = sin(phase * 9.0) * 0.5 + 0.5;
-    ink = mix(ink, mix(color * 0.48, nextColor, ribbon), crest * 0.82);
+    float lowest = min(color.r, min(color.g, color.b));
+    float chroma = max(color.r, max(color.g, color.b)) - lowest;
+    vec3 hue = (color - vec3(lowest)) / max(chroma, 0.001);
+    vec3 baseInk = vec3(0.09, 0.13, 0.17);
+    vec3 coloredInk = mix(baseInk, hue * 0.55 + vec3(0.02), smoothstep(0.02, 0.18, chroma));
+    vec3 ink = mix(baseInk, coloredInk, fill);
+    float ribbon = sin(edgeDistance * 120.0) * 0.5 + 0.5;
+    ink = mix(ink, mix(coloredInk, color, ribbon), crest * 0.82);
     vec3 channels = vec3(red, green, blue) / max(alpha, 0.001);
     gl_FragColor = vec4(ink * channels, alpha);
 }`;
@@ -133,7 +151,8 @@ export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
         },
         render(time: number) {
-            gl.uniform1f(timeLocation, time);
+            // Keep mediump shader precision stable across repeated four-color cycles.
+            gl.uniform1f(timeLocation, time % 32);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         },
     };

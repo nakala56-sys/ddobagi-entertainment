@@ -138,7 +138,7 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
     }, [textKey, colorKey, speed, distortion, Heading, textClassName, className]);
 
     return (
-        <div ref={rootRef} data-gradient-wave data-wave-ready={ready} style={{ "--wave-color-0": colors[0], "--wave-color-1": colors[1], "--wave-color-2": colors[2], "--wave-color-3": colors[3] } as CSSProperties} className={`relative isolate overflow-hidden bg-[linear-gradient(180deg,color-mix(in_srgb,var(--wave-color-0)_60%,white),color-mix(in_srgb,var(--wave-color-1)_40%,white)_35%,color-mix(in_srgb,var(--wave-color-2)_30%,white)_65%,color-mix(in_srgb,var(--wave-color-3)_20%,white)_85%,#fafafa)] text-[#17212b] ${className}`}>
+        <div ref={rootRef} data-gradient-wave data-wave-ready={ready} style={{ "--wave-color-0": colors[0] } as CSSProperties} className={`relative isolate overflow-hidden bg-[radial-gradient(ellipse_100%_140%_at_50%_-60%,var(--wave-color-0)_40%,white_75%)] text-[#17212b] ${className}`}>
             <canvas ref={backgroundRef} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${ready ? "visible" : "invisible"}`} />
             {before ? <div className="relative">{before}</div> : null}
             <Heading ref={headingRef} id={id} aria-label={lines.join(" ")} data-line className={`relative ${textClassName}`}>
