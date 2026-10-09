@@ -141,11 +141,6 @@ function finalCta(root: HTMLElement): Cleanup {
             .fromTo(root, { "--cta-wave-y": "-10%" }, { "--cta-wave-y": "4%", duration: 1 }, 0);
 
         reveal(root);
-        const image = root.querySelector<HTMLElement>("[data-image]");
-        if (image) {
-            scrollTimeline(image, { start: "clamp(top 90%)", end: "clamp(center center)" })
-                .fromTo(image, { scale: 1.08 }, { scale: 1 });
-        }
     });
 }
 

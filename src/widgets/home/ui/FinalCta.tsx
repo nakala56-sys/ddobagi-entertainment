@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
-import Image from "next/image";
 import { ContactCreatorButton } from "@/features/contactCreator";
 import Animation from "@/shared/utils/animation";
 
@@ -31,9 +30,6 @@ export function FinalCta() {
             }
             aria-labelledby="home-closing-title"
         >
-            <div className="closing-image absolute inset-0 opacity-[0.2]" data-image>
-                <Image src="/images/equipment/studio.webp" alt="또바기 회사소개서에 담긴 방송 환경" fill sizes="100vw" />
-            </div>
             <div className="closing-content relative text-center flex flex-col items-center gap-9 max-site:gap-8 content-width w-[min(132rem,_calc(100%_-_12rem))] mx-auto max-wide:w-[calc(100%_-_8rem)] max-site:w-[calc(100%_-_4rem)]">
                 <p className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase" data-reveal>
                     06 — YOUR NEXT CHAPTER
