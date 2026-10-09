@@ -1,8 +1,18 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { CustomEase } from "gsap/CustomEase";
 import Lenis from "lenis";
 
-if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
+const MOTION_EASE = "site-motion";
+const SHIMMER_EASE = "site-shimmer";
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger, CustomEase);
+    CustomEase.create(MOTION_EASE, "0.22,1,0.36,1");
+    CustomEase.create(SHIMMER_EASE, "0.65,0,0.35,1");
+}
+
+const textFrom = { autoAlpha: 0, y: 36, filter: "blur(20px)" };
+const textTo = { autoAlpha: 1, y: 0, filter: "blur(0px)" };
 
 type Cleanup = () => void;
 type Conditions = { desktop: boolean; reduced: boolean };
@@ -37,27 +47,42 @@ function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     };
 }
 
-// One linear timeline per scroll range: progress follows the current scroll position.
+// The scroll position controls time; CustomEase controls the visual motion within it.
 function scrollTimeline(trigger: HTMLElement, options: ScrollTrigger.Vars = {}) {
     return gsap.timeline({
-        defaults: { ease: "none", duration: 1 },
+        defaults: { ease: MOTION_EASE, duration: 1 },
         scrollTrigger: { trigger, start: "clamp(top 92%)", end: "clamp(top 65%)", scrub: true, invalidateOnRefresh: true, ...options },
     });
 }
 
 function reveal(root: HTMLElement) {
     root.querySelectorAll<HTMLElement>("[data-reveal]").forEach((element) => {
-        scrollTimeline(element).from(element, { autoAlpha: 0, y: 36 });
+        scrollTimeline(element).fromTo(element, textFrom, textTo);
     });
 }
 
 function intro(root: HTMLElement): Cleanup {
     return section(root, () => {
         const timeline = scrollTimeline(root, { start: "top top", end: () => `+=${window.innerHeight * 0.55}`, pin: true });
-        timeline.from(root.querySelectorAll("[data-line]"), { yPercent: 105, autoAlpha: 0 }, 0)
-            .from(root.querySelectorAll("[data-reveal]"), { autoAlpha: 0, y: 24 }, 0);
+        timeline.fromTo(root.querySelectorAll("[data-line]"), textFrom, textTo, 0)
+            .fromTo(root.querySelectorAll("[data-reveal]"), textFrom, textTo, 0);
         const image = root.querySelector<HTMLElement>("[data-image]");
         if (image) timeline.to(image, { scale: 1.12 }, 0);
+    });
+}
+
+function homeIntro(root: HTMLElement): Cleanup {
+    return section(root, () => {
+        const timeline = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 1.1 } })
+            .fromTo(root.querySelectorAll("[data-line]"), textFrom, { ...textTo, stagger: 0.12 }, 0)
+            .fromTo(root.querySelectorAll("[data-reveal]"), textFrom, textTo, 0.12);
+        const transition = root.closest<HTMLElement>("[data-page-pending]");
+        const play = () => { timeline.play(); };
+        if (transition?.dataset.pagePending === "true") transition.addEventListener("page:reveal", play, { once: true });
+        else play();
+        const image = root.querySelector<HTMLElement>("[data-image]");
+        if (image) scrollTimeline(root, { start: "top top", end: "bottom top" }).to(image, { scale: 1.12 });
+        return () => transition?.removeEventListener("page:reveal", play);
     });
 }
 
@@ -79,7 +104,7 @@ function message(root: HTMLElement): Cleanup {
         if (!desktop) { reveal(root); return; }
         const words = root.querySelectorAll("[data-word]");
         scrollTimeline(root, { start: "top top", end: "+=130%", pin: true })
-            .from(words, { opacity: 0.15, y: 30, stagger: 0.6, duration: 0.7 });
+            .fromTo(words, textFrom, { ...textTo, stagger: 0.6, duration: 0.7 });
     });
 }
 
@@ -92,9 +117,9 @@ function serviceOverview(root: HTMLElement): Cleanup {
             const preview = row.querySelector<HTMLElement>("[data-preview]");
             if (!preview) return;
             // All animations are created inside the media context; events only control them.
-            const x = gsap.quickTo(preview, "x", { duration: 0.35, ease: "power3.out" });
-            const y = gsap.quickTo(preview, "y", { duration: 0.35, ease: "power3.out" });
-            const visibility = gsap.fromTo(preview, { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.25, paused: true });
+            const x = gsap.quickTo(preview, "x", { duration: 0.35, ease: MOTION_EASE });
+            const y = gsap.quickTo(preview, "y", { duration: 0.35, ease: MOTION_EASE });
+            const visibility = gsap.fromTo(preview, { autoAlpha: 0, scale: 0.92 }, { autoAlpha: 1, scale: 1, duration: 0.25, ease: MOTION_EASE, paused: true });
             const enter = () => visibility.play();
             const leave = () => visibility.reverse();
             const move = (event: PointerEvent) => {
@@ -135,8 +160,9 @@ function horizontal(root: HTMLElement): Cleanup {
             onUpdate: (trigger) => {
                 if (counter) counter.textContent = `${String(Math.round(trigger.progress * (cards.length - 1)) + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
             },
-        }).to(track, { x: () => -distance() });
-        if (progress) timeline.fromTo(progress, { scaleX: 0 }, { scaleX: 1 }, 0);
+        // containerAnimation requires linear track movement for correct card measurements.
+        }).to(track, { x: () => -distance(), ease: "none" });
+        if (progress) timeline.fromTo(progress, { scaleX: 0 }, { scaleX: 1, ease: "none" }, 0);
         cards.forEach((card) => {
             const image = card.querySelector<HTMLElement>("[data-slide-image]");
             if (image) scrollTimeline(card, { containerAnimation: timeline, start: "left right", end: "right left" })
@@ -176,8 +202,8 @@ function showcase(root: HTMLElement): Cleanup {
         const cards = root.querySelectorAll<HTMLElement>("[data-showcase-card]");
         const indicator = root.querySelector<HTMLElement>("[data-counter]");
         root.classList.add("is-pinned");
-        gsap.set(cards, { autoAlpha: 0, x: 30 });
-        gsap.set(cards[0], { autoAlpha: 1, x: 0 });
+        gsap.set(cards, textFrom);
+        gsap.set(cards[0], textTo);
         const timeline = scrollTimeline(root, {
             start: "top top", end: () => `+=${window.innerHeight * 2.5}`, pin: true,
             onUpdate: (trigger) => {
@@ -186,8 +212,8 @@ function showcase(root: HTMLElement): Cleanup {
         });
         cards.forEach((card, index) => {
             if (!index) return;
-            timeline.to(cards[index - 1], { autoAlpha: 0, x: -30, duration: 0.35 }, index - 1)
-                .to(card, { autoAlpha: 1, x: 0, duration: 0.5 }, index - 1 + 0.15);
+            timeline.to(cards[index - 1], { autoAlpha: 0, y: -36, filter: "blur(20px)", duration: 0.35 }, index - 1)
+                .to(card, { ...textTo, duration: 0.5 }, index - 1 + 0.15);
         });
         return () => {
             root.classList.remove("is-pinned");
@@ -207,18 +233,78 @@ function stacking(root: HTMLElement): Cleanup {
         cards.forEach((card, index) => {
             if (!index) return;
             timeline.to(cards[index - 1], { scale: 0.94, y: -18 * (cards.length - index), duration: 1 }, index - 1)
-                .to(card, { yPercent: 0, duration: 1 }, index - 1);
+                .to(card, { yPercent: 0, duration: 1 }, index - 1)
+                .fromTo(card.firstElementChild, textFrom, textTo, index - 1);
         });
         return () => root.classList.remove("is-stacking");
     });
 }
 
+function pageLoading(root: HTMLElement, onComplete: () => void): Cleanup {
+    const content = root.querySelector<HTMLElement>("[data-page-content]")!;
+    const overlay = root.querySelector<HTMLElement>("[data-page-loader]")!;
+    const text = root.querySelector<HTMLElement>("[data-loading-text]")!;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const previousOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    let active = true;
+    let shimmerDone = reduced;
+    let revealing = false;
+    let transition: gsap.core.Timeline;
+    const restoreScroll = () => { document.documentElement.style.overflow = previousOverflow; };
+    const revealPage = () => {
+        const panel = content.querySelector<HTMLElement>(".route-panel");
+        const image = content.querySelector<HTMLImageElement>(".hero-image img");
+        if (!active || revealing || !shimmerDone || document.fonts.status === "loading" || content.querySelector(".page-loading") || (panel && panel.dataset.animationReady !== "true") || (image && !image.complete)) return;
+        revealing = true;
+        observer.disconnect();
+        restoreScroll();
+        if (reduced) {
+            gsap.set(content, { autoAlpha: 1 });
+            gsap.set(overlay, { autoAlpha: 0 });
+            onComplete();
+            ScrollTrigger.refresh();
+        } else transition.play();
+    };
+    const observer = new MutationObserver(revealPage);
+    const context = gsap.context(() => {
+        transition = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 0.45 }, onComplete })
+            .call(() => { root.dispatchEvent(new Event("page:reveal")); ScrollTrigger.refresh(); })
+            .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1 }, 0)
+            .to(overlay, { autoAlpha: 0 }, 0);
+        if (reduced) gsap.set(text, { backgroundPosition: "0% 0%" });
+        else gsap.fromTo(text, { backgroundPosition: "100% 0%" }, {
+            backgroundPosition: "0% 0%", duration: 1.6, ease: SHIMMER_EASE,
+            onComplete: () => { shimmerDone = true; revealPage(); },
+        });
+    }, root);
+    observer.observe(content, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-animation-ready"] });
+    content.addEventListener("load", revealPage, true);
+    content.addEventListener("error", revealPage, true);
+    // Route content can start another font load after the initial ready promise resolves.
+    document.fonts.addEventListener("loadingdone", revealPage);
+    document.fonts.addEventListener("loadingerror", revealPage);
+    document.fonts.ready.then(() => { if (active) revealPage(); });
+    revealPage();
+    return () => {
+        active = false;
+        observer.disconnect();
+        content.removeEventListener("load", revealPage, true);
+        content.removeEventListener("error", revealPage, true);
+        document.fonts.removeEventListener("loadingdone", revealPage);
+        document.fonts.removeEventListener("loadingerror", revealPage);
+        restoreScroll();
+        context.revert();
+    };
+}
+
 class Animation {
     static layout = {
+        loading: pageLoading,
         common: (): Cleanup => {
             const media = gsap.matchMedia();
             media.add("(min-width: 900px) and (prefers-reduced-motion: no-preference)", () => {
-                const lenis = new Lenis({ lerp: 0.12, allowNestedScroll: true });
+                const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
                 const update = () => ScrollTrigger.update();
                 lenis.on("scroll", update);
                 const tick = (time: number) => lenis.raf(time * 1000);
@@ -240,13 +326,13 @@ class Animation {
         footer: entrance,
         progress: (root: HTMLElement): Cleanup => {
             const context = gsap.context(() => {
-                scrollTimeline(root, { start: 0, end: "max" }).fromTo(root, { scaleX: 0 }, { scaleX: 1 });
+                scrollTimeline(root, { start: 0, end: "max" }).fromTo(root, { scaleX: 0 }, { scaleX: 1, ease: "none" });
             }, root);
             return () => context.revert();
         },
     };
 
-    static landing = { section: { heroIntro: intro, brandIntro: entrance, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta: imageReveal } };
+    static landing = { section: { heroIntro: homeIntro, brandIntro: entrance, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta: imageReveal } };
     static about = { section: { hero: intro, brandPhilosophy: entrance, brandMessage: message, location: entrance } };
     static services = { section: { hero: intro, overview: serviceOverview, slider: horizontal, closing: imageReveal } };
     static equipment = { section: { hero: intro, showcase, grid: entrance, studioEnvironment: imageReveal } };

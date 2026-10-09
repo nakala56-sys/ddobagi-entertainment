@@ -23,7 +23,7 @@ export default function NotFound() {
                     주소가 변경되었거나 더 이상 제공되지 않는 페이지입니다.
                 </p>
                 <Link
-                    className="rounded-full bg-[#a68d57] px-[2.4rem] py-[1.4rem] text-[1.6rem] font-[700] text-white"
+                    className="rounded-full bg-black px-[2.4rem] py-[1.4rem] text-[1.6rem] font-[700] text-white"
                     href="/"
                 >
                     메인으로 돌아가기
