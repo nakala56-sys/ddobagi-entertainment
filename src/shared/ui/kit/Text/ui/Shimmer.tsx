@@ -1,4 +1,3 @@
-import { useEffect, useId } from "react";
 
 interface TextShimmerProps {
     children: string;
@@ -23,47 +22,12 @@ export const Shimmer = ({
     },
     duration = 2,
 }: TextShimmerProps) => {
-    const shimmerName = `text-shimmer-${useId().replace(/:/g, "")}`;
-
-    useEffect(() => {
-        const prev = document.getElementById(shimmerName);
-        if (prev) prev.remove();
-
-        const keyframes = `
-      @keyframes ${shimmerName} {
-        0% {
-          background-position: -200% 0;
-        }
-        100% {
-          background-position: 200% 0;
-        }
-      }
-    `;
-
-        const styleTag = document.createElement("style");
-        styleTag.id = shimmerName;
-        styleTag.innerHTML = keyframes;
-        document.head.appendChild(styleTag);
-
-        return () => {
-            styleTag.remove();
-        };
-    }, [color.start, color.end, duration]);
 
     return (
         <Component
             ref={null}
-            className={`inline-block relative text-transparent bg-clip-text [background-size:400%_100%] ${className}`}
-            style={{
-                ...style,
-                backgroundImage: `linear-gradient(90deg, ${color.start} 0%, ${color.end} 50%, ${color.start} 100%)`,
-                backgroundSize: "400% 100%",
-                backgroundRepeat: "repeat",
-                backgroundPosition: "0% 0%",
-                animation: `${shimmerName} ${duration}s linear infinite`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-            }}
+            className={`inline-block relative text-transparent bg-clip-text bg-size-[400%_100%] bg-repeat bg-position-[0%_0%] animate-text-shimmer bg-[linear-gradient(90deg,var(--shimmer-start)_0%,var(--shimmer-end)_50%,var(--shimmer-start)_100%)] [-webkit-text-fill-color:transparent] ${className}`}
+            style={{ ...style, "--shimmer-start": color.start, "--shimmer-end": color.end, "--shimmer-duration": `${duration}s` } as React.CSSProperties}
         >
             {children}
         </Component>

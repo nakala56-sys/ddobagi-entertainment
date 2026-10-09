@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "motion/react";
 type Breakpoint = "mobile" | "tablet" | "pc";
 type PortalType = boolean | Breakpoint[];
 
-// portal prop 확장: 
+// portal prop 확장:
 // - portal={true} 전체
 // - portal={["mobile", "tablet"]}
 // - portal={["pc"]}
@@ -63,9 +63,9 @@ const motionTagMap = {
 // 브레이크포인트별 감지 훅
 function useBreakpoint(): Breakpoint {
     // tailwind 기반
-    // mobile: < 768px, tablet: 768 ~ 1280px, pc: >= 1280px
-    // CSS 변수 기준: --breakpoint-mobile: 9.375rem(344px), --breakpoint-tablet: 48rem(768px), --breakpoint-pc: 90rem(1440px)
-    // 모바일: < 768px, 태블릿: 768~1439px, PC: >=1440px
+    // mobile: < 76.8rem, tablet: 768 ~ 128rem, pc: >= 128rem
+    // CSS 변수 기준: --breakpoint-mobile: 9.2rem(34.4rem), --breakpoint-tablet: 48rem(76.8rem), --breakpoint-pc: 90rem(144rem)
+    // 모바일: < 76.8rem, 태블릿: 768~144rem, PC: >=144rem
     const get = () => {
         if (typeof window === "undefined") return "pc";
         if (window.innerWidth < 768) return "mobile";
@@ -87,19 +87,19 @@ function useBreakpoint(): Breakpoint {
 
 /**
  * <Portal.Section portal={["mobile"]} ...>이 두 번 생기는 이유는 다음과 같습니다.
- * 
+ *
  * - portal={["mobile"]}이면, 모바일 breakpoint에서 ReactDOM.createPortal로 document.body에 내용을 렌더링합니다.
  * - 동시에, 부모에서 (예: <section>내부에) <Portal.Section portal={["mobile"]}>로 마크업을 사용하면,
  *   데스크톱에서는 "원래 자리에" 그대로 나오고, 모바일에서는 portal로 복제되어 body에도 삽입됩니다.
  * - 하지만, 이 Portal 컴포넌트는 'Section'을 포함한 반환이 아래 두 케이스로 나누어짐:
  *   - 모바일 : ReactDOM.createPortal(...) && 부모 트리(원래 자리) 둘 다 각각 하나씩 존재 (중복 발생)
  *   - 데스크톱 : 부모 위치에만 하나 존재
- * 
+ *
  * 문제의 핵심은 "원래 트리"와 "portal로 body에 생긴 트리"가 모두 렌더되어 '2개'로 보이기 때문입니다.
- * 
+ *
  * 이를 방지하려면 "portal"이 true일 때 원래 자리에 아무것도 렌더하지 않도록 하고,
  * 아니면 원래 자리에만 렌더해야 합니다.
- * 
+ *
  * 기존 코드는 children을 원래 트리에 남기고, 동시에 portal 시에도 렌더합니다.
  * 즉, 아래처럼 "Fragment + Portal" 둘 다 그려집니다.
  */

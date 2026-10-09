@@ -15,5 +15,5 @@ const Progress = dynamic(() => import("@/widgets/layout/Progress").then((module)
 export default function SiteLayout({ children }: { children: ReactNode }) {
     const pathname = usePathname();
     useEffect(() => Animation.layout.common(), []);
-    return <PageTransition key={pathname}><a className="skip-link" href="#main-content">본문 바로가기</a><Header /><div id="main-content">{children}</div><Footer /><QuickMenu /><Toast /><Progress /></PageTransition>;
+    return <PageTransition key={pathname}><a className="skip-link fixed left-5 -top-20 z-[200] bg-[var(--paper)] text-[var(--ink)] p-[1.6rem_2rem] focus:top-3" href="#main-content">본문 바로가기</a><Header /><div id="main-content">{children}</div><Footer /><QuickMenu /><Toast /><Progress /></PageTransition>;
 }

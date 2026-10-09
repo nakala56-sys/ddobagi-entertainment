@@ -265,24 +265,8 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
     return (
         <span
             aria-hidden="true"
-            className="pointer-events-none absolute block whitespace-pre"
-            style={{
-                font: "inherit",
-                fontKerning: "inherit",
-                fontSize: "inherit",
-                fontStretch: "inherit",
-                fontStyle: "inherit",
-                fontVariant: "inherit",
-                fontWeight: "inherit",
-                height: line.height,
-                letterSpacing: "inherit",
-                left: line.left - horizontalInset,
-                lineHeight: `${line.height}px`,
-                right: line.right - horizontalInset,
-                textTransform: "inherit",
-                top: line.top,
-                wordSpacing: "inherit",
-            }}
+            className={`pointer-events-none absolute block whitespace-pre text-[length:inherit]`}
+            style={{ font: "inherit", fontKerning: "inherit", fontStretch: "inherit", fontStyle: "inherit", fontVariant: "inherit", fontWeight: "inherit", height: line.height, letterSpacing: "inherit", left: line.left - horizontalInset, lineHeight: `${line.height}px`, right: line.right - horizontalInset, textTransform: "inherit", top: line.top, wordSpacing: "inherit" }}
         >
             <motion.span
                 className="absolute inset-0 block"
@@ -292,7 +276,7 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
                     maskImage: revealMask,
                 }}
             >
-                <span style={{ display: "inline-block", paddingInline: horizontalInset }}>{line.text}</span>
+                <span className={`inline-block`} style={{ paddingInline: horizontalInset }}>{line.text}</span>
             </motion.span>
             {subHighlightColor ? (
                 <motion.span
@@ -303,7 +287,7 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
                         maskImage: subHighlightMask,
                     }}
                 >
-                    <span style={{ display: "inline-block", paddingInline: horizontalInset }}>{line.text}</span>
+                    <span className={`inline-block`} style={{ paddingInline: horizontalInset }}>{line.text}</span>
                 </motion.span>
             ) : null}
             <motion.span
@@ -314,7 +298,7 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
                     maskImage: highlightMask,
                 }}
             >
-                <span style={{ display: "inline-block", paddingInline: horizontalInset }}>{line.text}</span>
+                <span className={`inline-block`} style={{ paddingInline: horizontalInset }}>{line.text}</span>
             </motion.span>
         </span>
     );

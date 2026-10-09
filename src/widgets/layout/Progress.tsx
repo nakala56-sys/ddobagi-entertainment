@@ -11,5 +11,5 @@ export function Progress() {
         if (!ref.current) return;
         return Animation.layout.progress(ref.current);
     }, [pathname]);
-    return <div ref={ref} className="site-progress" aria-hidden="true" />;
+    return <div ref={ref} className="site-progress fixed top-0 left-0 right-0 h-1 z-[50] bg-[#ffffff] mix-blend-difference scale-x-0 origin-left" aria-hidden="true" />;
 }

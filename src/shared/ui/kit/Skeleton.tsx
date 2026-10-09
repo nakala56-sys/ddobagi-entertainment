@@ -175,7 +175,7 @@ const SkeletonBase = <T extends ElementType = "div">({
                     aria-label="hidden"
                     {...(rest as any)}
                     ref={ref}
-                    className={`${className?.skeleton ? className?.skeleton : "h-[1.4rem] min-w-[1.4rem]"} ${type ? getTypeOfStyle(type) : ""} bg-[var(--color-gray-200)] rounded-[0.4rem] animation glowing-dark overflow-hidden pointer-events-none relative`}
+                    className={`${className?.skeleton ? className?.skeleton : "h-4 min-w-4"} ${type ? getTypeOfStyle(type) : ""} bg-[var(--color-gray-200)] rounded-[0.4rem] animation glowing-dark overflow-hidden pointer-events-none relative`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -296,7 +296,7 @@ function SkeletonImage({ target, error, src, alt, className, style, onLoad, onEr
                     key="skeleton"
                     aria-label="hidden"
                     className={`${extractSkeletonClassName(className ?? {}) || "h-full w-full"} ${type ? getTypeOfStyle(type) : ""} absolute top-0 bg-[var(--color-gray-200)] animation glowing-dark overflow-hidden pointer-events-none`}
-                    // className={`${ extractSkeletonClassName(className ?? {}) || "h-[1.4rem] min-w-[1.4rem]" } ${ type ? getTypeOfStyle(type) : "" } absolute top-0 bg-[var(--color-gray-200)] animation glowing-dark overflow-hidden pointer-events-none`}
+                    // className={`${ extractSkeletonClassName(className ?? {}) || "h-4 min-w-4" } ${ type ? getTypeOfStyle(type) : "" } absolute top-0 bg-[var(--color-gray-200)] animation glowing-dark overflow-hidden pointer-events-none`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}

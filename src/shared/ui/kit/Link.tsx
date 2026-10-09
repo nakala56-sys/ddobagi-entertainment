@@ -5,13 +5,13 @@ import { useState } from "react";
 import { ButtonProps, LinkProps } from "../model/ui-props";
 import Link from "next/link";
 
-// Size type and sizeHeights from Input.tsx
+// Size type and sizeClasses from Input.tsx
 type ButtonSize = "sm" | "md" | "lg" | "xlg";
-const sizeHeights: Record<ButtonSize, string> = {
-    sm: "3.2rem",
-    md: "5.2rem",
-    lg: "5.2rem",
-    xlg: "7.2rem",
+const sizeClasses: Record<ButtonSize, string> = {
+    sm: "min-h-8",
+    md: "min-h-13",
+    lg: "min-h-13",
+    xlg: "min-h-18",
 };
 
 export const Linker = ({
@@ -61,7 +61,7 @@ export const Linker = ({
         }
     };
 
-    const height = sizeHeights[size];
+    const heightClass = sizeClasses[size];
 
     return (
         <Link href={href} prefetch={prefetch}>
@@ -81,13 +81,13 @@ export const Linker = ({
                 onHoverEnd={onHoverEnd}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                className={`
+                className={`${heightClass}
                     ${className}
                     ${isHovered && message ? "" : "overflow-hidden"}
                     relative transition-colors cursor-pointer
                     ${defaultHover ? "brightness-100 hover:brightness-50 transition-colors duration-200" : ""}
                 `}
-                style={{ minHeight: height }}
+
                 whileTap={{ scale: 0.95 }}
                 transition={{
                     type: "spring",
@@ -105,7 +105,7 @@ export const Linker = ({
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className={`${getDirectionStyle(direction ?? "top")} flex items-center gap-[0.4rem] w-max pointer-events-none absolute left-1/2 z-20 mb-2 -translate-x-1/2 p-[0.8rem_1.2rem] rounded-[1.2rem] border border-[var(--color-gray-700)] bg-[var(--color-gray-800)] shadow-[0_1rem_2rem_0_#9da9ae50] whitespace-pre`}
+                            className={`${getDirectionStyle(direction ?? "top")} flex items-center gap-1 w-max pointer-events-none absolute left-1/2 z-20 mb-2 -translate-x-1/2 p-[0.8rem_1.2rem] rounded-[1.2rem] border-[0.4rem] border-[var(--color-gray-700)] bg-[var(--color-gray-800)] shadow-[0_1.2rem_2rem_0_#9da9ae50] whitespace-pre`}
                             transition={{
                                 type: "spring",
                                 stiffness: 200,

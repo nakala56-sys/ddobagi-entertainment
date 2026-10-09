@@ -8,22 +8,22 @@ interface InputProps {
     size?: InputSize;
 }
 
-const sizeHeights: Record<InputSize, string> = {
-    sm: "6rem",
-    md: "12.8rem",
-    lg: "24rem",
-    xlg: "32rem",
+const sizeClasses: Record<InputSize, string> = {
+    sm: "min-h-15",
+    md: "min-h-32",
+    lg: "min-h-60",
+    xlg: "min-h-80",
 };
 
 const TextArea = ({ className = "", name, placeholder, type, size = "md" }: InputProps) => {
-    const height = sizeHeights[size];
+    const heightClass = sizeClasses[size];
 
     return (
         <textarea
-            className={`${className} rounded-[1.4rem] border border-[var(--adaptive-black100)] hover:border-[var(--adaptive-black500)] p-[1.6rem] transition-colors`}
+            className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[var(--adaptive-black100)] hover:border-[var(--adaptive-black500)] p-4 transition-colors`}
             name={name}
             placeholder={placeholder}
-            style={{ minHeight: height }}
+
         />
     );
 };

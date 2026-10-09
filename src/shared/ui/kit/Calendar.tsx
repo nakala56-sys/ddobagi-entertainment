@@ -9,11 +9,11 @@ type CalendarProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
     size?: CalendarSize;
 };
 
-const sizeHeights: Record<CalendarSize, string> = {
-    sm: "4.2rem",
-    md: "5.2rem",
-    lg: "5.2rem",
-    xlg: "7.2rem",
+const sizeClasses: Record<CalendarSize, string> = {
+    sm: "min-h-11",
+    md: "min-h-13",
+    lg: "min-h-13",
+    xlg: "min-h-18",
 };
 
 function formatCalendarValue(value: string, type: CalendarProps["type"]) {
@@ -33,7 +33,7 @@ function formatCalendarValue(value: string, type: CalendarProps["type"]) {
 }
 
 const Calendar = ({ className = "", size = "md", type = "datetime-local", placeholder, style, value, disabled, id, ...props }: CalendarProps) => {
-    const height = sizeHeights[size];
+    const heightClass = sizeClasses[size];
     const generatedId = useId();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const inputId = id ?? generatedId;
@@ -62,7 +62,7 @@ const Calendar = ({ className = "", size = "md", type = "datetime-local", placeh
         <div className="relative w-full">
             <input
                 {...props}
-                className="pointer-events-none absolute h-px w-px opacity-0"
+                className="pointer-events-none absolute h-1 w-1 opacity-0"
                 disabled={disabled}
                 id={inputId}
                 ref={inputRef}
@@ -70,10 +70,10 @@ const Calendar = ({ className = "", size = "md", type = "datetime-local", placeh
                 value={value}
             />
             <button
-                className={`${className} flex w-full items-center border border-[var(--adaptive-black100)] bg-white px-[1.6rem] text-left transition-colors hover:border-[var(--adaptive-black500)] disabled:cursor-not-allowed disabled:bg-[var(--adaptive-grey100)]`}
+                className={`${heightClass} ${className} flex w-full items-center border-[0.4rem] border-[var(--adaptive-black100)] bg-white px-4 text-left transition-colors hover:border-[var(--adaptive-black500)] disabled:cursor-not-allowed disabled:bg-[var(--adaptive-grey100)]`}
                 disabled={disabled}
                 onClick={handleOpenPicker}
-                style={{ ...style, minHeight: height }}
+                style={style}
                 type="button"
             >
                 <span className={displayValue ? "text-inherit" : "text-[var(--adaptive-grey500)]"}>{displayValue || placeholder || "선택해주세요"}</span>

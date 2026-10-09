@@ -2,7 +2,7 @@
 
 import type { MotionValue } from "motion/react";
 import type { ReactNode } from "react";
-import { Fragment, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { animate, motion, useAnimationFrame, useMotionTemplate, useMotionValue, useScroll, useTransform, useVelocity } from "motion/react";
 import { formatPriceWithCommas } from "@/shared/utils/formatPrice";
 
@@ -155,7 +155,7 @@ function LineOverlay({ highlightColor, index, line, progress, revealColor, softn
                     maskImage: revealMask,
                 }}
             >
-                <span style={{ display: "inline-block", paddingInline: softness }}>{line.text}</span>
+                <span className={`inline-block`} style={{ paddingInline: softness }}>{line.text}</span>
             </motion.span>
             <motion.span
                 className="absolute inset-0 block"
@@ -165,7 +165,7 @@ function LineOverlay({ highlightColor, index, line, progress, revealColor, softn
                     maskImage: highlightMask,
                 }}
             >
-                <span style={{ display: "inline-block", paddingInline: softness }}>{line.text}</span>
+                <span className={`inline-block`} style={{ paddingInline: softness }}>{line.text}</span>
             </motion.span>
         </span>
     );
@@ -328,7 +328,7 @@ const Rolling = ({
             back: "",
         },
     },
-    textSize = 14,
+    textSize = 16,
     guide = {
         front: "",
         back: "",
@@ -343,33 +343,33 @@ const Rolling = ({
     const FORMAT_INITIAL_VALUE = formatPriceWithCommas(initialValue).padStart(normalizedLength, "0").split("");
 
     const sizeMap = {
-        12: { text: "1.2", height: "1.2" },
-        13: { text: "1.3", height: "1.3" },
-        14: { text: "1.4", height: "1.4" },
-        15: { text: "1.5", height: "1.5" },
-        16: { text: "1.6", height: "1.6" },
-        17: { text: "1.7", height: "1.7" },
-        18: { text: "1.8", height: "1.8" },
-        19: { text: "1.9", height: "1.9" },
-        20: { text: "2.0", height: "2.0" },
-        21: { text: "2.1", height: "2.1" },
-        22: { text: "2.2", height: "2.2" },
-        23: { text: "2.3", height: "2.3" },
-        24: { text: "2.4", height: "2.4" },
-        25: { text: "2.5", height: "2.5" },
-        26: { text: "2.6", height: "2.6" },
-        27: { text: "2.7", height: "2.7" },
-        28: { text: "2.8", height: "2.8" },
-        29: { text: "2.9", height: "2.9" },
-        30: { text: "3.0", height: "3.0" },
-        31: { text: "3.1", height: "3.1" },
-        32: { text: "3.2", height: "3.2" },
-        33: { text: "3.3", height: "3.3" },
-        34: { text: "3.4", height: "3.4" },
-        35: { text: "3.5", height: "3.5" },
-        36: { text: "3.6", height: "3.6" },
-        37: { text: "3.7", height: "3.7" },
-        38: { text: "3.8", height: "3.8" },
+        12: { text: "1.2", height: "1.2", fontClass: "text-xs", heightClass: "h-3", lineHeightClass: "leading-[1.2rem]" },
+        13: { text: "1.2", height: "1.2", fontClass: "text-xs", heightClass: "h-3", lineHeightClass: "leading-[1.2rem]" },
+        14: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
+        15: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
+        16: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
+        17: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
+        18: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
+        19: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
+        20: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
+        21: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
+        22: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
+        23: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
+        24: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
+        25: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
+        26: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
+        27: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
+        28: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
+        29: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
+        30: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
+        31: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
+        32: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
+        33: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
+        34: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
+        35: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
+        36: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
+        37: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
+        38: { text: "4", height: "4", fontClass: "text-[4rem]", heightClass: "h-10", lineHeightClass: "leading-[4rem]" },
     };
 
     const size = sizeMap[textSize] || sizeMap[14]; // fallback
@@ -414,17 +414,17 @@ const Rolling = ({
 
     return (
         <div
-            className={`${className?.container ?? ""} relative`}
+            className={`${className?.container ?? ""} relative flex items-center`}
             aria-label={ariaLabel}
             data-value={value}
             ref={containerRef}
-            style={{ display: "flex", alignItems: "center" }}
+
         >
             {guide.front ? (
                 <motion.p
                     layout
-                    className={`${className.guide?.front ?? ""} `}
-                    style={{ fontSize: `${size.text}` }}
+                    className={`${className.guide?.front ?? ""}  ${size.fontClass}`}
+
                 >
                     {guide.front}
                 </motion.p>
@@ -436,8 +436,8 @@ const Rolling = ({
                         {digit === "," ? (
                             <motion.p
                                 layout
-                                className={className?.text ?? ""}
-                                style={{ fontSize: `${size.text}rem` }}
+                                className={`${className?.text ?? ""} ${size.fontClass}`}
+
                             >
                                 ,
                             </motion.p>
@@ -463,8 +463,8 @@ const Rolling = ({
             {guide.back ? (
                 <motion.p
                     layout
-                    className={`${className.guide?.back ?? ""}`}
-                    style={{ fontSize: `${size.text}` }}
+                    className={`${className.guide?.back ?? ""} ${size.fontClass}`}
+
                 >
                     {guide.back}
                 </motion.p>
@@ -490,8 +490,8 @@ const NumberColumn = ({ active, digit, className, initialDigit, rollingCount, si
 
     return (
         <div
-            className={`number-column ${className}`}
-            style={{ textAlign: "center", overflow: "hidden", height: `${size.height}rem` }}
+            className={`number-column ${className} text-center overflow-hidden ${size.heightClass}`}
+
             ref={columnRef}
             onClick={onClick}
         >
@@ -499,13 +499,13 @@ const NumberColumn = ({ active, digit, className, initialDigit, rollingCount, si
                 key="number-column"
                 animate={{ y: position }}
                 transition={{ duration: active ? Math.max(0.9, rollingCount * 0.45) : 0, delay: active ? delay + columnIndex * staggerDelay : 0, ease: [0.25, 0.8, 0.25, 1], staggerChildren: 0.5 }}
-                style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                className={`flex flex-col items-center`}
             >
                 {numbers.map((number, index) => (
                     <p
                         key={index}
-                        className={className}
-                        style={{ textAlign: "center", fontSize: `${size.text}rem`, height: `${size.height}rem` }}
+                        className={`${className} text-center ${size.fontClass} ${size.heightClass} ${size.lineHeightClass}`}
+
                     >
                         {number}
                     </p>
@@ -538,47 +538,12 @@ const TextShimmer = ({
     },
     duration = 2,
 }: TextShimmerProps) => {
-    const shimmerName = `text-shimmer-${useId().replace(/:/g, "")}`;
-
-    useEffect(() => {
-        const prev = document.getElementById(shimmerName);
-        if (prev) prev.remove();
-
-        const keyframes = `
-      @keyframes ${shimmerName} {
-        0% {
-          background-position: -200% 0;
-        }
-        100% {
-          background-position: 200% 0;
-        }
-      }
-    `;
-
-        const styleTag = document.createElement("style");
-        styleTag.id = shimmerName;
-        styleTag.innerHTML = keyframes;
-        document.head.appendChild(styleTag);
-
-        return () => {
-            styleTag.remove();
-        };
-    }, [color.start, color.end, duration]);
 
     return (
         <Component
             ref={null}
-            className={`inline-block relative text-transparent bg-clip-text [background-size:400%_100%] ${className}`}
-            style={{
-                ...style,
-                backgroundImage: `linear-gradient(90deg, ${color.start} 0%, ${color.end} 50%, ${color.start} 100%)`,
-                backgroundSize: "400% 100%",
-                backgroundRepeat: "repeat",
-                backgroundPosition: "0% 0%",
-                animation: `${shimmerName} ${duration}s linear infinite`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-            }}
+            className={`inline-block relative text-transparent bg-clip-text bg-size-[400%_100%] bg-repeat bg-position-[0%_0%] animate-text-shimmer bg-[linear-gradient(90deg,var(--shimmer-start)_0%,var(--shimmer-end)_50%,var(--shimmer-start)_100%)] [-webkit-text-fill-color:transparent] ${className}`}
+            style={{ ...style, "--shimmer-start": color.start, "--shimmer-end": color.end, "--shimmer-duration": `${duration}s` } as React.CSSProperties}
         >
             {children}
         </Component>
