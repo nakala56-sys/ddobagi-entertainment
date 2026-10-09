@@ -37,17 +37,27 @@ function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     };
 }
 
+// One linear timeline per scroll range: progress follows the current scroll position.
+function scrollTimeline(trigger: HTMLElement, options: ScrollTrigger.Vars = {}) {
+    return gsap.timeline({
+        defaults: { ease: "none", duration: 1 },
+        scrollTrigger: { trigger, start: "clamp(top 92%)", end: "clamp(top 65%)", scrub: true, invalidateOnRefresh: true, ...options },
+    });
+}
+
 function reveal(root: HTMLElement) {
     root.querySelectorAll<HTMLElement>("[data-reveal]").forEach((element) => {
-        gsap.from(element, { autoAlpha: 0, y: 36, duration: 0.85, ease: "power2.out", scrollTrigger: { trigger: element, start: "top 92%", toggleActions: "play none none reverse" } });
+        scrollTimeline(element).from(element, { autoAlpha: 0, y: 36 });
     });
 }
 
 function intro(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
-        gsap.from(root.querySelectorAll("[data-line]"), { yPercent: 105, autoAlpha: 0, duration: 1.1, stagger: 0.13, ease: "power3.out" });
-        gsap.from(root.querySelectorAll("[data-reveal]"), { autoAlpha: 0, y: 24, delay: 0.35, duration: 1 });
-        if (desktop) gsap.to(root.querySelector("[data-image]"), { scale: 1.12, ease: "none", scrollTrigger: { trigger: root, start: "top top", end: "bottom top", scrub: 1 } });
+    return section(root, () => {
+        const timeline = scrollTimeline(root, { start: "top top", end: () => `+=${window.innerHeight * 0.55}`, pin: true });
+        timeline.from(root.querySelectorAll("[data-line]"), { yPercent: 105, autoAlpha: 0 }, 0)
+            .from(root.querySelectorAll("[data-reveal]"), { autoAlpha: 0, y: 24 }, 0);
+        const image = root.querySelector<HTMLElement>("[data-image]");
+        if (image) timeline.to(image, { scale: 1.12 }, 0);
     });
 }
 
@@ -56,9 +66,11 @@ function entrance(root: HTMLElement): Cleanup {
 }
 
 function imageReveal(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
+    return section(root, () => {
         reveal(root);
-        if (desktop) gsap.fromTo(root.querySelector("[data-image]"), { clipPath: "inset(12% 8% 12% 8%)", scale: 0.95 }, { clipPath: "inset(0% 0% 0% 0%)", scale: 1, ease: "none", scrollTrigger: { trigger: root, start: "top 80%", end: "center center", scrub: 1 } });
+        const image = root.querySelector<HTMLElement>("[data-image]");
+        if (image) scrollTimeline(image, { start: "clamp(top 85%)", end: "clamp(center center)" })
+            .fromTo(image, { clipPath: "inset(12% 8% 12% 8%)", scale: 0.95 }, { clipPath: "inset(0% 0% 0% 0%)", scale: 1 });
     });
 }
 
@@ -66,7 +78,7 @@ function message(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
         if (!desktop) { reveal(root); return; }
         const words = root.querySelectorAll("[data-word]");
-        gsap.timeline({ scrollTrigger: { trigger: root, start: "top top", end: "+=130%", pin: true, scrub: 1, invalidateOnRefresh: true } })
+        scrollTimeline(root, { start: "top top", end: "+=130%", pin: true })
             .from(words, { opacity: 0.15, y: 30, stagger: 0.6, duration: 0.7 });
     });
 }
@@ -118,22 +130,25 @@ function horizontal(root: HTMLElement): Cleanup {
         const cards = track.querySelectorAll<HTMLElement>("[data-slide]");
         const counter = root.querySelector<HTMLElement>("[data-counter]");
         const progress = root.querySelector<HTMLElement>("[data-slider-progress]");
-        const tween = gsap.to(track, { x: () => -distance(), ease: "none", scrollTrigger: {
-            trigger: root, start: "top top", end: () => `+=${Math.max(distance(), window.innerHeight)}`, pin: true, scrub: 1, invalidateOnRefresh: true,
-            snap: { snapTo: 1 / Math.max(1, cards.length - 1), duration: { min: 0.1, max: 0.25 }, delay: 0.15 },
+        const timeline = scrollTimeline(root, {
+            start: "top top", end: () => `+=${Math.max(distance(), window.innerHeight)}`, pin: true,
             onUpdate: (trigger) => {
                 if (counter) counter.textContent = `${String(Math.round(trigger.progress * (cards.length - 1)) + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
-                if (progress) progress.style.transform = `scaleX(${trigger.progress})`;
             },
-        } });
-        cards.forEach((card) => gsap.fromTo(card.querySelector("[data-slide-image]"), { scale: 1 }, { scale: 1.06, ease: "none", scrollTrigger: { trigger: card, containerAnimation: tween, start: "left right", end: "right left", scrub: true } }));
+        }).to(track, { x: () => -distance() });
+        if (progress) timeline.fromTo(progress, { scaleX: 0 }, { scaleX: 1 }, 0);
+        cards.forEach((card) => {
+            const image = card.querySelector<HTMLElement>("[data-slide-image]");
+            if (image) scrollTimeline(card, { containerAnimation: timeline, start: "left right", end: "right left" })
+                .fromTo(image, { scale: 1 }, { scale: 1.06 });
+        });
         let focusFrame = 0;
         const select = (index: number) => {
             if (index < 0) return;
             cancelAnimationFrame(focusFrame);
             // Native anchor/focus scrolling finishes before we select the horizontal card.
             focusFrame = requestAnimationFrame(() => {
-                const trigger = tween.scrollTrigger;
+                const trigger = timeline.scrollTrigger;
                 if (!trigger) return;
                 window.scrollTo({ top: trigger.start + index / Math.max(1, cards.length - 1) * (trigger.end - trigger.start), behavior: "instant" });
                 ScrollTrigger.update();
@@ -163,12 +178,12 @@ function showcase(root: HTMLElement): Cleanup {
         root.classList.add("is-pinned");
         gsap.set(cards, { autoAlpha: 0, x: 30 });
         gsap.set(cards[0], { autoAlpha: 1, x: 0 });
-        const timeline = gsap.timeline({ scrollTrigger: {
-            trigger: root, start: "top top", end: () => `+=${window.innerHeight * 2.5}`, pin: true, scrub: 0.7, invalidateOnRefresh: true,
+        const timeline = scrollTimeline(root, {
+            start: "top top", end: () => `+=${window.innerHeight * 2.5}`, pin: true,
             onUpdate: (trigger) => {
                 if (indicator) indicator.textContent = `${String(Math.min(cards.length, Math.floor(trigger.progress * (cards.length - 1)) + 1)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
             },
-        } });
+        });
         cards.forEach((card, index) => {
             if (!index) return;
             timeline.to(cards[index - 1], { autoAlpha: 0, x: -30, duration: 0.35 }, index - 1)
@@ -188,7 +203,7 @@ function stacking(root: HTMLElement): Cleanup {
         root.classList.add("is-stacking");
         gsap.set(cards, { zIndex: (index) => index + 1 });
         gsap.set(Array.from(cards).slice(1), { yPercent: 120 });
-        const timeline = gsap.timeline({ scrollTrigger: { trigger: root, start: "top top", end: () => `+=${window.innerHeight * 2}`, pin: true, scrub: 1, invalidateOnRefresh: true } });
+        const timeline = scrollTimeline(root, { start: "top top", end: () => `+=${window.innerHeight * 2}`, pin: true });
         cards.forEach((card, index) => {
             if (!index) return;
             timeline.to(cards[index - 1], { scale: 0.94, y: -18 * (cards.length - index), duration: 1 }, index - 1)
@@ -213,7 +228,8 @@ class Animation {
             return () => media.revert();
         },
         header: (root: HTMLElement): Cleanup => section(root, () => {
-            gsap.from(root, { y: -20, autoAlpha: 0, duration: 0.6 });
+            // Keep navigation and the logo usable at scroll progress zero.
+            scrollTimeline(root, { start: 0, end: () => `+=${root.offsetHeight}` }).to(root, { y: -20 });
         }),
         main: (root: HTMLElement): Cleanup => {
             // Refresh route measurements without overriding Next.js back/forward restoration.
@@ -224,7 +240,7 @@ class Animation {
         footer: entrance,
         progress: (root: HTMLElement): Cleanup => {
             const context = gsap.context(() => {
-                gsap.fromTo(root, { scaleX: 0 }, { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: true, invalidateOnRefresh: true } });
+                scrollTimeline(root, { start: 0, end: "max" }).fromTo(root, { scaleX: 0 }, { scaleX: 1 });
             }, root);
             return () => context.revert();
         },
