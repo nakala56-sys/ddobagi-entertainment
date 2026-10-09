@@ -141,13 +141,14 @@ function finalCta(root: HTMLElement): Cleanup {
             const height = window.innerHeight;
             const size = Math.min(width, height);
             const grid = (value: number) => Math.max(4, Math.round(value / 4) * 4);
-            const drift = grid(size * 0.036);
-            const softness = grid(size * 0.008);
+            // Broad, low-frequency drift and a viewport-scaled feather dissolve the rim.
+            const drift = grid(size * 0.22);
+            const softness = grid(height * 0.1);
             const margin = drift + softness * 4;
             const centerY = height + width * 0.6;
             startRadius = Math.max(0, centerY - height - margin);
-            endRadius = Math.hypot(width / 2, centerY) + margin * 2;
-            frequency = 1.8 / size;
+            endRadius = Math.hypot(width / 2, centerY) + margin;
+            frequency = 0.9 / size;
             svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
             circle.setAttribute("cx", String(width / 2));
             circle.setAttribute("cy", String(centerY));
