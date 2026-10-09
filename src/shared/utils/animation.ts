@@ -5,6 +5,7 @@ import Lenis from "lenis";
 
 const MOTION_EASE = "site-motion";
 const SHIMMER_EASE = "site-shimmer";
+const SCROLL_SCRUB = 0.6;
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger, CustomEase);
     CustomEase.create(MOTION_EASE, "0.22,1,0.36,1");
@@ -47,11 +48,27 @@ function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     };
 }
 
-// The scroll position controls time; CustomEase controls the visual motion within it.
+// Scroll sets the target; numeric scrub eases the playhead toward it without losing reversibility.
 function scrollTimeline(trigger: HTMLElement, options: ScrollTrigger.Vars = {}) {
+    let renderedProgress: number | undefined;
     return gsap.timeline({
         defaults: { ease: MOTION_EASE, duration: 1 },
-        scrollTrigger: { trigger, start: "clamp(top 92%)", end: "clamp(top 65%)", scrub: true, invalidateOnRefresh: true, ...options },
+        scrollTrigger: {
+            trigger, start: "clamp(top 92%)", end: "clamp(top 65%)", scrub: SCROLL_SCRUB, invalidateOnRefresh: true, ...options,
+            onRefreshInit: (self) => {
+                // Lazy image/font loads must not snap a moving playhead to the scroll target.
+                renderedProgress = self.getTween()?.isActive() ? self.animation?.progress() : undefined;
+                options.onRefreshInit?.(self);
+            },
+            onRefresh: (self) => {
+                if (renderedProgress !== undefined) {
+                    self.animation?.progress(renderedProgress);
+                    self.getTween()?.resetTo("totalProgress", self.progress, renderedProgress);
+                    renderedProgress = undefined;
+                }
+                options.onRefresh?.(self);
+            },
+        },
     });
 }
 
@@ -96,17 +113,8 @@ function beliefMoments(root: HTMLElement): Cleanup {
         reveal(root);
         root.querySelectorAll<HTMLElement>("[data-float-image]").forEach((frame) => {
             gsap.set(frame, { scale: 0, transformOrigin: "50% 50%" });
-            gsap.fromTo(frame, { scale: 0 }, {
-                scale: 1,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: frame,
-                    start: "center bottom",
-                    end: "center center",
-                    scrub: true,
-                    invalidateOnRefresh: true,
-                },
-            });
+            scrollTimeline(frame, { start: "center bottom", end: "center center" })
+                .fromTo(frame, { scale: 0 }, { scale: 1, ease: "none" });
         });
     });
 }
@@ -143,7 +151,7 @@ function finalCta(root: HTMLElement): Cleanup {
             const grid = (value: number) => Math.max(4, Math.round(value / 4) * 4);
             // Broad, low-frequency drift and a viewport-scaled feather dissolve the rim.
             const drift = grid(size * 0.22);
-            const softness = grid(height * 0.1);
+            const softness = grid(height * 0.14);
             const margin = drift + softness * 4;
             const centerY = height + width * 0.6;
             startRadius = Math.max(0, centerY - height - margin);
@@ -236,11 +244,11 @@ function horizontal(root: HTMLElement): Cleanup {
         const progress = root.querySelector<HTMLElement>("[data-slider-progress]");
         const timeline = scrollTimeline(root, {
             start: "top top", end: () => `+=${Math.max(distance(), window.innerHeight)}`, pin: true,
-            onUpdate: (trigger) => {
-                if (counter) counter.textContent = `${String(Math.round(trigger.progress * (cards.length - 1)) + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
-            },
         // containerAnimation requires linear track movement for correct card measurements.
         }).to(track, { x: () => -distance(), ease: "none" });
+        timeline.eventCallback("onUpdate", () => {
+            if (counter) counter.textContent = `${String(Math.round(timeline.progress() * (cards.length - 1)) + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
+        });
         if (progress) timeline.fromTo(progress, { scaleX: 0 }, { scaleX: 1, ease: "none" }, 0);
         cards.forEach((card) => {
             const image = card.querySelector<HTMLElement>("[data-slide-image]");
@@ -285,9 +293,9 @@ function showcase(root: HTMLElement): Cleanup {
         gsap.set(cards[0], textTo);
         const timeline = scrollTimeline(root, {
             start: "top top", end: () => `+=${window.innerHeight * 2.5}`, pin: true,
-            onUpdate: (trigger) => {
-                if (indicator) indicator.textContent = `${String(Math.min(cards.length, Math.floor(trigger.progress * (cards.length - 1)) + 1)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
-            },
+        });
+        timeline.eventCallback("onUpdate", () => {
+            if (indicator) indicator.textContent = `${String(Math.min(cards.length, Math.floor(timeline.progress() * (cards.length - 1)) + 1)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
         });
         cards.forEach((card, index) => {
             if (!index) return;
