@@ -1,1 +1,0 @@
-export { NewsManagement } from "./NewsManagement";

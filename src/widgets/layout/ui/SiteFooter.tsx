@@ -1,51 +1,19 @@
 "use client";
 
-import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef } from "react";
+import { company } from "@/entities/company/constants/company";
+import { navigation } from "@/shared/config/navigation";
+import Animation from "@/shared/utils/animation";
 
 export function SiteFooter() {
-    return (
-        <footer className="bg-black py-16 mobile:px-[1.6rem] pc:px-0 text-white">
-            {/* <div className="mx-auto grid w-[min(112rem,calc(100%_-_3.2rem))] grid-cols-2 gap-20 max-[86rem]:grid-cols-1"> */}
-            {/* <div className="mx-auto grid max-w-[var(--size-pc)] grid-cols-2 gap-20 max-[86rem]:grid-cols-1"> */}
-            <div className="mx-auto grid max-w-[var(--size-pc)] grid-cols-2 mobile:gap-[1.6rem] pc:gap-20 max-[86rem]:grid-cols-1">
-                <div>
-                    <Image
-                        src={"/images/common/ico-logo.svg"}
-                        width={52}
-                        height={52}
-                        alt="제이엔에스 엔터테인먼트"
-                        className="invert mobile:w-[3.2rem] pc:w-[5.8rem]"
-                        // className={`${isNowDarkMode ? "invert" : ""}`}
-                    />
-                    <h5 className="mt-5 mb-0 mobile:text-[1.6rem] pc:text-[2.0rem] leading-[1.5] font-[900]">
-                        JNS ENTERTAINMENT
-                        <br />
-                        제이엔에스엔터테인먼트
-                    </h5>
-                </div>
-                <address className="not-italic text-base font-semibold leading-[1.5] text-white">
-                    <strong className="text-white/50 text-[1.4rem] font-[500]">INFORMATION</strong>
-                    <br />
-                    제이엔에스 엔터테인먼트
-                    <br />
-                    대표 우인식
-                    <br />
-                    사업자등록번호 414-77-00332
-                    <br />
-                    <br />
-                    <strong className="text-white/50 text-[1.4rem] font-[500]">CONTACT</strong>
-                    <br />
-                    02-6949-0286
-                    <br />
-                    <br />
-                    <strong className="text-white/50 text-[1.4rem] font-[500]">ADDRESS</strong>
-                    <br />
-                    서울특별시 강남구 강남대로 100길 30
-                    <br />
-                    <br />
-                    Copyright 제이엔에스. All rights reserved.
-                </address>
-            </div>
-        </footer>
-    );
+    const footerRef = useRef<HTMLElement>(null);
+    useEffect(() => {
+        if (!footerRef.current) return;
+        return Animation.layout.footer(footerRef.current);
+    }, []);
+    return <footer ref={footerRef} className="site-footer section-dark"><div className="content-width">
+        <div className="footer-top"><div data-reveal><p className="eyebrow">ALWAYS BY YOUR SIDE</p><Link href="/" className="footer-wordmark">TOBBAGI<span>↗</span></Link></div><nav aria-label="하단 메뉴">{navigation.map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}</nav></div>
+        <div className="footer-bottom"><address><strong>{company.name}</strong><span>{company.address}</span><a href={`tel:${company.phone.replaceAll("-", "")}`}>{company.phone}</a></address><p>© {new Date().getFullYear()} TOBBAGI ENTERTAINMENT</p></div>
+    </div></footer>;
 }

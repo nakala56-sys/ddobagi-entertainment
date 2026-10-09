@@ -1,42 +1,27 @@
 "use client";
 
-import { useEffect } from "react";
-import Lenis from "lenis";
-
-import * as HomeLayer from "@/widgets/home/ui";
+import { useEffect, useRef } from "react";
+import Animation from "@/shared/utils/animation";
+import { HomePageProvider } from "./model/HomeContext";
+import * as Layer from "@/widgets/home/ui";
 
 export default function Panel() {
+    const panelRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
-        window.scrollTo(0, 0);
-
-        const lenis = new Lenis({ lerp: 0.14, allowNestedScroll: true });
-        let frameId = 0;
-
-        const raf = (time: number) => {
-            lenis.raf(time);
-            frameId = window.requestAnimationFrame(raf);
-        };
-
-        frameId = window.requestAnimationFrame(raf);
-
-        return () => {
-            window.cancelAnimationFrame(frameId);
-            lenis.destroy();
-        };
+        if (!panelRef.current) return;
+        return Animation.layout.main(panelRef.current);
     }, []);
-
     return (
-        <>
-            <HomeLayer.Floating />
-            <HomeLayer.HeroIntro />
-            <HomeLayer.TransparencyProof />
-            <HomeLayer.RecordGraph />
-            <HomeLayer.OperationKnowhow />
-            <HomeLayer.BroadcastEnvironment />
-            <HomeLayer.PartnerRecruit />
-            <HomeLayer.TrustPrinciples />
-            <HomeLayer.ExpertNetwork />
-            <HomeLayer.FinalCtaSection />
-        </>
+        <HomePageProvider>
+            <div ref={panelRef} className="route-panel">
+                <Layer.HeroIntro />
+                <Layer.BrandIntro />
+                <Layer.SupportOverview />
+                <Layer.StudioPreview />
+                <Layer.CreatorStories />
+                <Layer.FinalCta />
+            </div>
+            <Layer.Modal />
+        </HomePageProvider>
     );
 }

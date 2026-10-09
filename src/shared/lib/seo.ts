@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 
-import { getPublishedPageContentServer } from "@/entities/pageContent/api/pageContent.api";
 import { getSiteUrl } from "@/shared/lib/siteUrl";
 
-export const SITE_NAME = "제이엔에스 엔터테인먼트";
-export const DEFAULT_DESCRIPTION = "가능성을 현실로 만드는 제이엔에스 엔터테인먼트 입니다.";
+export const SITE_NAME = "또바기 엔터테인먼트";
+export const DEFAULT_DESCRIPTION = "크리에이터의 가능성을 발견하고, 방송과 콘텐츠의 성장을 함께 만드는 또바기 엔터테인먼트입니다.";
 export const DEFAULT_OG_IMAGE_PATH = "/images/seo/og-default.jpg";
 
 export function getDefaultOgImageUrl() {
@@ -77,23 +76,6 @@ export function buildNoIndexMetadata(title: string, description?: string): Metad
             follow: false,
         },
     };
-}
-
-export async function buildCmsPageMetadata(
-    slug: string,
-    fallback: {
-        title: string;
-        description: string;
-        path: string;
-    },
-) {
-    const content = await getPublishedPageContentServer(slug);
-
-    return buildPageMetadata({
-        title: content?.seo_title || fallback.title,
-        description: content?.seo_description || content?.description || fallback.description,
-        path: fallback.path,
-    });
 }
 
 export function buildRootMetadata(): Metadata {

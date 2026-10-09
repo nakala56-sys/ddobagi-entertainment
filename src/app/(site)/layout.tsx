@@ -1,40 +1,16 @@
-import { createSiteJsonLd } from "@/shared/lib/JsonLd";
-import Script from "next/script";
+"use client";
 
-interface LayoutProps {
-    children: React.ReactNode;
-}
+import dynamic from "next/dynamic";
+import { useEffect, type ReactNode } from "react";
+import Animation from "@/shared/utils/animation";
 
-export default function Layout({ children }: LayoutProps) {
-    const jsonLd = createSiteJsonLd();
+const Header = dynamic(() => import("@/widgets/layout/Header").then((module) => module.Header), { ssr: false });
+const Footer = dynamic(() => import("@/widgets/layout/Footer").then((module) => module.Footer), { ssr: false });
+const QuickMenu = dynamic(() => import("@/widgets/layout/QuickMenu").then((module) => module.QuickMenu), { ssr: false });
+const Toast = dynamic(() => import("@/widgets/layout/Toast").then((module) => module.Toast), { ssr: false });
+const Progress = dynamic(() => import("@/widgets/layout/Progress").then((module) => module.Progress), { ssr: false });
 
-    return (
-        <>
-            <script
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-                suppressHydrationWarning
-                type="application/ld+json"
-            />
-            <Script
-                id="smartlog-script"
-                strategy="afterInteractive"
-                dangerouslySetInnerHTML={{
-                    __html: `
-      var hpt_info={'_account':'UHPT-300051', '_server': 'a300'};
-      
-      (function() {
-        var s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.async = true;
-        s.src = '//cdn.smlog.co.kr/core/smart_renew.js';
-        s.charset = 'utf-8';
-        var x = document.getElementsByTagName('script')[0];
-        x.parentNode.insertBefore(s, x);
-      })();
-    `,
-                }}
-            />
-            {children}
-        </>
-    );
+export default function SiteLayout({ children }: { children: ReactNode }) {
+    useEffect(() => Animation.layout.common(), []);
+    return <><a className="skip-link" href="#main-content">본문 바로가기</a><Header /><div id="main-content">{children}</div><Footer /><QuickMenu /><Toast /><Progress /></>;
 }
