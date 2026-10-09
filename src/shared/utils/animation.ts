@@ -120,6 +120,35 @@ function imageReveal(root: HTMLElement): Cleanup {
     });
 }
 
+/** Soft wobbly circular mask expands into the closing CTA before it fully enters view. */
+function finalCta(root: HTMLElement): Cleanup {
+    return section(root, () => {
+        gsap.set(root, { "--cta-wave": "0%", "--cta-wave-x": "50%", "--cta-wave-y": "-6%" });
+        const wave = gsap.timeline({
+            defaults: { ease: "none" },
+            scrollTrigger: {
+                trigger: root,
+                // Start while CTA is still below the fold so the black wave arrives first.
+                start: "top bottom+=160",
+                end: "top 38%",
+                scrub: true,
+                invalidateOnRefresh: true,
+            },
+        });
+        wave.fromTo(root, { "--cta-wave": "0%" }, { "--cta-wave": "140%", duration: 1 }, 0)
+            // Slight organic drift so the expanding rim feels wobbly rather than a perfect circle.
+            .fromTo(root, { "--cta-wave-x": "46%" }, { "--cta-wave-x": "54%", duration: 1 }, 0)
+            .fromTo(root, { "--cta-wave-y": "-10%" }, { "--cta-wave-y": "4%", duration: 1 }, 0);
+
+        reveal(root);
+        const image = root.querySelector<HTMLElement>("[data-image]");
+        if (image) {
+            scrollTimeline(image, { start: "clamp(top 90%)", end: "clamp(center center)" })
+                .fromTo(image, { scale: 1.08 }, { scale: 1 });
+        }
+    });
+}
+
 function message(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
         if (!desktop) { reveal(root); return; }
@@ -353,7 +382,7 @@ class Animation {
         },
     };
 
-    static landing = { section: { heroIntro: homeIntro, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta: imageReveal } };
+    static landing = { section: { heroIntro: homeIntro, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta } };
     static about = { section: { hero: intro, brandPhilosophy: entrance, brandMessage: message, location: entrance } };
     static services = { section: { hero: intro, overview: serviceOverview, slider: horizontal, closing: imageReveal } };
     static equipment = { section: { hero: intro, showcase, grid: entrance, studioEnvironment: imageReveal } };
