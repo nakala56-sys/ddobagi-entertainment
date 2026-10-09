@@ -100,7 +100,7 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
             resize();
             resume();
         };
-        const reveal = () => { revealed = true; resume(); };
+        const reveal = () => { if (!revealed) { revealed = true; resume(); } };
         const lost = (event: Event) => { event.preventDefault(); dispose(); setReady(false); };
         const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; resume(); });
         const sizes = new ResizeObserver(resize);
@@ -122,6 +122,7 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
         document.addEventListener("visibilitychange", resume);
         document.fonts.addEventListener("loadingdone", resize);
         transition?.addEventListener("page:reveal", reveal);
+        transition?.addEventListener("page:wave", reveal);
         [backgroundCanvas, textCanvas].forEach((canvas) => {
             canvas.addEventListener("webglcontextlost", lost);
             canvas.addEventListener("webglcontextrestored", setup);
@@ -138,6 +139,7 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
             document.removeEventListener("visibilitychange", resume);
             document.fonts.removeEventListener("loadingdone", resize);
             transition?.removeEventListener("page:reveal", reveal);
+            transition?.removeEventListener("page:wave", reveal);
             [backgroundCanvas, textCanvas].forEach((canvas) => {
                 canvas.removeEventListener("webglcontextlost", lost);
                 canvas.removeEventListener("webglcontextrestored", setup);

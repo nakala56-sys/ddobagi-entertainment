@@ -34,6 +34,8 @@ import { GradientWave } from "@/shared/ui/gradient-wave/GradientWave";
 | `before`, `children` | 제목 위·아래에 넣을 콘텐츠 |
 
 화면 밖이나 숨겨진 탭에서는 재생을 멈춥니다. 페이지 로더 안에서는
-`page:reveal` 이후 재생합니다. 모션 감소 설정과 WebGL 미지원·컨텍스트 손실 시에는
+`page:reveal` 이후 재생합니다. 홈에서는 shimmer 완료 후 `page:wave`로 먼저 시작하고,
+로딩 문장이 사라진 뒤 `page:reveal`로 hero 문장을 표시합니다. 파동의 재생 시간은 이어집니다.
+모션 감소 설정과 WebGL 미지원·컨텍스트 손실 시에는
 정적인 그라데이션과 HTML 제목을 표시하고, 컨텍스트 복구 시 다시 렌더링합니다.
 레이아웃·폰트 변경 시에만 텍스트 텍스처를 갱신하며 렌더링 배율은 최대 1.5입니다.

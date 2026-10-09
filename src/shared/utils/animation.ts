@@ -325,7 +325,7 @@ function stacking(root: HTMLElement): Cleanup {
     });
 }
 
-function pageLoading(root: HTMLElement, onComplete: () => void): Cleanup {
+function pageLoading(root: HTMLElement, onComplete: () => void, home = false): Cleanup {
     const content = root.querySelector<HTMLElement>("[data-page-content]")!;
     const overlay = root.querySelector<HTMLElement>("[data-page-loader]")!;
     const text = root.querySelector<HTMLElement>("[data-loading-text]")!;
@@ -343,8 +343,8 @@ function pageLoading(root: HTMLElement, onComplete: () => void): Cleanup {
         if (!active || revealing || !shimmerDone || document.fonts.status === "loading" || content.querySelector(".page-loading") || (panel && panel.dataset.animationReady !== "true") || (image && !image.complete)) return;
         revealing = true;
         observer.disconnect();
-        restoreScroll();
         if (reduced) {
+            restoreScroll();
             gsap.set(content, { autoAlpha: 1 });
             gsap.set(overlay, { autoAlpha: 0 });
             onComplete();
@@ -353,10 +353,26 @@ function pageLoading(root: HTMLElement, onComplete: () => void): Cleanup {
     };
     const observer = new MutationObserver(revealPage);
     const context = gsap.context(() => {
-        transition = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 0.45 }, onComplete })
-            .call(() => { root.dispatchEvent(new Event("page:reveal")); ScrollTrigger.refresh(); })
-            .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1 }, 0)
-            .to(overlay, { autoAlpha: 0 }, 0);
+        const reveal = () => { restoreScroll(); root.dispatchEvent(new Event("page:reveal")); ScrollTrigger.refresh(); };
+        transition = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 0.45 }, onComplete });
+        if (home) {
+            // Expose only the wave behind the loader; the rest of the page stays hidden.
+            transition.set(content, { opacity: 1 }, 0)
+                .call(() => {
+                    const wave = content.querySelector<HTMLElement>(".hero [data-gradient-wave]");
+                    if (wave) gsap.set(wave, { visibility: "visible" });
+                    root.dispatchEvent(new Event("page:wave"));
+                }, [], 0)
+                .to(overlay, { backgroundColor: "rgba(255, 255, 255, 0)" }, 0)
+                .to(text, { autoAlpha: 0, duration: 0.35 }, 1.8)
+                .set(overlay, { autoAlpha: 0 }, 2.15)
+                .set(content, { visibility: "visible" }, 2.15)
+                .call(reveal, [], 2.15);
+        } else {
+            transition.call(reveal)
+                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1 }, 0)
+                .to(overlay, { autoAlpha: 0 }, 0);
+        }
         if (reduced) gsap.set(text, { backgroundPosition: "0% 0%" });
         else gsap.fromTo(text, { backgroundPosition: "100% 0%" }, {
             backgroundPosition: "0% 0%", duration: 1.6, ease: SHIMMER_EASE,
