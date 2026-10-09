@@ -90,6 +90,27 @@ function entrance(root: HTMLElement): Cleanup {
     return section(root, () => { reveal(root); });
 }
 
+/** Images scale 0→1 as they reach viewport center, then stay at 1. */
+function beliefMoments(root: HTMLElement): Cleanup {
+    return section(root, () => {
+        reveal(root);
+        root.querySelectorAll<HTMLElement>("[data-float-image]").forEach((frame) => {
+            gsap.set(frame, { scale: 0, transformOrigin: "50% 50%" });
+            gsap.fromTo(frame, { scale: 0 }, {
+                scale: 1,
+                ease: "none",
+                scrollTrigger: {
+                    trigger: frame,
+                    start: "center bottom",
+                    end: "center center",
+                    scrub: true,
+                    invalidateOnRefresh: true,
+                },
+            });
+        });
+    });
+}
+
 function imageReveal(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
@@ -332,7 +353,7 @@ class Animation {
         },
     };
 
-    static landing = { section: { heroIntro: homeIntro, brandIntro: entrance, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta: imageReveal } };
+    static landing = { section: { heroIntro: homeIntro, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta: imageReveal } };
     static about = { section: { hero: intro, brandPhilosophy: entrance, brandMessage: message, location: entrance } };
     static services = { section: { hero: intro, overview: serviceOverview, slider: horizontal, closing: imageReveal } };
     static equipment = { section: { hero: intro, showcase, grid: entrance, studioEnvironment: imageReveal } };

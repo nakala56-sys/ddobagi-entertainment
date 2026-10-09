@@ -16,6 +16,7 @@ export default function Panel() {
             <div ref={panelRef} className="route-panel">
                 <Layer.HeroIntro />
                 <Layer.BrandIntro />
+                <Layer.BeliefMoments />
                 <Layer.SupportOverview />
                 <Layer.StudioPreview />
                 <Layer.CreatorStories />
