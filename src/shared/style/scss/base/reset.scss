@@ -1,4 +1,36 @@
 :root {
+    // 초기 설정
+    font-family:
+        var(--custom-font),
+        -apple-system,
+        BlinkMacSystemFont,
+        "Malgun Gothic",
+        "맑은 고딕",
+        helvetica,
+        "Apple SD Gothic Neo",
+        sans-serif;
+    font-size: var(--root-font-size);
+    font-weight: 600;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    background: var(--color-background-light);
+
+    color: var(--color-gray-1000);
+}
+
+html {
+    line-height: 1.25; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+    max-width: 100%;
+    background: var(--color-background-light);
+    scrollbar-width: none;
+}
+
+:root {
     font-family: var(--font-suit), "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
