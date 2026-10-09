@@ -128,7 +128,7 @@ function imageReveal(root: HTMLElement): Cleanup {
     });
 }
 
-/** Cover the viewport first, hand off to solid black, then reveal the sticky CTA. */
+/** The slow ink and the normally scrolling CTA have independent playheads. */
 function finalCta(root: HTMLElement): Cleanup {
     return section(root, () => {
         const ink = root.querySelector<HTMLElement>("[data-cta-ink]");
@@ -170,20 +170,17 @@ function finalCta(root: HTMLElement): Cleanup {
         };
         measure();
 
-        gsap.set(root, { backgroundColor: "transparent" });
         gsap.set(ink, { autoAlpha: 1 });
 
         scrollTimeline(root, {
-            start: "top bottom", end: () => `+=${window.innerHeight * 1.5}`,
+            start: "top bottom", end: "top top",
             scrub: 1.6,
             onRefreshInit: measure,
         })
             .fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0)
-            .fromTo(noise, { attr: { baseFrequency: () => frequency } }, { attr: { baseFrequency: () => frequency * 1.3 }, duration: 1, ease: SHIMMER_EASE }, 0)
-            // At time 1 the section fills the viewport; both backgrounds are already black.
-            .set(root, { backgroundColor: "#000000" }, 1)
-            .set(ink, { autoAlpha: 0 }, 1)
-            .fromTo(content, textFrom, { ...textTo, duration: 0.5 }, 1);
+            .fromTo(noise, { attr: { baseFrequency: () => frequency } }, { attr: { baseFrequency: () => frequency * 1.3 }, duration: 1, ease: SHIMMER_EASE }, 0);
+
+        scrollTimeline(content).fromTo(content, textFrom, textTo);
     });
 }
 
