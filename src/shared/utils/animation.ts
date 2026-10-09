@@ -120,27 +120,41 @@ function imageReveal(root: HTMLElement): Cleanup {
     });
 }
 
-/** Soft wobbly circular mask expands into the closing CTA before it fully enters view. */
+/**
+ * Fixed-viewport wobbly black ink covers the white page, then CTA copy appears.
+ * Section itself stays transparent — no hard rectangular edge.
+ */
 function finalCta(root: HTMLElement): Cleanup {
     return section(root, () => {
-        gsap.set(root, { "--cta-wave": "0%", "--cta-wave-x": "50%", "--cta-wave-y": "-6%" });
+        const ink = root.querySelector<HTMLElement>("[data-cta-ink]");
+        const circle = root.querySelector<SVGCircleElement>("[data-cta-circle]");
+        const fill = root.querySelector<HTMLElement>("[data-cta-fill]");
+        const content = root.querySelector<HTMLElement>("[data-cta-content]");
+        if (!ink || !circle || !content) return;
+
+        gsap.set(ink, { autoAlpha: 1 });
+        gsap.set(circle, { attr: { r: 0 } });
+        gsap.set(content, { autoAlpha: 0, y: 36 });
+        if (fill) gsap.set(fill, { autoAlpha: 0 });
+
         const wave = gsap.timeline({
             defaults: { ease: "none" },
             scrollTrigger: {
                 trigger: root,
-                // Start while CTA is still below the fold so the black wave arrives first.
                 start: "top bottom+=160",
-                end: "top 38%",
+                end: "center center",
                 scrub: true,
                 invalidateOnRefresh: true,
+                onLeave: () => { gsap.set(ink, { autoAlpha: 0 }); },
+                onEnterBack: () => { gsap.set(ink, { autoAlpha: 1 }); },
+                onLeaveBack: () => { gsap.set(ink, { autoAlpha: 0 }); gsap.set(circle, { attr: { r: 0 } }); },
             },
         });
-        wave.fromTo(root, { "--cta-wave": "0%" }, { "--cta-wave": "140%", duration: 1 }, 0)
-            // Slight organic drift so the expanding rim feels wobbly rather than a perfect circle.
-            .fromTo(root, { "--cta-wave-x": "46%" }, { "--cta-wave-x": "54%", duration: 1 }, 0)
-            .fromTo(root, { "--cta-wave-y": "-10%" }, { "--cta-wave-y": "4%", duration: 1 }, 0);
 
-        reveal(root);
+        // r≈130 covers the 100×100 viewBox from a center just below the bottom edge.
+        wave.fromTo(circle, { attr: { r: 0 } }, { attr: { r: 130 }, duration: 0.7 }, 0);
+        if (fill) wave.fromTo(fill, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, 0.48);
+        wave.fromTo(content, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: MOTION_EASE }, 0.55);
     });
 }
 

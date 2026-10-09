@@ -13,7 +13,7 @@ export default function Panel() {
     }, []);
     return (
         <HomePageProvider>
-            <div ref={panelRef} className="route-panel">
+            <div ref={panelRef} className="route-panel overflow-visible">
                 <Layer.HeroIntro />
                 <Layer.BrandIntro />
                 <Layer.BeliefMoments />

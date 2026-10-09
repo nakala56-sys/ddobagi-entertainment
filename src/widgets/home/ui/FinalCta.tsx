@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useId, useRef } from "react";
 import { ContactCreatorButton } from "@/features/contactCreator";
 import Animation from "@/shared/utils/animation";
 
 export function FinalCta() {
     const sectionRef = useRef<HTMLElement>(null);
+    const wobbleId = useId().replace(/:/g, "");
 
     useEffect(() => {
         if (!sectionRef.current) return;
@@ -16,36 +17,53 @@ export function FinalCta() {
         <section
             ref={sectionRef}
             data-cta-wave
-            className="closing relative overflow-hidden min-h-[85svh] flex items-center py-30 [&_h2]:text-[4.4rem] [&_h2]:compact:text-[4.4rem] [&_h2]:site:text-[6.8rem] [&_h2]:wide:text-[8.4rem] [&_h2]:xl:text-[10.8rem] [&_h2]:2xl:text-[11.2rem] [&_h2]:leading-[round(up,1.02em,0.4rem)] [&_h2]:tracking-[round(nearest,-0.055em,0.4rem)] [&_h2]:font-[550] max-site:min-h-[75svh] max-site:py-20 max-site:[&_h2]:text-[4rem] max-site:[&_h2]:compact:text-5xl max-site:[&_h2]:site:text-[8rem] max-site:[&_h2]:wide:text-[8rem] max-site:[&_h2]:xl:text-[8rem] max-site:[&_h2]:2xl:text-[8rem] section-dark [--accent:#ffffff] text-[var(--paper)] bg-[#000000] motion-reduce:[mask-image:none] motion-reduce:[-webkit-mask-image:none]"
-            style={
-                {
-                    "--cta-wave": "0%",
-                    "--cta-wave-x": "50%",
-                    "--cta-wave-y": "-6%",
-                    WebkitMaskImage:
-                        "radial-gradient(ellipse 115% 95% at var(--cta-wave-x) var(--cta-wave-y), #000 0%, #000 var(--cta-wave), transparent calc(var(--cta-wave) + 24%))",
-                    maskImage:
-                        "radial-gradient(ellipse 115% 95% at var(--cta-wave-x) var(--cta-wave-y), #000 0%, #000 var(--cta-wave), transparent calc(var(--cta-wave) + 24%))",
-                } as CSSProperties
-            }
+            className="closing relative z-20 overflow-visible bg-transparent min-h-[100svh] flex items-center py-30 [&_h2]:text-[4.4rem] [&_h2]:compact:text-[4.4rem] [&_h2]:site:text-[6.8rem] [&_h2]:wide:text-[8.4rem] [&_h2]:xl:text-[10.8rem] [&_h2]:2xl:text-[11.2rem] [&_h2]:leading-[round(up,1.02em,0.4rem)] [&_h2]:tracking-[round(nearest,-0.055em,0.4rem)] [&_h2]:font-[550] max-site:min-h-[85svh] max-site:py-20 max-site:[&_h2]:text-[4rem] max-site:[&_h2]:compact:text-5xl max-site:[&_h2]:site:text-[8rem] max-site:[&_h2]:wide:text-[8rem] max-site:[&_h2]:xl:text-[8rem] max-site:[&_h2]:2xl:text-[8rem] section-dark [--accent:#ffffff] text-[var(--paper)]"
             aria-labelledby="home-closing-title"
         >
-            <div className="closing-content relative text-center flex flex-col items-center gap-9 max-site:gap-8 content-width w-[min(132rem,_calc(100%_-_12rem))] mx-auto max-wide:w-[calc(100%_-_8rem)] max-site:w-[calc(100%_-_4rem)]">
-                <p className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase" data-reveal>
+            {/* Fixed to the viewport so parent overflow cannot clip the expanding ink. */}
+            <div
+                data-cta-ink
+                aria-hidden="true"
+                className="pointer-events-none fixed inset-0 z-[25]"
+            >
+                <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" className="h-full w-full overflow-visible">
+                    <defs>
+                        <filter id={`cta-ink-wobble-${wobbleId}`} x="-50%" y="-50%" width="200%" height="200%">
+                            <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="3" seed="7" result="noise" />
+                            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3.2" xChannelSelector="R" yChannelSelector="G" />
+                            <feGaussianBlur stdDeviation="0.55" />
+                        </filter>
+                    </defs>
+                    {/* Origin near the bottom edge — the ink rises like a wave into the white page. */}
+                    <circle
+                        data-cta-circle
+                        cx="50"
+                        cy="108"
+                        r="0"
+                        fill="#000000"
+                        filter={`url(#cta-ink-wobble-${wobbleId})`}
+                    />
+                </svg>
+            </div>
+
+            <div data-cta-fill aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 bg-[#000000] opacity-0" />
+
+            <div
+                data-cta-content
+                className="closing-content relative z-10 mx-auto flex w-[min(132rem,_calc(100%_-_12rem))] max-wide:w-[calc(100%_-_8rem)] max-site:w-[calc(100%_-_4rem)] flex-col items-center gap-9 text-center max-site:gap-8 content-width"
+            >
+                <p className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase">
                     06 — YOUR NEXT CHAPTER
                 </p>
-                <h2 id="home-closing-title" data-reveal>
+                <h2 id="home-closing-title">
                     LET’S GROW
                     <br />
                     TOGETHER.
                 </h2>
-                <p
-                    className="body-copy text-base compact:text-base site:text-base wide:text-base xl:text-lg 2xl:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)] [.section-dark_&]:text-[#b5b5b5] [.showcase-copy_&]:mt-8 [.stack-card_&]:max-w-110 [.stack-card_&]:text-[#b5b5b5] max-site:[.showcase-copy_&]:mt-5"
-                    data-reveal
-                >
+                <p className="body-copy text-base compact:text-base site:text-base wide:text-base xl:text-lg 2xl:text-lg leading-[round(up,1.9em,0.4rem)] text-[#b5b5b5]">
                     당신의 다음 이야기를 기다립니다.
                 </p>
-                <div data-reveal>
+                <div>
                     <ContactCreatorButton>또바기와 함께 시작하기</ContactCreatorButton>
                 </div>
             </div>
