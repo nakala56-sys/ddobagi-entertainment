@@ -34,7 +34,7 @@ const Checkbox = ({ defaultState = false, onClick }: { defaultState: boolean; on
                         alt=""
                         width={52}
                         height={52}
-                        className="invert absolute top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-50%]"
+                        className="invert absolute top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-50%] grayscale"
                     />
                 </motion.div>
             ) : null}

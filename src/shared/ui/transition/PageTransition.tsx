@@ -16,11 +16,10 @@ export function PageTransition({ children, waveIntro = true }: { children: React
         <div
             ref={rootRef}
             data-page-pending={!ready}
-            className="data-[page-pending=true]:[&>[data-page-content]]:invisible"
         >
             <div
                 data-page-content
-                className="[&_img]:grayscale"
+                className="aria-busy:invisible"
                 inert={!ready}
                 aria-busy={!ready}
             >

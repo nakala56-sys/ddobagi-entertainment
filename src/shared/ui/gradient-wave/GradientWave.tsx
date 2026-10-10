@@ -55,7 +55,11 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
         const palette = colorKey.split(",") as unknown as WaveColors;
         const canvasBleed = 1 + WAVE_BLEED;
 
-        const stop = () => { cancelAnimationFrame(frame); frame = 0; previous = 0; };
+        const stop = () => {
+            cancelAnimationFrame(frame);
+            frame = 0;
+            previous = 0;
+        };
         const draw = (time: number) => {
             frame = 0;
             if (previous) elapsed += Math.min((time - previous) / 1000, 0.25) * playback;
@@ -83,35 +87,71 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
             background.resize(width, bleedHeight, [0, 0, 1, canvasBleed], [width, height]);
             const ratio = foreground.resize(headingWidth, headingHeight, [x / width, y / height, headingWidth / width, headingHeight / height], [width, height]);
             const mask = createTextMask(heading, headingWidth, headingHeight, ratio);
-            if (!mask) { stop(); setReady(false); return; }
+            if (!mask) {
+                stop();
+                setReady(false);
+                return;
+            }
             foreground.mask(mask);
             background.render(elapsed);
             foreground.render(elapsed);
             setReady(true);
         };
-        const dispose = () => { stop(); background?.dispose(); foreground?.dispose(); background = null; foreground = null; };
+        const dispose = () => {
+            stop();
+            background?.dispose();
+            foreground?.dispose();
+            background = null;
+            foreground = null;
+        };
         const setup = () => {
             dispose();
             setReady(false);
             if (!active || motion.matches) return;
             background = createWaveRenderer(backgroundCanvas, palette, false, strength);
             foreground = createWaveRenderer(textCanvas, palette, true, strength);
-            if (!background || !foreground) { dispose(); return; }
+            if (!background || !foreground) {
+                dispose();
+                return;
+            }
             resize();
             resume();
         };
-        const reveal = () => { if (!revealed) { revealed = true; resume(); } };
-        const lost = (event: Event) => { event.preventDefault(); dispose(); setReady(false); };
-        const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; resume(); });
+        const reveal = () => {
+            if (!revealed) {
+                revealed = true;
+                resume();
+            }
+        };
+        const lost = (event: Event) => {
+            event.preventDefault();
+            dispose();
+            setReady(false);
+        };
+        const observer = new IntersectionObserver(([entry]) => {
+            visible = entry.isIntersecting;
+            resume();
+        });
         const sizes = new ResizeObserver(resize);
         const slots = new Set<Element>();
         const observeSlots = () => {
-            slots.forEach((element) => { if (element.parentElement !== root) { sizes.unobserve(element); slots.delete(element); } });
+            slots.forEach((element) => {
+                if (element.parentElement !== root) {
+                    sizes.unobserve(element);
+                    slots.delete(element);
+                }
+            });
             Array.from(root.children).forEach((element) => {
-                if (element.tagName === "DIV" && !slots.has(element)) { sizes.observe(element); slots.add(element); }
+                if (element.tagName === "DIV" && !slots.has(element)) {
+                    sizes.observe(element);
+                    slots.add(element);
+                }
             });
         };
-        const layout = new MutationObserver(() => { observeSlots(); resize(); });
+        const layout = new MutationObserver(() => {
+            observeSlots();
+            resize();
+        });
         observer.observe(root);
         sizes.observe(root);
         sizes.observe(heading);
@@ -127,7 +167,9 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
             canvas.addEventListener("webglcontextlost", lost);
             canvas.addEventListener("webglcontextrestored", setup);
         });
-        document.fonts.ready.then(() => { if (active) setup(); });
+        document.fonts.ready.then(() => {
+            if (active) setup();
+        });
         return () => {
             active = false;
             dispose();
@@ -166,9 +208,27 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
                 className={`pointer-events-none absolute top-0 left-0 z-0 w-full ${ready ? "visible" : "invisible"}`}
             />
             {before ? <div className="relative z-10">{before}</div> : null}
-            <Heading ref={headingRef} id={id} aria-label={lines.join(" ")} data-line className={`relative z-10 ${textClassName}`}>
-                {lines.map((line, index) => <span key={index} data-wave-line className={`block whitespace-pre-wrap break-words ${ready ? "text-transparent" : ""}`}>{line || "\u00a0"}</span>)}
-                <canvas ref={textRef} aria-hidden="true" className={`pointer-events-none absolute inset-0 h-full w-full ${ready ? "visible" : "invisible"}`} />
+            <Heading
+                ref={headingRef}
+                id={id}
+                aria-label={lines.join(" ")}
+                data-line
+                className={`relative z-10 ${textClassName}`}
+            >
+                {lines.map((line, index) => (
+                    <span
+                        key={index}
+                        data-wave-line
+                        className={`block whitespace-pre-wrap break-words ${ready ? "text-transparent" : ""}`}
+                    >
+                        {line || "\u00a0"}
+                    </span>
+                ))}
+                <canvas
+                    ref={textRef}
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute inset-0 h-full w-full ${ready ? "visible" : "invisible"}`}
+                />
             </Heading>
             {children ? <div className="relative z-10">{children}</div> : null}
         </div>

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import ReactDOM from "react-dom";
 import { ReactNode, ElementType, ComponentPropsWithoutRef, Fragment, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { getBreakpointQuery, type Breakpoint } from "@/shared/lib/breakpoints";
 
 // Tailwind와 맞춘 breakpoint
-type Breakpoint = "mobile" | "tablet" | "pc";
 type PortalType = boolean | Breakpoint[];
 
 // portal prop 확장:
@@ -13,7 +13,7 @@ type PortalType = boolean | Breakpoint[];
 // - portal={["mobile", "tablet"]}
 // - portal={["pc"]}
 // - portal={false} or undefined
-type SkeletonProps<T extends ElementType> =  {
+type SkeletonProps<T extends ElementType> = {
     as?: T;
     portal?: PortalType;
 } & Omit<ComponentPropsWithoutRef<T>, keyof "as" | "portal">;
@@ -36,7 +36,7 @@ const tagMap = {
     h3: "h3",
     h4: "h4",
     h5: "h5",
-    h6: "h6"
+    h6: "h6",
 };
 
 const motionTagMap = {
@@ -57,21 +57,17 @@ const motionTagMap = {
     h3: motion.h3,
     h4: motion.h4,
     h5: motion.h5,
-    h6: motion.h6
+    h6: motion.h6,
 };
 
 // 브레이크포인트별 감지 훅
 function useBreakpoint(): Breakpoint {
-    // tailwind 기반
-    // mobile: < 76.8rem, tablet: 768 ~ 128rem, pc: >= 128rem
-    // CSS 변수 기준: --breakpoint-mobile: 9.2rem(34.4rem), --breakpoint-tablet: 48rem(76.8rem), --breakpoint-pc: 90rem(144rem)
-    // 모바일: < 76.8rem, 태블릿: 768~144rem, PC: >=144rem
     const get = () => {
         if (typeof window === "undefined") return "pc";
-        if (window.innerWidth < 768) return "mobile";
-        if (window.innerWidth < 1440) return "tablet";
-        return "pc";
-    }
+        if (window.matchMedia(getBreakpointQuery("pc")).matches) return "pc";
+        if (window.matchMedia(getBreakpointQuery("tablet")).matches) return "tablet";
+        return "mobile";
+    };
     const [breakpoint, setBreakpoint] = useState<Breakpoint>(get);
 
     useEffect(() => {
@@ -134,8 +130,8 @@ const PortalBase = <T extends ElementType = "div">({
     if (typeof portal === "boolean") {
         if (!portal) {
             // portal 사용 안함: 원래 자리에만 렌더
-            return as
-                ? <Tag
+            return as ? (
+                <Tag
                     key="content"
                     {...(rest as any)}
                     ref={ref}
@@ -144,16 +140,30 @@ const PortalBase = <T extends ElementType = "div">({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                  >{children}</Tag>
-                : <Fragment>{children}</Fragment>;
+                >
+                    {children}
+                </Tag>
+            ) : (
+                <Fragment>{children}</Fragment>
+            );
         }
         // portal true: 원래 트리에 아무것도 두지 않고 portal로만 렌더
         if (!canUseDOM) {
-            return as ? <Tag {...(rest as any)} ref={ref} className={classString}>{children}</Tag> : <Fragment>{children}</Fragment>;
+            return as ? (
+                <Tag
+                    {...(rest as any)}
+                    ref={ref}
+                    className={classString}
+                >
+                    {children}
+                </Tag>
+            ) : (
+                <Fragment>{children}</Fragment>
+            );
         }
         return ReactDOM.createPortal(
-            as
-                ? <Tag
+            as ? (
+                <Tag
                     key="content"
                     {...(rest as any)}
                     ref={ref}
@@ -162,9 +172,13 @@ const PortalBase = <T extends ElementType = "div">({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                  >{children}</Tag>
-                : <Fragment>{children}</Fragment>,
-            document.body
+                >
+                    {children}
+                </Tag>
+            ) : (
+                <Fragment>{children}</Fragment>
+            ),
+            document.body,
         );
     }
     // portal이 배열(브레이크포인트)
@@ -172,8 +186,8 @@ const PortalBase = <T extends ElementType = "div">({
         const shouldPortal = portal.includes(breakpoint);
         if (!shouldPortal) {
             // portal 해당 안함: 원래 트리에만 렌더
-            return as
-                ? <Tag
+            return as ? (
+                <Tag
                     key="content"
                     {...(rest as any)}
                     ref={ref}
@@ -182,16 +196,30 @@ const PortalBase = <T extends ElementType = "div">({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                  >{children}</Tag>
-                : <Fragment>{children}</Fragment>;
+                >
+                    {children}
+                </Tag>
+            ) : (
+                <Fragment>{children}</Fragment>
+            );
         }
         // portal 해당할 때만 portal 렌더, 원래 자리에는 아무것도 안 보임
         if (!canUseDOM) {
-            return as ? <Tag {...(rest as any)} ref={ref} className={classString}>{children}</Tag> : <Fragment>{children}</Fragment>;
+            return as ? (
+                <Tag
+                    {...(rest as any)}
+                    ref={ref}
+                    className={classString}
+                >
+                    {children}
+                </Tag>
+            ) : (
+                <Fragment>{children}</Fragment>
+            );
         }
         return ReactDOM.createPortal(
-            as
-                ? <Tag
+            as ? (
+                <Tag
                     key="content"
                     {...(rest as any)}
                     ref={ref}
@@ -200,15 +228,19 @@ const PortalBase = <T extends ElementType = "div">({
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                  >{children}</Tag>
-                : <Fragment>{children}</Fragment>,
-            document.body
+                >
+                    {children}
+                </Tag>
+            ) : (
+                <Fragment>{children}</Fragment>
+            ),
+            document.body,
         );
     }
     // 그 외 (undefined, null 등)
     // portal prop 없는 경우: 원래 트리에만 렌더
-    return as
-        ? <Tag
+    return as ? (
+        <Tag
             key="content"
             {...(rest as any)}
             ref={ref}
@@ -217,16 +249,16 @@ const PortalBase = <T extends ElementType = "div">({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-          >{children}</Tag>
-        : <Fragment>{children}</Fragment>;
+        >
+            {children}
+        </Tag>
+    ) : (
+        <Fragment>{children}</Fragment>
+    );
 };
 
-const convertSkeletonComponent = <Tag extends keyof typeof tagMap>(
-    tag: Tag
-) => {
-    return function SkeletonComponent(
-        props: Omit<SkeletonProps<Tag>, "as"> & { motion?: boolean }
-    ) {
+const convertSkeletonComponent = <Tag extends keyof typeof tagMap>(tag: Tag) => {
+    return function SkeletonComponent(props: Omit<SkeletonProps<Tag>, "as"> & { motion?: boolean }) {
         const { motion: useMotion = true, ...rest } = props as any;
         const Comp = useMotion ? motionTagMap[tag] : tagMap[tag];
         // rest.className이 객체일 수 있음에 주의:
@@ -234,7 +266,12 @@ const convertSkeletonComponent = <Tag extends keyof typeof tagMap>(
             ...rest,
             className: typeof rest.className === "string" ? rest.className : "",
         };
-        return <PortalBase {...fixedRest} as={Comp} />;
+        return (
+            <PortalBase
+                {...fixedRest}
+                as={Comp}
+            />
+        );
     };
 };
 

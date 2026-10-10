@@ -1,93 +1,124 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 @import "tailwindcss";
 
-@theme {
-    --breakpoint-mobile: 9.375rem; /* 344px 이상 */
-    --breakpoint-tablet: 48rem; /* 768px 이상 */
-    --breakpoint-pc: 90rem; /* 1440px 이상 */
+/* 62.5% root: 1rem = 10px; each spacing step is 0.4rem (4px). */
+@theme static {
+    --spacing: 0.4rem;
+    --animate-text-shimmer: text-shimmer var(--shimmer-duration, 2s) var(--ease-out) infinite;
+    --font-sans: var(--font-suit), "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    --font-nanum: var(--font-nanum-square), sans-serif;
+    --breakpoint-*: initial;
+    --breakpoint-mobile: 21.5rem; /* 344px */
+    --breakpoint-tablet: 48rem; /* 768px */
+    --breakpoint-pc: 90rem; /* 1440px */
+    --text-xs: 1.2rem;
+    --text-sm: 1.6rem;
+    --text-base: 1.6rem;
+    --text-lg: 2rem;
+    --text-xl: 2rem;
+    --text-2xl: 2.4rem;
+    --text-3xl: 3.2rem;
+    --text-4xl: 3.6rem;
+    --text-5xl: 4.8rem;
+    --text-6xl: 6rem;
+    --text-7xl: 7.2rem;
+    --text-8xl: 9.6rem;
+    --text-9xl: 12.8rem;
+    --text-xs--line-height: 1.6rem;
+    --text-sm--line-height: 2.4rem;
+    --text-base--line-height: 2.4rem;
+    --text-lg--line-height: 2.8rem;
+    --text-xl--line-height: 2.8rem;
+    --text-2xl--line-height: 3.2rem;
+    --text-3xl--line-height: 4rem;
+    --text-4xl--line-height: 4rem;
+    --text-5xl--line-height: 4.8rem;
+    --text-6xl--line-height: 6rem;
+    --text-7xl--line-height: 7.2rem;
+    --text-8xl--line-height: 9.6rem;
+    --text-9xl--line-height: 12.8rem;
+    --radius-xs: 0.4rem;
+    --radius-sm: 0.4rem;
+    --radius-md: 0.8rem;
+    --radius-lg: 0.8rem;
+    --radius-xl: 1.2rem;
+    --radius-2xl: 1.6rem;
+    --radius-3xl: 2.4rem;
+    --radius-4xl: 3.2rem;
+    --shadow-2xs: 0 0.4rem 0.4rem #0000000d;
+    --shadow-xs: 0 0.4rem 0.8rem #0000000d;
+    --shadow-sm: 0 0.4rem 1.2rem #00000015;
+    --shadow-md: 0 0.4rem 1.6rem #0000001a;
+    --shadow-lg: 0 0.8rem 2.4rem #0000001a;
+    --shadow-xl: 0 1.2rem 3.2rem #0000001a;
+    --shadow-2xl: 0 2.4rem 4.8rem #00000040;
+    --ease-in: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --paper: #ffffff;
+    --ink: #000000;
+    --muted: #737373;
+    --accent: #000000;
+    --line: #dedede;
+    --adaptive-grey50: #ffffff;
+    --adaptive-grey900: #000000;
+    --adaptive-grey500: #737373;
+    --adaptive-black900: #000000;
+    --adaptive-black100: #ededed;
+    --adaptive-black500: #737373;
 }
 
-@utility keyword-focus {
-    @apply text-[1.6rem] px-[0.6rem] py-[0.2rem] rounded-[0.8rem] bg-[var(--color-brand-100)] text-[var(--color-brand-700)] hover:bg-[var(--color-brand-500)];
-}
-
-@utility keyword-focus-sm {
-    @apply text-[1.4rem] font-bold px-[0.4rem] py-[0.2rem] rounded-[0.7rem] bg-[var(--color-brand-100)] text-[var(--color-brand-700)] hover:bg-[var(--color-brand-700)] hover:text-white;
-}
-
-@utility keyword-warning {
-    @apply text-[1.6rem] px-[0.6rem] py-[0.2rem] rounded-[0.8rem] bg-[var(--color-red-100)] text-[var(--color-red-700)] hover:bg-[var(--color-red-500)];
-}
-
-@utility keyword-warning-sm {
-    @apply text-[1.4rem] font-bold px-[0.4rem] py-[0.2rem] rounded-[0.7rem] bg-[var(--color-red-100)] text-[var(--color-red-700)] hover:bg-[var(--color-red-200)];
-}
-
-@utility button-normal-pc {
-    @apply bg-[var(--color-blue-100)] text-[var(--color-blue-500)] rounded-[0.8rem];
-}
-
-@utility button-positive-pc {
-    @apply bg-[var(--color-blue-100)] text-[var(--color-blue-500)] rounded-[0.8rem];
-}
-
-@utility button-positive-mobile {
-    @apply bg-[var(--color-blue-500)] text-white rounded-full;
-}
-
-@utility button-negative {
-    @apply text-[1.4rem] font-bold px-[0.4rem] py-[0.2rem] rounded-[0.7rem] bg-[var(--color-red-100)] text-[var(--color-red-700)] hover:bg-[var(--color-red-200)];
-}
-
-@layer components {
-    /* 이름 flex-row는 Tailwind 기본 유틸과 충돌해 @utility로 옮기지 않음 */
-    .flex-center {
-        @apply flex items-center justify-center;
+@layer base {
+    html {
+        @apply max-w-full bg-white leading-[1.25] scroll-pt-[3.2rem] tablet:scroll-pt-[10rem] [scrollbar-width:none] [-webkit-text-size-adjust:100%] motion-reduce:scroll-auto;
     }
-
-    .flex-row {
-        @apply flex flex-row items-center justify-between;
+    body {
+        @apply m-0 font-sans text-base leading-6;
     }
-
-    .flex-column {
-        @apply flex flex-col items-start justify-center;
+    h1,
+    h2,
+    h3,
+    p {
+        @apply m-0;
     }
-
-    .flex-space-between {
-        @apply flex items-stretch justify-between;
+    h1,
+    h2,
+    h3 {
+        @apply font-sans;
     }
-
-    .flex-around {
-        @apply flex items-center justify-around;
+    a {
+        @apply text-inherit no-underline;
+    }
+    button,
+    input {
+        @apply [font:inherit];
+    }
+    button {
+        @apply cursor-pointer disabled:cursor-default;
+    }
+    button,
+    a,
+    input {
+        @apply [-webkit-tap-highlight-color:transparent];
+    }
+    img {
+        @apply object-cover;
+    }
+    address {
+        @apply not-italic;
+    }
+    ::selection {
+        @apply text-white bg-black;
+    }
+    :focus-visible {
+        @apply outline-[0.4rem] outline-solid outline-[var(--accent)] outline-offset-[0.8rem];
     }
 }
 
-@layer utilities {
-    .border-gradient {
-        background-image: linear-gradient(#ffffff, #ffffff), linear-gradient(0deg, #c165ff, #ff3284);
-        background-origin: border-box;
-        background-clip: content-box, border-box;
-        border: 1px solid transparent;
+@keyframes text-shimmer {
+    from {
+        background-position: -200% 0;
     }
-    .border-gradient-coupon-left {
-        background-image: linear-gradient(#f4f5f9, #f4f5f9), linear-gradient(90deg, #f4f5f9 50%, #d2d5db 50%);
-        background-origin: border-box;
-        background-clip: content-box, border-box;
-        border: 1px solid transparent;
-    }
-    .border-gradient-coupon-right {
-        background-image: linear-gradient(#f4f5f9, #f4f5f9), linear-gradient(270deg, #f4f5f9 50%, #d2d5db 50%);
-        background-origin: border-box;
-        background-clip: content-box, border-box;
-        border: 1px solid transparent;
-    }
-
-    .scrollbar-hide {
-        &::-webkit-scrollbar {
-            display: none;
-        }
-        scrollbar-width: none;
+    to {
+        background-position: 200% 0;
     }
 }

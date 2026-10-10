@@ -23,7 +23,6 @@ const TextArea = ({ className = "", name, placeholder, type, size = "md" }: Inpu
             className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[var(--adaptive-black100)] hover:border-[var(--adaptive-black500)] p-4 transition-colors`}
             name={name}
             placeholder={placeholder}
-
         />
     );
 };

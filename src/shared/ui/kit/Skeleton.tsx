@@ -286,7 +286,7 @@ function SkeletonImage({ target, error, src, alt, className, style, onLoad, onEr
                 onLoad={onLoad}
                 onError={onError}
                 style={style}
-                className={extractClassName(className ?? {})}
+                className={`grayscale ${extractClassName(className ?? {})}`}
                 {...rest}
             />
             {/* { !error && delayedTarget ? (

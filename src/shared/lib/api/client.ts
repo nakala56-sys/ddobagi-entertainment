@@ -1,4 +1,6 @@
 import { finishApiPending, startApiPending } from "@/shared/model/stores/useApiPendingStore";
+import { showErrorToast } from "@/shared/lib/toast";
+import { ApiError, readApiResponse } from "./error";
 
 type ClientFetchOptions = Omit<RequestInit, "body"> & {
     body?: unknown;
@@ -12,10 +14,8 @@ export async function clientFetch<T>(url: string, options: ClientFetchOptions = 
     const isFormData = options.body instanceof FormData;
     const method = (options.method ?? "GET").toUpperCase();
     const shouldTrackPending = typeof window !== "undefined" && method !== "GET" && method !== "HEAD";
-    const headers: HeadersInit = {
-        ...(isFormData ? {} : { "Content-Type": "application/json" }),
-        ...(options.headers ?? {}),
-    };
+    const headers = new Headers(options.headers);
+    if (!isFormData && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
 
     if (shouldTrackPending) {
         startApiPending();
@@ -27,13 +27,16 @@ export async function clientFetch<T>(url: string, options: ClientFetchOptions = 
             headers,
             body: options.body === undefined ? undefined : isFormData ? (options.body as FormData) : JSON.stringify(options.body),
         });
-        const data = await response.json().catch(() => null);
-
-        if (!response.ok) {
-            throw new Error(data?.message ?? "API 요청에 실패했습니다.");
+        return await readApiResponse<T>(response);
+    } catch (error) {
+        const normalized = error instanceof Error ? error : new Error("API 요청에 실패했습니다.");
+        if (typeof window !== "undefined") {
+            if (error instanceof ApiError && (error.status === 401 || error.status === 419)) {
+                window.dispatchEvent(new CustomEvent("api:auth-expired", { detail: { status: error.status } }));
+            }
+            showErrorToast(normalized.message);
         }
-
-        return data as T;
+        throw normalized;
     } finally {
         if (shouldTrackPending) {
             finishApiPending();

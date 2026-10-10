@@ -44,7 +44,7 @@ export function BeliefMoments() {
             aria-labelledby="home-belief-moments-title"
         >
             <div className="sticky top-0 z-20 flex h-svh items-center justify-center pointer-events-none">
-                <div className="content-width pointer-events-auto mx-auto flex w-[min(132rem,_calc(100%_-_12rem))] max-wide:w-[calc(100%_-_8rem)] max-site:w-[calc(100%_-_4rem)] flex-col items-center text-center px-5">
+                <div className="content-width pointer-events-auto mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] flex-col items-center text-center px-5">
                     <p
                         className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
                         data-reveal
@@ -53,15 +53,14 @@ export function BeliefMoments() {
                     </p>
                     <h2
                         id="home-belief-moments-title"
-                        className="display-title mt-7 text-[4rem] compact:text-[4rem] site:text-5xl wide:text-6xl xl:text-[8rem] 2xl:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] max-site:mt-5 max-site:text-4xl"
+                        className="display-title mt-5 tablet:mt-7 text-4xl tablet:text-5xl pc:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)]"
                         data-reveal
                     >
                         가능성은 당신에게.
-                        <br />
-                        그 다음은 <span className="accent text-[var(--accent)]">우리 함께.</span>
+                        <br />그 다음은 <span className="accent text-[var(--accent)]">우리 함께.</span>
                     </h2>
                     <p
-                        className="body-copy mt-10 max-w-150 text-base compact:text-base site:text-base wide:text-base xl:text-lg 2xl:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                        className="body-copy mt-10 max-w-150 text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
                         data-reveal
                     >
                         각자의 매력을 발견하고, 콘텐츠로 연결하고,
@@ -71,7 +70,7 @@ export function BeliefMoments() {
                         또바기는 크리에이터의 다음을 함께하는 파트너입니다.
                     </p>
                     <Link
-                        className="text-link mt-12 inline-flex items-center gap-8 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent py-3 text-base font-[650] text-[inherit]"
+                        className="text-[inherit] mt-12 inline-flex items-center gap-8 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent py-3 text-base font-[650]"
                         href="/about"
                         data-reveal
                     >
@@ -80,7 +79,11 @@ export function BeliefMoments() {
                 </div>
             </div>
 
-            <div className="relative z-0 -mt-[100svh]" style={{ height: trackHeight }} aria-hidden="true">
+            <div
+                className="relative z-0 -mt-[100svh]"
+                style={{ height: trackHeight }}
+                aria-hidden="true"
+            >
                 {MOMENT_IMAGES.map((image, index) => (
                     <div
                         key={image.src}
@@ -95,8 +98,8 @@ export function BeliefMoments() {
                                 src={image.src}
                                 alt={image.alt}
                                 fill
-                                sizes="(min-width: 900px) 34rem, 56vw"
-                                className="object-cover"
+                                sizes="(min-width: 48rem) 34rem, 56vw"
+                                className="object-cover grayscale"
                             />
                         </div>
                     </div>

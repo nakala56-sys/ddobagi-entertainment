@@ -13,7 +13,10 @@ export default function Panel() {
     }, []);
     return (
         <BenefitsPageProvider>
-            <div ref={panelRef} className="route-panel">
+            <div
+                ref={panelRef}
+                className="route-panel"
+            >
                 <Layer.BenefitsHero />
                 <Layer.BenefitsOverview />
                 <Layer.BenefitsStickyCards />

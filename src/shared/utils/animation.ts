@@ -2,6 +2,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CustomEase } from "gsap/CustomEase";
 import Lenis from "lenis";
+import { getBreakpointQuery } from "@/shared/lib/breakpoints";
 
 const MOTION_EASE = "site-motion";
 const SHIMMER_EASE = "site-shimmer";
@@ -19,6 +20,14 @@ type Cleanup = () => void;
 type Conditions = { desktop: boolean; reduced: boolean };
 type SectionAnimation = (root: HTMLElement, conditions: Conditions) => void | Cleanup;
 
+function setSectionState(root: Element, state: string, enabled: boolean) {
+    const targets = [root, ...root.querySelectorAll(`[data-${state}-target]`)];
+    targets.forEach((target) => {
+        if (enabled) target.setAttribute(`data-${state}`, "true");
+        else target.removeAttribute(`data-${state}`);
+    });
+}
+
 // Every section owns its selectors, timelines, media queries and cleanup.
 function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     const media = gsap.matchMedia(root);
@@ -30,7 +39,7 @@ function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
             if (active) ScrollTrigger.refresh();
         });
     };
-    media.add({ all: "(min-width: 0px)", desktop: "(min-width: 900px)", reduced: "(prefers-reduced-motion: reduce)" }, (context) => {
+    media.add({ all: "all", desktop: getBreakpointQuery("tablet"), reduced: "(prefers-reduced-motion: reduce)" }, (context) => {
         const conditions = context.conditions as Conditions;
         // Static markup remains readable when animation is disabled.
         if (conditions.reduced) return;
@@ -130,10 +139,10 @@ function creatorGallery(root: HTMLElement): Cleanup {
         if (!stage || !lead || !top || !bottom || !copy || !shade) return;
 
         const cover = root.previousElementSibling?.matches("[data-gallery-cover]") ? root.previousElementSibling : null;
-        root.classList.add("is-gallery");
+        setSectionState(root, "gallery", true);
         if (cover) {
-            cover.classList.add("is-gallery-cover");
-            root.classList.add("is-gallery-reveal");
+            setSectionState(cover, "gallery-cover", true);
+            setSectionState(root, "gallery-reveal", true);
         }
         const width = () => stage.clientWidth;
         const height = () => stage.clientHeight;
@@ -184,8 +193,9 @@ function creatorGallery(root: HTMLElement): Cleanup {
             .to(bottom, { x: () => smallWidth() * 0.55, duration: 1.2, ease: "none" }, "gallery+=3.9");
 
         return () => {
-            root.classList.remove("is-gallery", "is-gallery-reveal");
-            cover?.classList.remove("is-gallery-cover");
+            setSectionState(root, "gallery", false);
+            setSectionState(root, "gallery-reveal", false);
+            if (cover) setSectionState(cover, "gallery-cover", false);
         };
     });
 }
@@ -327,7 +337,7 @@ function horizontal(root: HTMLElement): Cleanup {
         const track = root.querySelector<HTMLElement>("[data-track]");
         const viewport = root.querySelector<HTMLElement>("[data-viewport]");
         if (!track || !viewport) return;
-        root.classList.add("is-horizontal");
+        setSectionState(root, "horizontal", true);
         const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
         const cards = track.querySelectorAll<HTMLElement>("[data-slide]");
         const counter = root.querySelector<HTMLElement>("[data-counter]");
@@ -367,7 +377,7 @@ function horizontal(root: HTMLElement): Cleanup {
             cancelAnimationFrame(focusFrame);
             root.removeEventListener("focusin", focus);
             window.removeEventListener("hashchange", hash);
-            root.classList.remove("is-horizontal");
+            setSectionState(root, "horizontal", false);
             if (counter) counter.textContent = `01 / ${String(cards.length).padStart(2, "0")}`;
             if (progress) progress.style.removeProperty("transform");
         };
@@ -382,7 +392,7 @@ function showcase(root: HTMLElement): Cleanup {
         }
         const cards = root.querySelectorAll<HTMLElement>("[data-showcase-card]");
         const indicator = root.querySelector<HTMLElement>("[data-counter]");
-        root.classList.add("is-pinned");
+        setSectionState(root, "pinned", true);
         gsap.set(cards, textFrom);
         gsap.set(cards[0], textTo);
         const timeline = scrollTimeline(root, {
@@ -399,7 +409,7 @@ function showcase(root: HTMLElement): Cleanup {
             timeline.to(cards[index - 1], { autoAlpha: 0, y: -36, duration: 0.35 }, index - 1).to(card, { ...textTo, duration: 0.5 }, index - 1 + 0.15);
         });
         return () => {
-            root.classList.remove("is-pinned");
+            setSectionState(root, "pinned", false);
             if (indicator) indicator.textContent = `01 / ${String(cards.length).padStart(2, "0")}`;
         };
     });
@@ -412,7 +422,7 @@ function stacking(root: HTMLElement): Cleanup {
             return;
         }
         const cards = root.querySelectorAll<HTMLElement>("[data-stack-card]");
-        root.classList.add("is-stacking");
+        setSectionState(root, "stacking", true);
         gsap.set(cards, { zIndex: (index) => index + 1 });
         gsap.set(Array.from(cards).slice(1), { yPercent: 120 });
         const timeline = scrollTimeline(root, { start: "top top", end: () => `+=${window.innerHeight * 2}`, pin: true });
@@ -423,7 +433,7 @@ function stacking(root: HTMLElement): Cleanup {
                 .to(card, { yPercent: 0, duration: 1 }, index - 1)
                 .fromTo(card.firstElementChild, textFrom, textTo, index - 1);
         });
-        return () => root.classList.remove("is-stacking");
+        return () => setSectionState(root, "stacking", false);
     });
 }
 
@@ -536,7 +546,7 @@ class Animation {
         loading: pageLoading,
         common: (): Cleanup => {
             const media = gsap.matchMedia();
-            media.add("(min-width: 900px) and (prefers-reduced-motion: no-preference)", () => {
+            media.add(`${getBreakpointQuery("tablet")} and (prefers-reduced-motion: no-preference)`, () => {
                 const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
                 const update = () => ScrollTrigger.update();
                 lenis.on("scroll", update);

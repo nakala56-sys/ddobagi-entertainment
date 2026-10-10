@@ -73,9 +73,12 @@ function FadeInOut({ activeKey, children, className = "", duration = 1.4, feathe
         if (!restoredPrevious) return undefined;
 
         lastUnmountedLayer = null;
-        timerRef.current = setTimeout(() => {
-            setPrevious(null);
-        }, duration * 1000 + 120);
+        timerRef.current = setTimeout(
+            () => {
+                setPrevious(null);
+            },
+            duration * 1000 + 120,
+        );
 
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
@@ -100,9 +103,12 @@ function FadeInOut({ activeKey, children, className = "", duration = 1.4, feathe
         setCurrent(nextCurrent);
         setTransitionId((value) => value + 1);
 
-        timerRef.current = setTimeout(() => {
-            setPrevious(null);
-        }, duration * 1000 + 120);
+        timerRef.current = setTimeout(
+            () => {
+                setPrevious(null);
+            },
+            duration * 1000 + 120,
+        );
 
         return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
