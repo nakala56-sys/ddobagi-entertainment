@@ -21,16 +21,16 @@ export function SiteHeader() {
     return (
         <header
             ref={headerRef}
-            className={`site-header [--accent:#17212b] [--header-ink:#17212b] h-23 absolute top-0 left-0 w-full z-[20] flex items-center justify-between p-[0_4rem] text-[var(--header-ink)] max-wide:px-8 max-site:h-19 max-site:px-5`}
+            className={`site-header [--accent:#17212b] [--header-ink:#17212b] h-19 tablet:h-23 absolute top-0 left-0 w-full z-[20] flex items-center justify-between py-0 text-[var(--header-ink)] px-5 tablet:px-8 pc:px-10`}
         >
             <Link
-                className="brand-logo flex items-center gap-3 text-lg font-[750] leading-[round(up,1.1em,0.4rem)] tracking-[round(nearest,0.07em,0.4rem)] [&_small]:block [&_small]:text-[0.8rem] [&_small]:tracking-[round(nearest,0.18em,0.4rem)] [&_small]:mt-1 [&_small]:font-[500] max-site:text-base"
+                className="brand-logo flex items-center gap-3 text-base tablet:text-lg font-[750] leading-[round(up,1.1em,0.4rem)] tracking-[round(nearest,0.07em,0.4rem)]"
                 href="/"
                 aria-label="또바기 엔터테인먼트 홈"
             >
                 <Image
-                    className={`logo-symbol w-12 h-auto shrink-0 object-contain max-site:w-10 ${isHome ? "" : ""}`}
-                    // className={`logo-symbol w-12 h-auto shrink-0 object-contain max-site:w-10 ${isHome ? "brightness-0" : ""}`}
+                    className={`logo-symbol w-10 tablet:w-12 h-auto shrink-0 object-contain grayscale ${isHome ? "" : ""} `}
+
                     src="/images/common/tobbagi-logo.webp"
                     alt=""
                     width={48}
@@ -38,19 +38,20 @@ export function SiteHeader() {
                     priority
                 />
                 <section className="flex flex-col">
-                    <p className="text-[1.4rem]">TOBBAGI</p>
-                    <p className="text-[1.4rem]">ENTERTAINMENT</p>
+                    <p className="text-[1.6rem]">TOBBAGI</p>
+                    <p className="text-[1.6rem]">ENTERTAINMENT</p>
                 </section>
                 {/* <span>
                     TOBBAGI<small>ENTERTAINMENT</small>
                 </span> */}
             </Link>
             <nav
-                className="desktop-navigation flex gap-9 text-[1.6rem] [&_a[aria-current=page]]:text-current [&_a[aria-current=page]]:underline [&_a[aria-current=page]]:underline-offset-[0.8rem] max-wide:gap-5 max-site:hidden"
+                className="desktop-navigation hidden tablet:flex gap-5 pc:gap-9 text-[1.6rem]"
                 aria-label="주 메뉴"
             >
                 {navigation.map((item) => (
                     <Link
+                        className="aria-[current=page]:text-current aria-[current=page]:underline aria-[current=page]:underline-offset-[0.8rem]"
                         key={item.href}
                         href={item.href}
                         aria-current={pathname === item.href ? "page" : undefined}
@@ -60,19 +61,19 @@ export function SiteHeader() {
                 ))}
             </nav>
             <div className="header-actions flex items-center gap-5">
-                <ContactCreatorButton className="header-contact [&.header-contact]:text-xs [&.header-contact]:p-[1.2rem_1.6rem] [&.header-contact]:gap-5 [&.header-contact]:max-site:hidden">
+                <ContactCreatorButton className="header-contact [&.header-contact]:text-xs [&.header-contact]:p-[1.2rem_1.6rem] [&.header-contact]:gap-5 [&.header-contact]:hidden tablet:[&.header-contact]:inline-flex">
                     Let’s Talk
                 </ContactCreatorButton>
                 <button
-                    className="menu-toggle hidden w-10 h-10 border-0 bg-transparent text-current [&_span]:block [&_span]:h-1 [&_span]:bg-[currentColor] [&_span]:w-7 [&_span]:m-2 max-site:block"
+                    className="menu-toggle block tablet:hidden w-10 h-10 border-0 bg-transparent text-current"
                     type="button"
                     aria-label="메뉴 열기"
                     aria-expanded={menuOpen}
                     aria-controls="mobile-menu"
                     onClick={() => setMenuOpen(true)}
                 >
-                    <span />
-                    <span />
+                    <span className="block h-1 bg-[currentColor] w-7 m-2" />
+                    <span className="block h-1 bg-[currentColor] w-7 m-2" />
                 </button>
             </div>
             <Sidebar

@@ -26,7 +26,6 @@ const Input = ({ className = "", name, placeholder, type, size = "md", ...props 
             name={name}
             placeholder={placeholder}
             type={type}
-
         />
     );
 };

@@ -8,7 +8,8 @@
         "start": "next start",
         "lint": "eslint .",
         "test": "vitest run",
-        "test:watch": "vitest"
+        "test:watch": "vitest",
+        "format:check": "prettier --check \"src/**/*.{ts,tsx,css,scss}\" \"*.config.*\" package.json tsconfig.json"
     },
     "dependencies": {
         "@gsap/react": "^2.1.2",
@@ -30,6 +31,8 @@
         "@vitejs/plugin-react": "^6.0.2",
         "eslint": "^9.39.4",
         "eslint-config-next": "^16.2.6",
+        "prettier": "^3.9.9",
+        "sass": "^1.105.1",
         "tailwindcss": "^4.2.4",
         "typescript": "^5.0.0",
         "vitest": "^4.1.8"

@@ -1,4 +1,3 @@
-
 interface TextShimmerProps {
     children: string;
     as?: React.ElementType;
@@ -22,7 +21,6 @@ export const Shimmer = ({
     },
     duration = 2,
 }: TextShimmerProps) => {
-
     return (
         <Component
             ref={null}

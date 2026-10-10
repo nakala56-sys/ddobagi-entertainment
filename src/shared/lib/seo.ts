@@ -23,14 +23,7 @@ function normalizePath(path: string) {
     return path.startsWith("/") ? path : `/${path}`;
 }
 
-export function buildPageMetadata({
-    title,
-    description,
-    path,
-    ogType = "website",
-    image,
-    noIndex = false,
-}: BuildPageMetadataOptions): Metadata {
+export function buildPageMetadata({ title, description, path, ogType = "website", image, noIndex = false }: BuildPageMetadataOptions): Metadata {
     const canonicalPath = normalizePath(path);
     const url = `${getSiteUrl()}${canonicalPath}`;
     const ogImage = image ?? getDefaultOgImageUrl();

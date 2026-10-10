@@ -13,7 +13,10 @@ export default function Panel() {
     }, []);
     return (
         <EquipmentPageProvider>
-            <div ref={panelRef} className="route-panel">
+            <div
+                ref={panelRef}
+                className="route-panel"
+            >
                 <Layer.EquipmentHero />
                 <Layer.EquipmentShowcase />
                 <Layer.EquipmentGrid />

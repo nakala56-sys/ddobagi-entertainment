@@ -17,7 +17,7 @@ export function FinalCta() {
         <section
             ref={sectionRef}
             data-cta-wave
-            className="closing relative z-10 overflow-visible bg-white motion-reduce:bg-black [&_h2]:text-[4.4rem] [&_h2]:compact:text-[4.4rem] [&_h2]:site:text-[6.8rem] [&_h2]:wide:text-[8.4rem] [&_h2]:xl:text-[10.8rem] [&_h2]:2xl:text-[11.2rem] [&_h2]:leading-[round(up,1.02em,0.4rem)] [&_h2]:tracking-[round(nearest,-0.055em,0.4rem)] [&_h2]:font-[550] max-site:[&_h2]:text-[4rem] max-site:[&_h2]:compact:text-5xl max-site:[&_h2]:site:text-[8rem] max-site:[&_h2]:wide:text-[8rem] max-site:[&_h2]:xl:text-[8rem] max-site:[&_h2]:2xl:text-[8rem] section-dark [--accent:#ffffff] text-[var(--paper)]"
+            className="closing relative z-10 overflow-visible bg-white motion-reduce:bg-black section-dark [--accent:#ffffff] text-[var(--paper)]"
             aria-labelledby="home-closing-title"
         >
             {/* Fixed to the viewport so parent overflow cannot clip the expanding ink. */}
@@ -75,20 +75,21 @@ export function FinalCta() {
                 </svg>
             </div>
 
-            <div className="relative z-10 flex min-h-[100svh] items-center py-30 max-site:py-20 mix-blend-difference motion-reduce:mix-blend-normal motion-reduce:min-h-[85svh]">
+            <div className="relative z-10 flex min-h-[100svh] items-center py-20 tablet:py-30 mix-blend-difference motion-reduce:mix-blend-normal motion-reduce:min-h-[85svh]">
                 <div
                     data-cta-content
-                    className="closing-content relative z-10 mx-auto flex w-[min(132rem,_calc(100%_-_12rem))] max-wide:w-[calc(100%_-_8rem)] max-site:w-[calc(100%_-_4rem)] flex-col items-center gap-9 text-center max-site:gap-8 content-width"
+                    className="closing-content relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] flex-col items-center gap-8 tablet:gap-9 text-center content-width"
                 >
                     <p className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase">06 — YOUR NEXT CHAPTER</p>
-                    <h2 id="home-closing-title">
+                    <h2
+                        className="text-[4rem] tablet:text-[6.8rem] pc:text-[11.2rem] leading-[round(up,1.02em,0.4rem)] tracking-[round(nearest,-0.055em,0.4rem)] font-[550]"
+                        id="home-closing-title"
+                    >
                         LET’S GROW
                         <br />
                         TOGETHER.
                     </h2>
-                    <p className="body-copy text-base compact:text-base site:text-base wide:text-base xl:text-lg 2xl:text-lg leading-[round(up,1.9em,0.4rem)] text-[#b5b5b5]">
-                        당신의 다음 이야기를 기다립니다.
-                    </p>
+                    <p className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[#b5b5b5]">당신의 다음 이야기를 기다립니다.</p>
                     <div>
                         <ContactCreatorButton>또바기와 함께 시작하기</ContactCreatorButton>
                     </div>

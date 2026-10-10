@@ -141,18 +141,33 @@ export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors
         gl.deleteBuffer(buffer);
         gl.deleteTexture(texture);
     };
-    if (!program || !buffer || !texture) { dispose(); return null; }
-    for (const [type, source] of [[gl.VERTEX_SHADER, vertexSource], [gl.FRAGMENT_SHADER, fragmentSource]] as const) {
+    if (!program || !buffer || !texture) {
+        dispose();
+        return null;
+    }
+    for (const [type, source] of [
+        [gl.VERTEX_SHADER, vertexSource],
+        [gl.FRAGMENT_SHADER, fragmentSource],
+    ] as const) {
         const shader = gl.createShader(type);
-        if (!shader) { dispose(); return null; }
+        if (!shader) {
+            dispose();
+            return null;
+        }
         shaders.push(shader);
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) { dispose(); return null; }
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+            dispose();
+            return null;
+        }
         gl.attachShader(program, shader);
     }
     gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { dispose(); return null; }
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        dispose();
+        return null;
+    }
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
@@ -165,7 +180,10 @@ export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
-    gl.uniform3fv(gl.getUniformLocation(program, "u_colors[0]"), colors.flatMap((color, index) => rgb(color, DEFAULT_WAVE_COLORS[index])));
+    gl.uniform3fv(
+        gl.getUniformLocation(program, "u_colors[0]"),
+        colors.flatMap((color, index) => rgb(color, DEFAULT_WAVE_COLORS[index])),
+    );
     gl.uniform1f(gl.getUniformLocation(program, "u_text"), Number(text));
     gl.uniform1f(gl.getUniformLocation(program, "u_distortion"), distortion);
     const timeLocation = gl.getUniformLocation(program, "u_time");

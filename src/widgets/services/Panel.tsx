@@ -13,7 +13,10 @@ export default function Panel() {
     }, []);
     return (
         <ServicesPageProvider>
-            <div ref={panelRef} className="route-panel">
+            <div
+                ref={panelRef}
+                className="route-panel"
+            >
                 <Layer.ServicesHero />
                 <Layer.ServicesOverview />
                 <Layer.ServicesSlider />

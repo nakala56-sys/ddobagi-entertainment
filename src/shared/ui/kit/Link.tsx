@@ -64,7 +64,10 @@ export const Linker = ({
     const heightClass = sizeClasses[size];
 
     return (
-        <Link href={href} prefetch={prefetch}>
+        <Link
+            href={href}
+            prefetch={prefetch}
+        >
             <motion.button
                 type={type}
                 ref={ref}

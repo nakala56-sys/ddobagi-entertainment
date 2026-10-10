@@ -220,24 +220,24 @@ function groupTextLines(element: HTMLElement) {
 
     const measuredLines = groups
         .map((group) => {
-        range.setStart(textNode, group.start);
-        range.setEnd(textNode, group.end);
+            range.setStart(textNode, group.start);
+            range.setEnd(textNode, group.end);
 
-        const lineRects = Array.from(range.getClientRects());
-        const resolvedRects = lineRects.length > 0 ? lineRects : group.rects;
-        const left = Math.min(...resolvedRects.map((rect) => rect.left));
-        const right = Math.max(...resolvedRects.map((rect) => rect.right));
-        const top = Math.min(...resolvedRects.map((rect) => rect.top));
-        const bottom = Math.max(...resolvedRects.map((rect) => rect.bottom));
+            const lineRects = Array.from(range.getClientRects());
+            const resolvedRects = lineRects.length > 0 ? lineRects : group.rects;
+            const left = Math.min(...resolvedRects.map((rect) => rect.left));
+            const right = Math.max(...resolvedRects.map((rect) => rect.right));
+            const top = Math.min(...resolvedRects.map((rect) => rect.top));
+            const bottom = Math.max(...resolvedRects.map((rect) => rect.bottom));
 
-        return {
-            height: bottom - top,
-            left: left - containerRect.left,
-            right: containerRect.right - right,
-            text: text.slice(group.start, group.end).trimEnd(),
-            top: top - containerRect.top,
-            width: right - left,
-        };
+            return {
+                height: bottom - top,
+                left: left - containerRect.left,
+                right: containerRect.right - right,
+                text: text.slice(group.start, group.end).trimEnd(),
+                top: top - containerRect.top,
+                width: right - left,
+            };
         })
         .sort((prev, next) => prev.top - next.top);
 
@@ -265,8 +265,14 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
     return (
         <span
             aria-hidden="true"
-            className={`pointer-events-none absolute block whitespace-pre text-[length:inherit]`}
-            style={{ font: "inherit", fontKerning: "inherit", fontStretch: "inherit", fontStyle: "inherit", fontVariant: "inherit", fontWeight: "inherit", height: line.height, letterSpacing: "inherit", left: line.left - horizontalInset, lineHeight: `${line.height}px`, right: line.right - horizontalInset, textTransform: "inherit", top: line.top, wordSpacing: "inherit" }}
+            className="pointer-events-none absolute block whitespace-pre text-[length:inherit] [font:inherit] [font-kerning:inherit] [font-stretch:inherit] [font-style:inherit] [font-variant:inherit] [font-weight:inherit] [letter-spacing:inherit] [text-transform:inherit] [word-spacing:inherit]"
+            style={{
+                height: line.height,
+                left: line.left - horizontalInset,
+                lineHeight: `${line.height}px`,
+                right: line.right - horizontalInset,
+                top: line.top,
+            }}
         >
             <motion.span
                 className="absolute inset-0 block"
@@ -276,7 +282,12 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
                     maskImage: revealMask,
                 }}
             >
-                <span className={`inline-block`} style={{ paddingInline: horizontalInset }}>{line.text}</span>
+                <span
+                    className={`inline-block`}
+                    style={{ paddingInline: horizontalInset }}
+                >
+                    {line.text}
+                </span>
             </motion.span>
             {subHighlightColor ? (
                 <motion.span
@@ -287,7 +298,12 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
                         maskImage: subHighlightMask,
                     }}
                 >
-                    <span className={`inline-block`} style={{ paddingInline: horizontalInset }}>{line.text}</span>
+                    <span
+                        className={`inline-block`}
+                        style={{ paddingInline: horizontalInset }}
+                    >
+                        {line.text}
+                    </span>
                 </motion.span>
             ) : null}
             <motion.span
@@ -298,7 +314,12 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
                     maskImage: highlightMask,
                 }}
             >
-                <span className={`inline-block`} style={{ paddingInline: horizontalInset }}>{line.text}</span>
+                <span
+                    className={`inline-block`}
+                    style={{ paddingInline: horizontalInset }}
+                >
+                    {line.text}
+                </span>
             </motion.span>
         </span>
     );

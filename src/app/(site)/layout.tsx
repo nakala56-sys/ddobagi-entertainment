@@ -5,6 +5,7 @@ import { useEffect, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Animation from "@/shared/utils/animation";
 import { PageTransition } from "@/shared/ui/transition/PageTransition";
+import { ApiLoading } from "@/widgets/layout/ApiLoading";
 
 const Header = dynamic(() => import("@/widgets/layout/Header").then((module) => module.Header), { ssr: false });
 const Footer = dynamic(() => import("@/widgets/layout/Footer").then((module) => module.Footer), { ssr: false });
@@ -29,6 +30,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
             <QuickMenu />
             <Toast />
             <Progress />
+            <ApiLoading />
         </PageTransition>
     );
 }

@@ -150,13 +150,11 @@ export const Rolling = ({
             aria-label={ariaLabel}
             data-value={value}
             ref={containerRef}
-
         >
             {guide.front ? (
                 <motion.p
                     layout
                     className={`${className.guide?.front ?? ""}  ${size.fontClass}`}
-
                 >
                     {guide.front}
                 </motion.p>
@@ -169,7 +167,6 @@ export const Rolling = ({
                             <motion.p
                                 layout
                                 className={`${className?.text ?? ""} ${size.fontClass}`}
-
                             >
                                 ,
                             </motion.p>
@@ -196,7 +193,6 @@ export const Rolling = ({
                 <motion.p
                     layout
                     className={`${className.guide?.back ?? ""} ${size.fontClass}`}
-
                 >
                     {guide.back}
                 </motion.p>
@@ -237,7 +233,6 @@ const NumberColumn = ({ active, digit, className, initialDigit, rollingCount, si
                     <p
                         key={index}
                         className={`${className} text-center ${size.fontClass} ${size.heightClass} ${size.lineHeightClass}`}
-
                     >
                         {number}
                     </p>

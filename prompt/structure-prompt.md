@@ -58,7 +58,7 @@ IF 2개 이상 ui 섹션이 같은 페이지 상태·행동(선택/필터/페이
 
 ### entities
 - 도메인 데이터: src/entities/{domain}/
-- api/{domain}.api.ts, api/{domain}.query.ts, model/{domain}.type.ts
+- API가 있는 도메인은 api/{domain}.api.ts, api/{domain}.query.ts, model/{domain}.type.ts를 둔다. 정적 데이터만 있는 도메인은 constants/ + model/로 구성하고 API/query 파일을 억지로 만들지 않는다.
 - lib/, constants/ 필요 시 허용
 - features/widgets/views에 {domain}.api.ts / .query.ts 새로 만들지 마라
 
@@ -72,11 +72,11 @@ IF 2개 이상 ui 섹션이 같은 페이지 상태·행동(선택/필터/페이
 - entities/{domain}/api/*.api.ts 는 endpoint, method, payload 조립만 담당하고 인증·에러 처리·응답 파싱은 shared fetch wrapper에 위임한다
 - entities/{domain}/api/*.query.ts 는 `*.api.ts`를 감싸는 query option / hook만 담당하고 fetch, 인증, 공통 에러 처리를 넣지 않는다
 - 인증, 공통 headers, 공통 에러 처리, 재시도, refresh 같은 횡단 관심사는 shared/lib/api에 모은다
-- accessToken / refreshToken / cookies / auth header / hmac header 처리는 `server.ts`에 우선 모은다
-- `server.ts`는 쿠키 기반 인증, refresh 재시도, 공통 headers, 공통 에러 추적을 담당한다
+- 인증이 있는 프로젝트에서 accessToken / refreshToken / cookies / auth header / hmac header 처리는 `server.ts`에 우선 모은다
+- `server.ts`는 공통 headers, 응답 파싱, 공통 에러 추적을 담당한다. 인증 API가 존재하는 프로젝트에서는 쿠키 기반 인증과 refresh 재시도를 추가한다. 인증 API가 없는 정적 사이트에 임의의 인증 endpoint를 만들지 않는다.
 - `client.ts`는 브라우저 요청용 wrapper로 두고 `401`, `419` 같은 인증 만료 응답의 공통 후처리를 담당한다
 - `client.ts`는 POST / PUT / PATCH / DELETE 요청에 대한 공통 loading UX와 에러 후처리를 담당한다
-- Slack tracking, 공통 에러 로깅, 응답 메시지 정규화는 domain api가 아니라 shared/lib/api에서 처리한다
+- Slack tracking(연동이 있을 때), 공통 에러 로깅, 응답 메시지 정규화는 domain api가 아니라 shared/lib/api에서 처리한다
 - `response.ok` 검사, `response.json()` 파싱, 실패 시 throw는 shared fetch wrapper가 공통 처리한다
 - features/widgets/views에는 fetch wrapper를 새로 만들지 마라
 
@@ -119,12 +119,14 @@ src/widgets/{route}/
 - Tailwind CSS를 100% 활용한다. 컴포넌트·섹션 UI 스타일은 Tailwind 유틸리티 클래스로 작성한다
 - 기존에 CSS/SCSS로 작성된 스타일은 Tailwind CSS로 전환한다 (공통 base/abstracts 초기 세팅 제외)
 - 프로젝트 루트 `.prettierrc`를 반드시 준수한다 (semi, trailingComma, printWidth, tabWidth, bracketSpacing, arrowParens, singleAttributePerLine, bracketSameLine 등)
-- 간격·크기·타이포 수치에 **4배수 디자인**을 100% 준수한다 (예: 4, 8, 12, 16… / rem 기준 0.4rem, 0.8rem, 1.2rem, 1.6rem…)
+- 정적으로 지정하는 px/rem 간격·크기·타이포 수치에 **4배수 디자인**을 100% 준수한다 (예: 4, 8, 12, 16… / root 10px에서 0.4rem, 0.8rem, 1.2rem, 1.6rem…). 0, 비율(fr/%/vw/vh/em), unitless 값, 런타임 측정·애니메이션 중간값은 이 규칙의 대상이 아니다.
+- 미디어쿼리의 rem은 기본 글자 크기 기준이므로 root의 62.5%와 구분한다. JS 반응형 감지도 `shared/styles/global.css`의 토큰을 읽고, 별도 px 경계값을 만들지 않는다.
 - 브레이크포인트는 `src/shared/styles/global.css`의 `@theme`에 정의하고, 이 값만 사용한다:
 
 ```css
 @theme {
-    --breakpoint-mobile: 9.375rem; /* 344px 이상 */
+    --breakpoint-*: initial; /* Tailwind 기본 브레이크포인트 제거 */
+    --breakpoint-mobile: 21.5rem; /* 344px 이상 */
     --breakpoint-tablet: 48rem; /* 768px 이상 */
     --breakpoint-pc: 90rem; /* 1440px 이상 */
 }
@@ -132,7 +134,7 @@ src/widgets/{route}/
 
 - 반응형 유틸리티 프리픽스는 **`mobile:` / `tablet:` / `pc:`만 100% 사용**한다. 예: `mobile:flex`, `tablet:block`, `pc:grid`
 - 반응형은 **mobile-first (min-width)** 로 작성한다. 기본 클래스 = 가장 좁은 화면, `tablet:` / `pc:`로 커질수록 덮어쓴다
-- `@theme`에는 `--breakpoint-mobile` / `--breakpoint-tablet` / `--breakpoint-pc`만 둔다. 그 외 브레이크포인트 변수·커스텀 variant를 추가하거나 남겨두지 않는다
+- `@theme`의 브레이크포인트는 `--breakpoint-*: initial`로 기본값을 제거한 뒤 `--breakpoint-mobile` / `--breakpoint-tablet` / `--breakpoint-pc`만 둔다. 그 외 브레이크포인트 변수·커스텀 variant를 추가하거나 남겨두지 않는다
 - `src/app/globals.css` 등에 남아 있는 구 브레이크포인트 정의(`--breakpoint-sm`~`2xl`, `--breakpoint-compact`/`site`/`wide` 등)는 제거하고, 반응형 정의는 `src/shared/styles/global.css` `@theme`로 단일화한다
 
 #### 반응형 — 금지 프리픽스 (현재 프로젝트에서 발견·전환 필수)
@@ -182,7 +184,7 @@ className="py-18 tablet:py-30 flex flex-col tablet:flex-row text-[4rem] tablet:t
 | 조상/컨텍스트 `[_&]:` / `[.class_&]:` | `[.section-dark_&]:`, `[.is-horizontal_&]:`, `[.split-copy_&]:` |
 | 반응형과 결합된 자식 variant | `tablet:[&_h3]:text-lg`, `max-site:[&_p]:text-xs` |
 
-`hover:` / `focus:` / `disabled:` / `aria-*:` 같은 **자기 자신 상태** variant는 허용한다. 금지 대상은 **다른 요소를 선택자로 찌르는** 패턴이다.
+`hover:` / `focus:` / `disabled:` / `aria-*:` / `data-*:` 및 자기 자신 클래스·순서 같은 **자기 자신 상태** variant는 허용한다. 애니메이션 상태는 대상 요소에 `data-*`를 설정해 소비한다. 금지 대상은 **다른 요소를 선택자로 찌르는** 패턴이다.
 
 ```tsx
 // ❌ 구 — 부모에서 자식 스타일링
@@ -209,326 +211,327 @@ className="py-18 tablet:py-30 flex flex-col tablet:flex-row text-[4rem] tablet:t
 </div>
 ```
 
-- 초기 스타일 세팅은 SCSS로 구성한다. 아래 3개 파일은 **내용을 그대로** 생성한다 (축약·임의 작성 금지)
+- 초기 스타일 세팅은 SCSS로 구성한다. 아래 3개 파일은 **내용을 그대로** 생성한다 (축약·임의 작성 금지). 전문 갱신 시 4배수 디자인과 `.prettierrc`를 우선 적용한다.
+- `index.scss`와 `global.css`를 root layout에서 불러온다. reset은 `@layer base`에 두어 Tailwind 유틸리티가 우선 적용되도록 한다.
 - `src/shared/styles/index.scss`는 아래 구조로 세팅한다:
 
 ```scss
 // base 초기 세팅 스타일
-@use "base/fonts";
-@use "base/resets";
+@use "base/Fonts";
+@use "base/Resets";
 
 // abstracts 전역변수
-@use "abstracts/variables";
+@use "abstracts/Variables";
 ```
 
 - `src/shared/styles/base/Fonts.scss` — 아래 내용을 그대로 생성:
 
 ```scss
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-Thin.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-Thin.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 200;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-ExtraLight.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-ExtraLight.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-Light.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-Light.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-Regular.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-Regular.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-Medium.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-Medium.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-SemiBold.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-SemiBold.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-Bold.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-Bold.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-ExtraBold.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-ExtraBold.woff2") format("woff2");
 }
 
 @font-face {
-  font-family: 'SUIT';
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-  src: url("/fonts/suit/woff2/SUIT-Heavy.woff2") format("woff2");
+    font-family: "SUIT";
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+    src: url("/fonts/suit/woff2/SUIT-Heavy.woff2") format("woff2");
 }
 ```
 
 - `src/shared/styles/base/Resets.scss` — 아래 내용을 그대로 생성:
 
 ```scss
-:root {
-    // 초기 설정
-    font-family:
-        var(--custom-font),
-        -apple-system,
-        BlinkMacSystemFont,
-        "Malgun Gothic",
-        "맑은 고딕",
-        helvetica,
-        "Apple SD Gothic Neo",
-        sans-serif;
-    font-size: var(--root-font-size);
-    font-weight: 600;
+@layer base {
+    :root {
+        // 초기 설정
+        font-family:
+            var(--custom-font),
+            -apple-system,
+            BlinkMacSystemFont,
+            "Malgun Gothic",
+            "맑은 고딕",
+            helvetica,
+            "Apple SD Gothic Neo",
+            sans-serif;
+        font-size: var(--root-font-size);
+        font-weight: 600;
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
 
-    background: var(--color-background-light);
+        background: var(--color-background-light);
 
-    color: var(--color-gray-1000);
-}
+        color: var(--color-gray-1000);
+    }
 
-html {
-    line-height: 1.25; /* 1 */
-    -webkit-text-size-adjust: 100%; /* 2 */
-    max-width: 100%;
-    background: var(--color-background-light);
-    scrollbar-width: none;
-}
+    html {
+        line-height: 1.25; /* 1 */
+        -webkit-text-size-adjust: 100%; /* 2 */
+        max-width: 100%;
+        background: var(--color-background-light);
+        scrollbar-width: none;
+    }
 
-::selection {
-    background: var(--color-brand-100);
-    color: var(--color-brand-700);
-}
+    ::selection {
+        background: var(--color-brand-100);
+        color: var(--color-brand-700);
+    }
 
-* {
-    scrollbar-width: thin;
-    box-sizing: border-box;
-}
+    * {
+        scrollbar-width: thin;
+        box-sizing: border-box;
+    }
 
-body {
-    position: relative;
-    // overflow-y: hidden;
-    min-height: 100dvh;
-    width: 100%;
-    background-color: var(--color-background-light);
+    body {
+        position: relative;
+        // overflow-y: hidden;
+        min-height: 100dvh;
+        width: 100%;
+        background-color: var(--color-background-light);
 
-    display: flex;
-    flex-direction: column;
-    align-items: start;
+        display: block;
 
-    &::-webkit-scrollbar {
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+
+    main {
+        scrollbar-color: rgba(0, 29, 58, 0.18) transparent;
+        scrollbar-width: thin;
+    }
+
+    html,
+    body,
+    div,
+    span,
+    applet,
+    object,
+    iframe,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    blockquote,
+    pre,
+    a,
+    abbr,
+    acronym,
+    address,
+    big,
+    cite,
+    code,
+    del,
+    dfn,
+    em,
+    img,
+    ins,
+    kbd,
+    q,
+    s,
+    samp,
+    small,
+    strike,
+    strong,
+    sub,
+    sup,
+    tt,
+    var,
+    b,
+    u,
+    i,
+    center,
+    dl,
+    dt,
+    dd,
+    ol,
+    ul,
+    li,
+    fieldset,
+    form,
+    label,
+    legend,
+    table,
+    caption,
+    tbody,
+    tfoot,
+    thead,
+    tr,
+    th,
+    td,
+    article,
+    button,
+    aside,
+    canvas,
+    details,
+    embed,
+    figure,
+    figcaption,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    output,
+    ruby,
+    section,
+    summary,
+    time,
+    mark,
+    audio,
+    video {
+        font-size: inherit;
+        margin: 0;
+        padding: 0;
+        vertical-align: baseline;
+        color: inherit;
+        line-height: inherit;
+    }
+
+    /* HTML5 display-role reset for older browsers */
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    menu,
+    nav,
+    section {
+        display: block;
+    }
+
+    body {
+        font-size: 1.6rem;
+        line-height: 1;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    }
+
+    ol,
+    ul {
+        list-style: none;
+    }
+
+    blockquote,
+    q {
+        quotes: none;
+    }
+
+    blockquote:before,
+    blockquote:after,
+    q:before,
+    q:after {
+        content: "";
+        content: none;
+    }
+
+    audio {
         display: none;
     }
-}
 
-main {
-    scrollbar-color: rgba(0, 29, 58, 0.18) transparent;
-    scrollbar-width: thin;
-}
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
 
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-b,
-u,
-i,
-center,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td,
-article,
-button,
-aside,
-canvas,
-details,
-embed,
-figure,
-figcaption,
-footer,
-header,
-hgroup,
-menu,
-nav,
-output,
-ruby,
-section,
-summary,
-time,
-mark,
-audio,
-video {
-    font-size: var(--default-font-size);
-    margin: 0;
-    padding: 0;
-    vertical-align: baseline;
-    color: var(--main-text-color);
-    line-height: 1;
-}
+    input {
+        height: var(--input-height);
+        padding: var(--input-padding);
+    }
 
-/* HTML5 display-role reset for older browsers */
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-menu,
-nav,
-section {
-    display: block;
-}
+    a {
+        display: inline-block;
+        text-decoration: none;
+    }
 
-body {
-    font-size: 1.6rem;
-    line-height: 1;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
+    hr {
+        height: 4px;
+        background: var(--color-gray-200);
+    }
 
-ol,
-ul {
-    list-style: none;
-}
+    button {
+        cursor: pointer;
+        border: none;
+        padding: 0;
+        margin: 0;
+        background: none;
+    }
 
-blockquote,
-q {
-    quotes: none;
-}
-
-blockquote:before,
-blockquote:after,
-q:before,
-q:after {
-    content: "";
-    content: none;
-}
-
-audio {
-    display: none;
-}
-
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-input {
-    height: var(--input-height);
-    padding: var(--input-padding);
-}
-
-a {
-    display: inline-block;
-    text-decoration: none;
-}
-
-hr {
-    height: 0.1px;
-    background: var(--color-gray-200);
-}
-
-button {
-    cursor: pointer;
-    border: none;
-    padding: 0;
-    margin: 0;
-    background: none;
-}
-
-input {
-    &:focus {
-        outline: none;
+    input {
+        &:focus {
+            outline: none;
+        }
     }
 }
 ```
@@ -541,7 +544,7 @@ input {
     --custom-font: "SUIT";
     --root-font-size: 62.5%;
     --default-font-size: 1.6rem;
-    // --default-font-size: 1.4rem;
+    // --default-font-size: 1.6rem;
 
     --preview-font: "NanumMyeongjo";
     // --preview-font: "NanumMyeongjo";
@@ -606,7 +609,6 @@ input {
     // --color-red-500: #a51926;
 
     /* 블루 계열 색상 */
-    --color-blue-500: #00199f; /* 정보용으로 덮어쓰기된 값 */
     --color-blue-900: #1957c2;
     --color-blue-800: #1b64da;
     --color-blue-700: #2272eb;
@@ -633,39 +635,39 @@ input {
     --letter-line-height: 1.29;
 
     --tool-height: 4.8rem;
-    --tool-width: 24.2rem;
+    --tool-width: 24.4rem;
 
-    --preview-width: 37.5rem;
-    --preview-height: 66.7rem;
+    --preview-width: 37.6rem;
+    --preview-height: 66.8rem;
 
-    --modal-width: 46.2rem;
+    --modal-width: 46.4rem;
 
     /* 레이아웃 간격 */
     --section-space: 12.8rem;
     --between-space: 1.2rem;
 
     /* 입력 폼 */
-    --input-height: 4.2rem;
+    --input-height: 4.4rem;
     --input-padding: 0.4rem 0;
-    --input-date-width: 12.2rem;
+    --input-date-width: 12.4rem;
 
-    --shadow-normal: 0 20px 50px 0 var(--color-gray-400);
-    // --shadow-normal: inset 0 0 0 1px var(--color-gray-200), 0 20px 36px 0px #0000000d;
+    --shadow-normal: 0 20px 52px 0 var(--color-gray-400);
+    // --shadow-normal: inset 0 0 0 4px var(--color-gray-200), 0 20px 36px 0px #0000000d;
     --shadow-popup:
-        0 1px 1px 0.5px #2929290a, 0 3px 3px -1.5px #29292905, 0 6px 6px -3px #2929290a, 0 12px 12px -6px #2929290a, 0 24px 24px -12px #2929290a, 0 48px 48px -24px #5e5e6a94, 0 0 0 1px #2929290a,
-        inset 0 -1px 1px -0.5px #3333330f;
-    // --shadow-normal: 0 1px 1px 0.5px #2929290a,0 3px 3px -1.5px #29292905,0 6px 6px -3px #2929290a,0 12px 12px -6px #2929290a,0 24px 24px -12px #2929290a,0 48px 48px -24px #2929290a,0 0 0 1px #2929290a,inset 0 -1px 1px -0.5px #3333330f;
+        0 4px 4px 4px #2929290a, 0 4px 4px -4px #29292905, 0 8px 8px -4px #2929290a, 0 12px 12px -8px #2929290a, 0 24px 24px -12px #2929290a, 0 48px 48px -24px #5e5e6a94, 0 0 0 4px #2929290a,
+        inset 0 -4px 4px -4px #3333330f;
+    // --shadow-normal: 0 4px 4px 4px #2929290a,0 4px 4px -4px #29292905,0 8px 8px -4px #2929290a,0 12px 12px -8px #2929290a,0 24px 24px -12px #2929290a,0 48px 48px -24px #2929290a,0 0 0 4px #2929290a,inset 0 -4px 4px -4px #3333330f;
     --shadow-hard:
-        inset 0 0 0 4px var(--color-gray-500), 0 19px 8px #731f0803, 0 11px 6px #731f080a, 0 5px 5px #731f0812, 0 1px 3px #731f0814, 0 0 0 2px var(--color-gray-200), inset 0 0.5px 0.5px #ffffff1f;
+        inset 0 0 0 4px var(--color-gray-500), 0 20px 8px #731f0803, 0 12px 8px #731f080a, 0 4px 4px #731f0812, 0 4px 4px #731f0814, 0 0 0 4px var(--color-gray-200), inset 0 4px 4px #ffffff1f;
 
-    --shadow-border-normal: inset 0 0 0 1px var(--color-gray-200);
-    --shadow-border-hover: inset 0 0 0 3px var(--color-blue-300);
-    --shadow-border-fail-normal: inset 0 0 0 1px var(--color-red-500);
-    --shadow-border-fail-hover: inset 0 0 0 3px var(--color-red-500);
-    --shadow-border-brand: inset 0 0 0 1px var(--color-brand-500);
+    --shadow-border-normal: inset 0 0 0 4px var(--color-gray-200);
+    --shadow-border-hover: inset 0 0 0 4px var(--color-blue-300);
+    --shadow-border-fail-normal: inset 0 0 0 4px var(--color-red-500);
+    --shadow-border-fail-hover: inset 0 0 0 4px var(--color-red-500);
+    --shadow-border-brand: inset 0 0 0 4px var(--color-brand-500);
 
     --shadow-brand-hard:
-        inset 0 0 0 4px var(--color-brand-500), 0 19px 8px #731f0803, 0 11px 6px #731f080a, 0 5px 5px #731f0812, 0 1px 3px #731f0814, 0 0 0 1px var(--color-brand-500), inset 0 0.5px 0.5px #ffffff1f;
+        inset 0 0 0 4px var(--color-brand-500), 0 20px 8px #731f0803, 0 12px 8px #731f080a, 0 4px 4px #731f0812, 0 4px 4px #731f0814, 0 0 0 4px var(--color-brand-500), inset 0 4px 4px #ffffff1f;
 
     --empty-element-height: calc(1.6rem * 15);
     --empty-action-height: calc(1.6rem * 3);
@@ -674,19 +676,19 @@ input {
 
     /* 버튼 크기 */
     --button-sm-height: 3.2rem;
-    --button-sm-padding: 0.2rem 0.4rem;
+    --button-sm-padding: 0.4rem 0.4rem;
 
-    --button-md-height: 3.4rem;
-    --button-md-padding: 0.2rem 1.2rem;
+    --button-md-height: 3.6rem;
+    --button-md-padding: 0.4rem 1.2rem;
 
-    --button-lg-height: 5rem;
-    --button-lg-padding: 1.2rem 1.8rem;
+    --button-lg-height: 5.2rem;
+    --button-lg-padding: 1.2rem 2rem;
 
     /* 버튼 크기 */
     --button-height-xxs: 2rem;
     --button-height-xs: 2.8rem;
-    --button-height-sm: 3.4rem;
-    --button-height-md: 4.2rem;
+    --button-height-sm: 3.6rem;
+    --button-height-md: 4.4rem;
     --button-height-lg: 4.8rem;
 
     /* 반응형 사이즈 */
@@ -697,7 +699,7 @@ input {
     --size-phablet: 512px;
     --size-mobile: 376px;
     --sidebar-sub-width: calc(1.6rem * 18);
-    // --sidebar-sub-width: 28.6rem;
+    // --sidebar-sub-width: 28.8rem;
 
     /* 라이브러리 관련 */
     --toastify-toast-min-height: auto !important;
@@ -717,7 +719,7 @@ input {
 - entities/{domain}/api/\*.api.ts 에서 `fetch` 직접 호출
 - entities/{domain}/api/\*.query.ts 에 인증/에러/HTTP 로직 혼합
 - shared/lib/api 외 다른 공통 HTTP 유틸, axios wrapper, fetch wrapper 생성
-- `*.api.ts`, `*.query.ts`, `*.type.ts`에서 `Fetch` / `Query` / `Payload` / `Response` suffix 규칙을 어기는 임의 네이밍
+- 도메인 API 함수, query 훅, 요청/응답 타입에서 `Fetch` / `Query` / `Payload` / `Response` suffix 규칙을 어기는 임의 네이밍 (정적 도메인 모델과 shared wrapper 내부 타입은 적용 대상 아님)
 - ui 섹션에 페이지 공유 상태(useState) — PageProvider/model로 이동
 - 모든 페이지 ui 파일명 Title/Status/Analysis 획일화
 - useSearch 등 예시 훅 이름 기계 복붙
@@ -727,7 +729,8 @@ input {
 - Panel 파일 안에 `EstimatePage`처럼 **내부 서브 컴포넌트를 만들어 섹션 조립을 숨기는 패턴** (섹션은 `ui/`에 두고 Panel이 `Layer.*`로 직접 나열)
 - Modal 없는 빈 scaffold 생성
 - 테스트용 state/hook 없이 껍데기 파일만 만드는 방식
-- UI 스타일을 인라인 CSS·별도 CSS 모듈·임의 SCSS로 새로 작성 (공통 base/abstracts 초기 세팅 제외)
+- 정적 UI 스타일을 인라인 CSS·별도 CSS 모듈·임의 SCSS로 새로 작성 (공통 base/abstracts 초기 세팅 제외)
+- 동적 스타일 예외는 런타임 측정값, 컴포넌트 API로 전달받는 색상·스타일, CSS 변수, GSAP/Motion/WebGL의 애니메이션 제어값에 한정한다. 고정된 레이아웃·색상·폰트 선언은 Tailwind에 둔다.
 - `mobile:` / `tablet:` / `pc:` 이외의 반응형 프리픽스 사용 (`sm`/`md`/`lg`/`xl`/`2xl`, `compact`/`site`/`wide`/`phablet`, `max-compact`/`max-site`/`max-wide`, 기타 `max-*`)
 - 구 max-width 클래스를 새 이름으로만 바꿔 두는 1:1 치환 (반드시 mobile-first로 재작성)
 - `@theme` 또는 globals에 구 브레이크포인트 변수(`--breakpoint-sm`~`2xl`, `--breakpoint-compact`/`site`/`wide` 등)를 남기거나 추가

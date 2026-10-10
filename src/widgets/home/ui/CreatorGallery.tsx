@@ -32,7 +32,7 @@ export function CreatorGallery() {
     return (
         <section
             ref={sectionRef}
-            className="creator-gallery relative z-10 bg-white [&.is-gallery-reveal]:-mt-[100svh]"
+            className="creator-gallery relative z-10 bg-white data-[gallery-reveal=true]:-mt-[100svh]"
             aria-labelledby="home-gallery-title"
         >
             <h2
@@ -42,12 +42,14 @@ export function CreatorGallery() {
                 당신의 무대가 넓어지는 순간
             </h2>
             <div
+                data-gallery-target
                 data-gallery-stage
-                className="relative overflow-hidden px-5 py-18 [.is-gallery_&]:h-svh [.is-gallery_&]:p-0"
+                className="relative overflow-hidden px-5 py-18 data-[gallery=true]:h-svh data-[gallery=true]:p-0"
             >
                 <div
+                    data-gallery-target
                     data-gallery-lead
-                    className="relative z-20 mx-auto aspect-[16/10] w-full max-w-330 overflow-hidden rounded-[2rem] [.is-gallery_&]:absolute [.is-gallery_&]:left-1/2 [.is-gallery_&]:top-1/2 [.is-gallery_&]:m-0 [.is-gallery_&]:aspect-auto [.is-gallery_&]:max-w-none"
+                    className="relative z-20 mx-auto aspect-[16/10] w-full max-w-330 overflow-hidden rounded-[2rem] data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:aspect-auto data-[gallery=true]:max-w-none"
                 >
                     <Image
                         src="/images/landing/studio3.jpg"
@@ -55,7 +57,7 @@ export function CreatorGallery() {
                         fill
                         sizes="100vw"
                         loading="eager"
-                        className="object-cover filter-none!"
+                        className="object-cover filter-none! grayscale"
                     />
                     <div
                         data-gallery-shade
@@ -66,52 +68,56 @@ export function CreatorGallery() {
                         data-gallery-copy
                         data-reveal
                         aria-hidden="true"
-                        className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-balance break-keep text-2xl font-[580] leading-[1.3] tracking-[-0.04em] text-white site:text-6xl xl:text-[7.2rem]"
+                        className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white break-keep text-2xl tablet:text-6xl pc:text-[7.2rem] font-[580] leading-[1.3] tracking-[-0.04em]"
                     >
                         <span>당신의 색깔이 빛나고,</span>
                         <span>당신의 무대가 넓어지는 곳.</span>
                     </p>
                 </div>
                 <div
+                    data-gallery-target
                     data-gallery-top
-                    className="mx-auto mt-6 grid max-w-330 grid-cols-2 gap-6 [.is-gallery_&]:absolute [.is-gallery_&]:left-1/2 [.is-gallery_&]:top-1/2 [.is-gallery_&]:m-0 [.is-gallery_&]:flex [.is-gallery_&]:max-w-none [.is-gallery_&]:gap-[var(--gallery-gap)]"
+                    className="mx-auto mt-6 grid max-w-330 grid-cols-2 gap-6 data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:flex data-[gallery=true]:max-w-none data-[gallery=true]:gap-[var(--gallery-gap)]"
                 >
                     {TOP_IMAGES.map((image) => (
                         <div
+                            data-gallery-target
                             key={image?.src ?? "lead-slot"}
                             data-gallery-side={image ? "" : undefined}
                             data-reveal={image ? "" : undefined}
                             aria-hidden={image ? undefined : true}
-                            className={`${image ? "relative" : "hidden [.is-gallery_&]:block"} aspect-[3/2] overflow-hidden rounded-[2rem] [.is-gallery_&]:h-[var(--gallery-card-height)] [.is-gallery_&]:w-[var(--gallery-card-width)] [.is-gallery_&]:shrink-0`}
+                            className={`aspect-[3/2] overflow-hidden rounded-[2rem] data-[gallery=true]:h-[var(--gallery-card-height)] data-[gallery=true]:w-[var(--gallery-card-width)] data-[gallery=true]:shrink-0 ${image ? "relative" : "hidden data-[gallery=true]:block"} `}
                         >
                             {image ? (
                                 <Image
                                     src={image.src}
                                     alt={image.alt}
                                     fill
-                                    sizes="(min-width: 900px) 29vw, 50vw"
-                                    className="object-cover filter-none!"
+                                    sizes="(min-width: 48rem) 29vw, 50vw"
+                                    className="object-cover filter-none! grayscale"
                                 />
                             ) : null}
                         </div>
                     ))}
                 </div>
                 <div
+                    data-gallery-target
                     data-gallery-bottom
-                    className="mx-auto mt-6 grid max-w-330 grid-cols-2 gap-6 [.is-gallery_&]:absolute [.is-gallery_&]:left-1/2 [.is-gallery_&]:top-1/2 [.is-gallery_&]:m-0 [.is-gallery_&]:flex [.is-gallery_&]:max-w-none [.is-gallery_&]:gap-[var(--gallery-gap)]"
+                    className="mx-auto mt-6 grid max-w-330 grid-cols-2 gap-6 data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:flex data-[gallery=true]:max-w-none data-[gallery=true]:gap-[var(--gallery-gap)]"
                 >
                     {BOTTOM_IMAGES.map((image) => (
                         <div
+                            data-gallery-target
                             key={image.src}
                             data-reveal
-                            className="relative aspect-[3/2] overflow-hidden rounded-[2rem] [.is-gallery_&]:h-[var(--gallery-small-height)] [.is-gallery_&]:w-[var(--gallery-small-width)] [.is-gallery_&]:shrink-0"
+                            className="relative aspect-[3/2] overflow-hidden rounded-[2rem] data-[gallery=true]:h-[var(--gallery-small-height)] data-[gallery=true]:w-[var(--gallery-small-width)] data-[gallery=true]:shrink-0"
                         >
                             <Image
                                 src={image.src}
                                 alt={image.alt}
                                 fill
-                                sizes="(min-width: 900px) 20vw, 50vw"
-                                className="object-cover filter-none!"
+                                sizes="(min-width: 48rem) 20vw, 50vw"
+                                className="object-cover filter-none! grayscale"
                             />
                         </div>
                     ))}

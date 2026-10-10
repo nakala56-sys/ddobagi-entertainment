@@ -155,7 +155,12 @@ function LineOverlay({ highlightColor, index, line, progress, revealColor, softn
                     maskImage: revealMask,
                 }}
             >
-                <span className={`inline-block`} style={{ paddingInline: softness }}>{line.text}</span>
+                <span
+                    className={`inline-block`}
+                    style={{ paddingInline: softness }}
+                >
+                    {line.text}
+                </span>
             </motion.span>
             <motion.span
                 className="absolute inset-0 block"
@@ -165,7 +170,12 @@ function LineOverlay({ highlightColor, index, line, progress, revealColor, softn
                     maskImage: highlightMask,
                 }}
             >
-                <span className={`inline-block`} style={{ paddingInline: softness }}>{line.text}</span>
+                <span
+                    className={`inline-block`}
+                    style={{ paddingInline: softness }}
+                >
+                    {line.text}
+                </span>
             </motion.span>
         </span>
     );
@@ -418,13 +428,11 @@ const Rolling = ({
             aria-label={ariaLabel}
             data-value={value}
             ref={containerRef}
-
         >
             {guide.front ? (
                 <motion.p
                     layout
                     className={`${className.guide?.front ?? ""}  ${size.fontClass}`}
-
                 >
                     {guide.front}
                 </motion.p>
@@ -437,7 +445,6 @@ const Rolling = ({
                             <motion.p
                                 layout
                                 className={`${className?.text ?? ""} ${size.fontClass}`}
-
                             >
                                 ,
                             </motion.p>
@@ -464,7 +471,6 @@ const Rolling = ({
                 <motion.p
                     layout
                     className={`${className.guide?.back ?? ""} ${size.fontClass}`}
-
                 >
                     {guide.back}
                 </motion.p>
@@ -505,7 +511,6 @@ const NumberColumn = ({ active, digit, className, initialDigit, rollingCount, si
                     <p
                         key={index}
                         className={`${className} text-center ${size.fontClass} ${size.heightClass} ${size.lineHeightClass}`}
-
                     >
                         {number}
                     </p>
@@ -538,7 +543,6 @@ const TextShimmer = ({
     },
     duration = 2,
 }: TextShimmerProps) => {
-
     return (
         <Component
             ref={null}
@@ -555,15 +559,7 @@ function wrap(min: number, max: number, value: number) {
     return ((((value - min) % range) + range) % range) + min;
 }
 
-function TextMarquee({
-    children,
-    className = "",
-    contentClassName = "",
-    direction = "left",
-    interaction = false,
-    repeat = 4,
-    speed = 40,
-}: TextMarqueeProps) {
+function TextMarquee({ children, className = "", contentClassName = "", direction = "left", interaction = false, repeat = 4, speed = 40 }: TextMarqueeProps) {
     const baseX = useMotionValue(0);
     const { scrollY } = useScroll();
     const scrollVelocity = useVelocity(scrollY);

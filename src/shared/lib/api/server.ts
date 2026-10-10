@@ -1,29 +1,29 @@
 import { NextResponse } from "next/server";
 import type { ApiResponse } from "@/shared/lib/api/client";
+import { getSiteUrl } from "@/shared/lib/siteUrl";
+import { readApiResponse } from "./error";
 
 type ServerFetchOptions = Omit<RequestInit, "body"> & {
     body?: unknown;
 };
 
-import { getSiteUrl } from "@/shared/lib/siteUrl";
-
 export async function serverFetch<T>(url: string, options: ServerFetchOptions = {}): Promise<T> {
     const target = url.startsWith("http") ? url : `${getSiteUrl()}${url}`;
-    const response = await fetch(target, {
-        ...options,
-        headers: {
-            "Content-Type": "application/json",
-            ...(options.headers ?? {}),
-        },
-        body: options.body === undefined ? undefined : JSON.stringify(options.body),
-    });
-    const data = await response.json().catch(() => null);
-
-    if (!response.ok) {
-        throw new Error(data?.message ?? "서버 API 요청에 실패했습니다.");
+    const headers = new Headers(options.headers);
+    const isFormData = options.body instanceof FormData;
+    if (!isFormData && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+    try {
+        const response = await fetch(target, {
+            ...options,
+            headers,
+            body: options.body === undefined ? undefined : isFormData ? (options.body as FormData) : JSON.stringify(options.body),
+        });
+        return await readApiResponse<T>(response);
+    } catch (error) {
+        const normalized = error instanceof Error ? error : new Error("서버 API 요청에 실패했습니다.");
+        console.error("[serverFetch]", normalized);
+        throw normalized;
     }
-
-    return data as T;
 }
 
 export function apiOk<T>(data: T, init?: ResponseInit) {
