@@ -239,20 +239,19 @@ function finalCta(root: HTMLElement): Cleanup {
 
         let startRadius = 0;
         let endRadius = 0;
-        let frequency = 0;
         const measure = () => {
             const width = window.innerWidth;
             const height = window.innerHeight;
             const size = Math.min(width, height);
             const grid = (value: number) => Math.max(4, Math.round(value / 4) * 4);
-            // Broad, low-frequency drift and a viewport-scaled feather dissolve the rim.
+            // Keep the soft rim without scaling blur cost indefinitely on large screens.
             const drift = grid(size * 0.22);
-            const softness = grid(height * 0.14);
-            const margin = drift + softness * 4;
+            const softness = grid(Math.min(height * 0.08, 80));
+            // Displacement reaches half its scale; three blur deviations pad the visible rim.
+            const margin = grid(drift * 0.5 + softness * 3);
             const centerY = height + width * 0.6;
             startRadius = Math.max(0, centerY - height - margin);
             endRadius = Math.hypot(width / 2, centerY) + margin;
-            frequency = 0.9 / size;
             svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
             circle.setAttribute("cx", String(width / 2));
             circle.setAttribute("cy", String(centerY));
@@ -261,6 +260,8 @@ function finalCta(root: HTMLElement): Cleanup {
             filter.setAttribute("y", String(-margin));
             filter.setAttribute("width", String(width + margin * 2));
             filter.setAttribute("height", String(height + margin * 2));
+            // Keep noise frequency fixed while the circle expands.
+            noise.setAttribute("baseFrequency", String(0.9 / size));
             displacement.setAttribute("scale", String(drift));
             blur.setAttribute("stdDeviation", String(softness));
         };
@@ -273,9 +274,7 @@ function finalCta(root: HTMLElement): Cleanup {
             end: "top top",
             scrub: 1.6,
             onRefreshInit: measure,
-        })
-            .fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0)
-            .fromTo(noise, { attr: { baseFrequency: () => frequency } }, { attr: { baseFrequency: () => frequency * 1.3 }, duration: 1, ease: SHIMMER_EASE }, 0);
+        }).fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0);
 
         revealElement(content);
     });
