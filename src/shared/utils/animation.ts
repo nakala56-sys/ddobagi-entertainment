@@ -138,7 +138,7 @@ function creatorGallery(root: HTMLElement): Cleanup {
         const sides = root.querySelectorAll<HTMLElement>("[data-gallery-side]");
         if (!stage || !lead || !top || !bottom || !copy || !shade) return;
 
-        const cover = root.previousElementSibling?.matches("[data-gallery-cover]") ? root.previousElementSibling : null;
+        const cover = root.previousElementSibling?.matches("[data-gallery-cover-anchor]") ? root.previousElementSibling : null;
         setSectionState(root, "gallery", true);
         if (cover) {
             setSectionState(cover, "gallery-cover", true);
