@@ -21,8 +21,9 @@ export default function Panel() {
                 {/* <Layer.BrandIntro /> */}
                 <Layer.BeliefMoments />
                 <Layer.SupportOverview />
-                <Layer.StudioPreview />
-                <Layer.CreatorStories />
+                <Layer.CreatorGallery />
+                {/* <Layer.StudioPreview /> */}
+                {/* <Layer.CreatorStories /> */}
                 <Layer.FinalCta />
             </div>
             <Layer.Modal />

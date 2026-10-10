@@ -115,6 +115,598 @@ src/widgets/{route}/
 - `Panel.tsx`는 기본적으로 `<Layer.Modal />`을 포함해야 한다
 - 테스트만 가능한 초기 상태라도 바로 렌더 가능한 더미 섹션을 만들어 구조를 비워두지 않는다
 
+### 스타일 / 디자인
+- Tailwind CSS를 100% 활용한다. 컴포넌트·섹션 UI 스타일은 Tailwind 유틸리티 클래스로 작성한다
+- 기존에 CSS/SCSS로 작성된 스타일은 Tailwind CSS로 전환한다 (공통 base/abstracts 초기 세팅 제외)
+- 프로젝트 루트 `.prettierrc`를 반드시 준수한다 (semi, trailingComma, printWidth, tabWidth, bracketSpacing, arrowParens, singleAttributePerLine, bracketSameLine 등)
+- 간격·크기·타이포 수치에 **4배수 디자인**을 100% 준수한다 (예: 4, 8, 12, 16… / rem 기준 0.4rem, 0.8rem, 1.2rem, 1.6rem…)
+- 브레이크포인트는 `src/shared/styles/global.css`의 `@theme`에 정의하고, 이 값만 사용한다:
+
+```css
+@theme {
+    --breakpoint-mobile: 9.375rem; /* 344px 이상 */
+    --breakpoint-tablet: 48rem; /* 768px 이상 */
+    --breakpoint-pc: 90rem; /* 1440px 이상 */
+}
+```
+
+- 반응형 유틸리티 프리픽스는 **`mobile:` / `tablet:` / `pc:`만 100% 사용**한다. 예: `mobile:flex`, `tablet:block`, `pc:grid`
+- 반응형은 **mobile-first (min-width)** 로 작성한다. 기본 클래스 = 가장 좁은 화면, `tablet:` / `pc:`로 커질수록 덮어쓴다
+- `@theme`에는 `--breakpoint-mobile` / `--breakpoint-tablet` / `--breakpoint-pc`만 둔다. 그 외 브레이크포인트 변수·커스텀 variant를 추가하거나 남겨두지 않는다
+- `src/app/globals.css` 등에 남아 있는 구 브레이크포인트 정의(`--breakpoint-sm`~`2xl`, `--breakpoint-compact`/`site`/`wide` 등)는 제거하고, 반응형 정의는 `src/shared/styles/global.css` `@theme`로 단일화한다
+
+#### 반응형 — 금지 프리픽스 (현재 프로젝트에서 발견·전환 필수)
+아래 프리픽스는 **전부 제거**하고 `mobile:` / `tablet:` / `pc:`로 재작성한다. 이름만 바꾸는 1:1 치환 금지.
+
+| 금지 (구) | 비고 |
+| --------- | ---- |
+| `sm:` `md:` `lg:` `xl:` `2xl:` | Tailwind 기본 |
+| `compact:` `site:` `wide:` `phablet:` | 프로젝트 구 커스텀 (min-width) |
+| `max-compact:` `max-site:` `max-wide:` | 프로젝트 구 커스텀 (max-width) |
+| 기타 `max-*:` 반응형 프리픽스 | max-width variant 일체 |
+
+#### 반응형 — 전환 매핑 (참고)
+정확한 px가 달라도 **의도(좁음/중간/넓음)** 를 아래 3단으로 합친다.
+
+| 구 프리픽스 의도 | 새 프리픽스 |
+| ---------------- | ----------- |
+| `compact:` / `max-compact:` / `sm:` / `phablet:` 근처 | `mobile:` (또는 기본 클래스) |
+| `site:` / `max-site:` / `md:` / `lg:` 근처 | `tablet:` |
+| `wide:` / `max-wide:` / `xl:` / `2xl:` / PC 레이아웃 | `pc:` |
+
+#### 반응형 — 재작성 예시 (MUST)
+`max-*`는 “이하에서 적용”이므로, mobile-first로 **기본값 ↔ 큰 화면** 순서를 뒤집어 다시 쓴다.
+
+```tsx
+// ❌ 구 (max-width 스택)
+className="grid grid-cols-3 max-site:grid-cols-2 max-compact:grid-cols-1"
+
+// ✅ 신 (mobile-first, 허용 프리픽스만)
+className="grid grid-cols-1 tablet:grid-cols-2 pc:grid-cols-3"
+```
+
+```tsx
+// ❌ 구
+className="py-30 max-site:py-18 flex max-site:flex-col site:text-5xl xl:text-[8rem]"
+
+// ✅ 신
+className="py-18 tablet:py-30 flex flex-col tablet:flex-row text-[4rem] tablet:text-5xl pc:text-[8rem]"
+```
+
+#### 자식 선택자 arbitrary variant — 사용 금지 (MUST)
+프로젝트 정리 시 부모 `className`에서 자식을 겨냥하는 arbitrary variant를 **쓰지 않는다**. 스타일은 **해당 요소에 직접** `className`으로 부여한다.
+
+| 금지 패턴 | 예시 |
+| --------- | ---- |
+| 자식 타겟 `[&_tag]:` / `[&_tag_…]:` | `[&_h3]:`, `[&_p]:`, `[&_nav]:`, `[&_a]:`, `[&_span]:` |
+| 조상/컨텍스트 `[_&]:` / `[.class_&]:` | `[.section-dark_&]:`, `[.is-horizontal_&]:`, `[.split-copy_&]:` |
+| 반응형과 결합된 자식 variant | `tablet:[&_h3]:text-lg`, `max-site:[&_p]:text-xs` |
+
+`hover:` / `focus:` / `disabled:` / `aria-*:` 같은 **자기 자신 상태** variant는 허용한다. 금지 대상은 **다른 요소를 선택자로 찌르는** 패턴이다.
+
+```tsx
+// ❌ 구 — 부모에서 자식 스타일링
+<article className="[&_h3]:mt-8 [&_h3]:text-2xl [&_p]:text-base [&_p]:mt-4">
+    <h3>{title}</h3>
+    <p>{desc}</p>
+</article>
+
+// ✅ 신 — 각 요소에 직접 className
+<article>
+    <h3 className="mt-8 text-2xl">{title}</h3>
+    <p className="mt-4 text-base">{desc}</p>
+</article>
+```
+
+```tsx
+// ❌ 구
+<div className="max-site:[&_h3]:text-lg tablet:[&_p]:text-xs">...</div>
+
+// ✅ 신 — 반응형도 해당 태그에 직접
+<div>
+    <h3 className="text-base tablet:text-lg">...</h3>
+    <p className="text-xs tablet:text-sm">...</p>
+</div>
+```
+
+- 초기 스타일 세팅은 SCSS로 구성한다. 아래 3개 파일은 **내용을 그대로** 생성한다 (축약·임의 작성 금지)
+- `src/shared/styles/index.scss`는 아래 구조로 세팅한다:
+
+```scss
+// base 초기 세팅 스타일
+@use "base/fonts";
+@use "base/resets";
+
+// abstracts 전역변수
+@use "abstracts/variables";
+```
+
+- `src/shared/styles/base/Fonts.scss` — 아래 내용을 그대로 생성:
+
+```scss
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-Thin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-ExtraLight.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-Light.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-Regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-Medium.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-SemiBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-Bold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-ExtraBold.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: 'SUIT';
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+  src: url("/fonts/suit/woff2/SUIT-Heavy.woff2") format("woff2");
+}
+```
+
+- `src/shared/styles/base/Resets.scss` — 아래 내용을 그대로 생성:
+
+```scss
+:root {
+    // 초기 설정
+    font-family:
+        var(--custom-font),
+        -apple-system,
+        BlinkMacSystemFont,
+        "Malgun Gothic",
+        "맑은 고딕",
+        helvetica,
+        "Apple SD Gothic Neo",
+        sans-serif;
+    font-size: var(--root-font-size);
+    font-weight: 600;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    background: var(--color-background-light);
+
+    color: var(--color-gray-1000);
+}
+
+html {
+    line-height: 1.25; /* 1 */
+    -webkit-text-size-adjust: 100%; /* 2 */
+    max-width: 100%;
+    background: var(--color-background-light);
+    scrollbar-width: none;
+}
+
+::selection {
+    background: var(--color-brand-100);
+    color: var(--color-brand-700);
+}
+
+* {
+    scrollbar-width: thin;
+    box-sizing: border-box;
+}
+
+body {
+    position: relative;
+    // overflow-y: hidden;
+    min-height: 100dvh;
+    width: 100%;
+    background-color: var(--color-background-light);
+
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+main {
+    scrollbar-color: rgba(0, 29, 58, 0.18) transparent;
+    scrollbar-width: thin;
+}
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+button,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+    font-size: var(--default-font-size);
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+    color: var(--main-text-color);
+    line-height: 1;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+    display: block;
+}
+
+body {
+    font-size: 1.6rem;
+    line-height: 1;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+blockquote,
+q {
+    quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+    content: "";
+    content: none;
+}
+
+audio {
+    display: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+input {
+    height: var(--input-height);
+    padding: var(--input-padding);
+}
+
+a {
+    display: inline-block;
+    text-decoration: none;
+}
+
+hr {
+    height: 0.1px;
+    background: var(--color-gray-200);
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background: none;
+}
+
+input {
+    &:focus {
+        outline: none;
+    }
+}
+```
+
+- `src/shared/styles/abstracts/Variables.scss` — 아래 내용을 그대로 생성:
+
+```scss
+:root {
+    /* 폰트 */
+    --custom-font: "SUIT";
+    --root-font-size: 62.5%;
+    --default-font-size: 1.6rem;
+    // --default-font-size: 1.4rem;
+
+    --preview-font: "NanumMyeongjo";
+    // --preview-font: "NanumMyeongjo";
+
+    /* 배경 색상 */
+    --color-background-light: #ffffff;
+    --color-background-outside: #ffffff;
+    --color-background-normal: white;
+    --color-background-funnel: #ffffff;
+
+    /* 텍스트 색상 */
+    --color-main-text-light: var(--color-gray-800);
+
+    /* 브랜드 색상 */
+    --color-brand-900: #095eb9;
+    --color-brand-800: #1870c5;
+    --color-brand-700: #2982d1;
+    --color-brand-600: #3b92dd;
+    --color-brand-500: #3c9aff; /* 기본 강조색 */
+    --color-brand-400: #5aaaff;
+    --color-brand-300: #83c1ff;
+    --color-brand-200: #b0d8ff;
+    --color-brand-100: #eaf1ff; /* 부드러운 배경용 */
+    --color-brand-50: #f4f7ff; /* 거의 흰색에 가까운 파랑기 배경 */
+
+    /* 그레이 색상 */
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f2f4f6;
+    --color-gray-200: #e5e8eb;
+    --color-gray-300: #d1d6db;
+    --color-gray-400: #b0b8c1;
+    --color-gray-500: #8b95a1;
+    --color-gray-600: #6b7684;
+    --color-gray-700: #4e5968;
+    --color-gray-800: #333d4b;
+    --color-gray-900: #191f28;
+    --color-gray-1000: #000000;
+
+    /* 동의 색상 (그린) */
+    --color-green-50: #f0faf6;
+    --color-green-100: #aeefd5;
+    --color-green-200: #76e4b8;
+    --color-green-300: #3fd599;
+    --color-green-400: #15c47e;
+    --color-green-500: #03b26c;
+    --color-green-600: #02a262;
+    --color-green-700: #029359;
+    --color-green-800: #028450;
+    --color-green-900: #027648;
+
+    /* 부정 색상 (레드) */
+    --color-red-50: #ffeeee;
+    --color-red-100: #ffd4d6;
+    --color-red-200: #feafb4;
+    --color-red-300: #fb8890;
+    --color-red-400: #f66570;
+    --color-red-500: #f04452;
+    --color-red-600: #e42939;
+    --color-red-700: #d22030;
+    --color-red-800: #bc1b2a;
+    --color-red-900: #a51926;
+    // --color-red-500: #a51926;
+
+    /* 블루 계열 색상 */
+    --color-blue-500: #00199f; /* 정보용으로 덮어쓰기된 값 */
+    --color-blue-900: #1957c2;
+    --color-blue-800: #1b64da;
+    --color-blue-700: #2272eb;
+    --color-blue-600: #3182f6; /* 메인 블루: 중간 */
+    --color-blue-500: #4593fc;
+    --color-blue-400: #64a8ff;
+    --color-blue-300: #90c2ff;
+    --color-blue-200: #c9e2ff;
+    --color-blue-100: #e8f3ff;
+    --color-blue-50: #f4f7ff; /* 가장 밝은 블루 */
+
+    /* 경고 색상 (오렌지) */
+    --color-orange-900: #a33100;
+    --color-orange-500: #ff7337;
+    --color-orange-50: #fff4ef;
+
+    /* 헤더, 푸터, 배너 크기 */
+    --button-height: 4rem;
+    --button-min-height: 3.2rem;
+    --nav-height: 5.2rem;
+    --header-height: 4.8rem;
+    --notice-height: 4rem;
+    --footer-height: calc(1.6rem * 8);
+    --letter-line-height: 1.29;
+
+    --tool-height: 4.8rem;
+    --tool-width: 24.2rem;
+
+    --preview-width: 37.5rem;
+    --preview-height: 66.7rem;
+
+    --modal-width: 46.2rem;
+
+    /* 레이아웃 간격 */
+    --section-space: 12.8rem;
+    --between-space: 1.2rem;
+
+    /* 입력 폼 */
+    --input-height: 4.2rem;
+    --input-padding: 0.4rem 0;
+    --input-date-width: 12.2rem;
+
+    --shadow-normal: 0 20px 50px 0 var(--color-gray-400);
+    // --shadow-normal: inset 0 0 0 1px var(--color-gray-200), 0 20px 36px 0px #0000000d;
+    --shadow-popup:
+        0 1px 1px 0.5px #2929290a, 0 3px 3px -1.5px #29292905, 0 6px 6px -3px #2929290a, 0 12px 12px -6px #2929290a, 0 24px 24px -12px #2929290a, 0 48px 48px -24px #5e5e6a94, 0 0 0 1px #2929290a,
+        inset 0 -1px 1px -0.5px #3333330f;
+    // --shadow-normal: 0 1px 1px 0.5px #2929290a,0 3px 3px -1.5px #29292905,0 6px 6px -3px #2929290a,0 12px 12px -6px #2929290a,0 24px 24px -12px #2929290a,0 48px 48px -24px #2929290a,0 0 0 1px #2929290a,inset 0 -1px 1px -0.5px #3333330f;
+    --shadow-hard:
+        inset 0 0 0 4px var(--color-gray-500), 0 19px 8px #731f0803, 0 11px 6px #731f080a, 0 5px 5px #731f0812, 0 1px 3px #731f0814, 0 0 0 2px var(--color-gray-200), inset 0 0.5px 0.5px #ffffff1f;
+
+    --shadow-border-normal: inset 0 0 0 1px var(--color-gray-200);
+    --shadow-border-hover: inset 0 0 0 3px var(--color-blue-300);
+    --shadow-border-fail-normal: inset 0 0 0 1px var(--color-red-500);
+    --shadow-border-fail-hover: inset 0 0 0 3px var(--color-red-500);
+    --shadow-border-brand: inset 0 0 0 1px var(--color-brand-500);
+
+    --shadow-brand-hard:
+        inset 0 0 0 4px var(--color-brand-500), 0 19px 8px #731f0803, 0 11px 6px #731f080a, 0 5px 5px #731f0812, 0 1px 3px #731f0814, 0 0 0 1px var(--color-brand-500), inset 0 0.5px 0.5px #ffffff1f;
+
+    --empty-element-height: calc(1.6rem * 15);
+    --empty-action-height: calc(1.6rem * 3);
+    --empty-filter-height: calc(1.6rem * 2);
+    --empty-pagination-height: calc(1.6rem * 2);
+
+    /* 버튼 크기 */
+    --button-sm-height: 3.2rem;
+    --button-sm-padding: 0.2rem 0.4rem;
+
+    --button-md-height: 3.4rem;
+    --button-md-padding: 0.2rem 1.2rem;
+
+    --button-lg-height: 5rem;
+    --button-lg-padding: 1.2rem 1.8rem;
+
+    /* 버튼 크기 */
+    --button-height-xxs: 2rem;
+    --button-height-xs: 2.8rem;
+    --button-height-sm: 3.4rem;
+    --button-height-md: 4.2rem;
+    --button-height-lg: 4.8rem;
+
+    /* 반응형 사이즈 */
+    --size-pc-full-hd: 1920px;
+    --size-pc-wide: 1440px;
+    --size-pc: 1024px;
+    --size-tablet: 768px;
+    --size-phablet: 512px;
+    --size-mobile: 376px;
+    --sidebar-sub-width: calc(1.6rem * 18);
+    // --sidebar-sub-width: 28.6rem;
+
+    /* 라이브러리 관련 */
+    --toastify-toast-min-height: auto !important;
+
+    /* 스크롤 탑 위치 */
+    --scroll-top: 0;
+}
+```
+
 ## MUST NOT (금지)
 
 - page.tsx에서 widgets/ui/features 직접 렌더 (View 경유 필수)
@@ -135,6 +727,15 @@ src/widgets/{route}/
 - Panel 파일 안에 `EstimatePage`처럼 **내부 서브 컴포넌트를 만들어 섹션 조립을 숨기는 패턴** (섹션은 `ui/`에 두고 Panel이 `Layer.*`로 직접 나열)
 - Modal 없는 빈 scaffold 생성
 - 테스트용 state/hook 없이 껍데기 파일만 만드는 방식
+- UI 스타일을 인라인 CSS·별도 CSS 모듈·임의 SCSS로 새로 작성 (공통 base/abstracts 초기 세팅 제외)
+- `mobile:` / `tablet:` / `pc:` 이외의 반응형 프리픽스 사용 (`sm`/`md`/`lg`/`xl`/`2xl`, `compact`/`site`/`wide`/`phablet`, `max-compact`/`max-site`/`max-wide`, 기타 `max-*`)
+- 구 max-width 클래스를 새 이름으로만 바꿔 두는 1:1 치환 (반드시 mobile-first로 재작성)
+- `@theme` 또는 globals에 구 브레이크포인트 변수(`--breakpoint-sm`~`2xl`, `--breakpoint-compact`/`site`/`wide` 등)를 남기거나 추가
+- 4배수가 아닌 spacing/size 값 사용
+- `.prettierrc`와 다른 포맷(들여쓰기 2칸, printWidth 무시, semi 생략 등)으로 코드 작성
+- `global.css`의 `@theme` 브레이크포인트(`mobile`/`tablet`/`pc`)를 무시하거나 임의 미디어쿼리로 대체
+- `Fonts.scss` / `Resets.scss` / `Variables.scss`를 빈 파일·축약본·임의 내용으로 생성 (프롬프트에 명시된 전문을 그대로 사용)
+- 자식/조상 선택자 arbitrary variant 사용 (`[&_h3]:`, `[&_p]:`, `[.section-dark_&]:`, `tablet:[&_nav]:flex` 등) — 스타일은 대상 요소에 직접 부여
 
 ## 주의사항 — Panel 섹션 조립 (자주 하는 실수)
 
@@ -298,6 +899,11 @@ queryKey 골든 샘플:
 4. admin 복합 페이지 PageProvider + model + ui 분리
 5. entities 중복 제거, import 방향 위반 수정
 6. 새로 만드는 모든 라우트에 기본 Modal + 테스트용 useSearch scaffold가 들어갔는지 확인
+7. `global.css` `@theme` 브레이크포인트·Tailwind 유틸·4배수·`.prettierrc` 준수 여부 확인
+8. `src/shared/styles` 초기 SCSS(`Fonts.scss`/`Resets.scss`/`Variables.scss` 전문 그대로 + `index.scss`) 세팅 확인
+9. 반응형 프리픽스 전수 점검: `sm`/`md`/`lg`/`xl`/`2xl`/`compact`/`site`/`wide`/`phablet`/`max-*` 잔존 0건, `mobile`/`tablet`/`pc`만 사용
+10. `src/app/globals.css` 등 구 `--breakpoint-*` 정의 제거·`shared/styles/global.css` `@theme`로 단일화 확인
+11. 자식/조상 arbitrary variant(`[&_…]`, `[.…_&]`) 잔존 0건 확인 — 스타일은 대상 요소 직접 className으로 이동
 
 ## 완료 후 출력 (필수)
 
@@ -309,6 +915,9 @@ queryKey 골든 샘플:
 
 3. 아직 미준수 항목과 이유
 4. app / views / widgets / features / entities 트리 요약
+5. 스타일 준수 요약: Tailwind 전환 여부, 반응형(`mobile`/`tablet`/`pc`만·구 프리픽스 잔존 0), 자식 arbitrary variant 잔존 0, 4배수, `.prettierrc`, `shared/styles` 초기 세팅
+6. 반응형 잔존 검색 결과 요약 (금지 프리픽스 매치 수 = 0이어야 함)
+7. 자식/조상 arbitrary variant 잔존 검색 결과 요약 (`[&_` / `[.` + `_&]` 매치 수 = 0이어야 함)
 
 ````
 
@@ -330,4 +939,5 @@ queryKey 골든 샘플:
 4. `entities/{domain}/api + model` 패턴
 5. `features` = capability명 (라우트명 아님)
 6. 2+ 섹션 상태 공유 → `widgets/{route}/model` + PageProvider
+7. Tailwind + 반응형은 `mobile`/`tablet`/`pc`만 (구 `max-site`/`compact`/`xl` 등 금지) + 자식 arbitrary variant 금지 + 4배수 + `.prettierrc` + `shared/styles` 초기 SCSS
 ````

@@ -1,4 +1,5 @@
 export { HeroIntro } from "./HeroIntro";
+export { CreatorGallery } from "./CreatorGallery";
 export { BrandIntro } from "./BrandIntro";
 export { BeliefMoments } from "./BeliefMoments";
 export { SupportOverview } from "./SupportOverview";

@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+    --breakpoint-mobile: 9.375rem; /* 344px 이상 */
+    --breakpoint-tablet: 48rem; /* 768px 이상 */
+    --breakpoint-pc: 90rem; /* 1440px 이상 */
+}
+
+@utility keyword-focus {
+    @apply text-[1.6rem] px-[0.6rem] py-[0.2rem] rounded-[0.8rem] bg-[var(--color-brand-100)] text-[var(--color-brand-700)] hover:bg-[var(--color-brand-500)];
+}
+
+@utility keyword-focus-sm {
+    @apply text-[1.4rem] font-bold px-[0.4rem] py-[0.2rem] rounded-[0.7rem] bg-[var(--color-brand-100)] text-[var(--color-brand-700)] hover:bg-[var(--color-brand-700)] hover:text-white;
+}
+
+@utility keyword-warning {
+    @apply text-[1.6rem] px-[0.6rem] py-[0.2rem] rounded-[0.8rem] bg-[var(--color-red-100)] text-[var(--color-red-700)] hover:bg-[var(--color-red-500)];
+}
+
+@utility keyword-warning-sm {
+    @apply text-[1.4rem] font-bold px-[0.4rem] py-[0.2rem] rounded-[0.7rem] bg-[var(--color-red-100)] text-[var(--color-red-700)] hover:bg-[var(--color-red-200)];
+}
+
+@utility button-normal-pc {
+    @apply bg-[var(--color-blue-100)] text-[var(--color-blue-500)] rounded-[0.8rem];
+}
+
+@utility button-positive-pc {
+    @apply bg-[var(--color-blue-100)] text-[var(--color-blue-500)] rounded-[0.8rem];
+}
+
+@utility button-positive-mobile {
+    @apply bg-[var(--color-blue-500)] text-white rounded-full;
+}
+
+@utility button-negative {
+    @apply text-[1.4rem] font-bold px-[0.4rem] py-[0.2rem] rounded-[0.7rem] bg-[var(--color-red-100)] text-[var(--color-red-700)] hover:bg-[var(--color-red-200)];
+}
+
+@layer components {
+    /* 이름 flex-row는 Tailwind 기본 유틸과 충돌해 @utility로 옮기지 않음 */
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+
+    .flex-row {
+        @apply flex flex-row items-center justify-between;
+    }
+
+    .flex-column {
+        @apply flex flex-col items-start justify-center;
+    }
+
+    .flex-space-between {
+        @apply flex items-stretch justify-between;
+    }
+
+    .flex-around {
+        @apply flex items-center justify-around;
+    }
+}
+
+@layer utilities {
+    .border-gradient {
+        background-image: linear-gradient(#ffffff, #ffffff), linear-gradient(0deg, #c165ff, #ff3284);
+        background-origin: border-box;
+        background-clip: content-box, border-box;
+        border: 1px solid transparent;
+    }
+    .border-gradient-coupon-left {
+        background-image: linear-gradient(#f4f5f9, #f4f5f9), linear-gradient(90deg, #f4f5f9 50%, #d2d5db 50%);
+        background-origin: border-box;
+        background-clip: content-box, border-box;
+        border: 1px solid transparent;
+    }
+    .border-gradient-coupon-right {
+        background-image: linear-gradient(#f4f5f9, #f4f5f9), linear-gradient(270deg, #f4f5f9 50%, #d2d5db 50%);
+        background-origin: border-box;
+        background-clip: content-box, border-box;
+        border: 1px solid transparent;
+    }
+
+    .scrollbar-hide {
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        scrollbar-width: none;
+    }
+}

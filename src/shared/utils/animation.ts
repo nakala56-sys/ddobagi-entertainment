@@ -12,8 +12,8 @@ if (typeof window !== "undefined") {
     CustomEase.create(SHIMMER_EASE, "0.65,0,0.35,1");
 }
 
-const textFrom = { autoAlpha: 0, y: 36, filter: "blur(20px)" };
-const textTo = { autoAlpha: 1, y: 0, filter: "blur(0px)" };
+const textFrom = { autoAlpha: 0, y: 72 };
+const textTo = { autoAlpha: 1, y: 0 };
 
 type Cleanup = () => void;
 type Conditions = { desktop: boolean; reduced: boolean };
@@ -38,7 +38,9 @@ function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     });
     const images = Array.from(root.querySelectorAll("img"));
     images.forEach((image) => image.addEventListener("load", refresh));
-    document.fonts.ready.then(() => { if (active) refresh(); });
+    document.fonts.ready.then(() => {
+        if (active) refresh();
+    });
     refresh();
     return () => {
         active = false;
@@ -54,7 +56,12 @@ function scrollTimeline(trigger: HTMLElement, options: ScrollTrigger.Vars = {}) 
     return gsap.timeline({
         defaults: { ease: MOTION_EASE, duration: 1 },
         scrollTrigger: {
-            trigger, start: "clamp(top 92%)", end: "clamp(top 65%)", scrub: SCROLL_SCRUB, invalidateOnRefresh: true, ...options,
+            trigger,
+            start: "clamp(top 92%)",
+            end: "clamp(top 65%)",
+            scrub: SCROLL_SCRUB,
+            invalidateOnRefresh: true,
+            ...options,
             onRefreshInit: (self) => {
                 // Lazy image/font loads must not snap a moving playhead to the scroll target.
                 renderedProgress = self.getTween()?.isActive() ? self.animation?.progress() : undefined;
@@ -72,19 +79,27 @@ function scrollTimeline(trigger: HTMLElement, options: ScrollTrigger.Vars = {}) 
     });
 }
 
+function revealElement(element: HTMLElement) {
+    const home = Boolean(element.closest("main#home"));
+    scrollTimeline(element, home ? { end: "clamp(top 55%)", scrub: 0.3 } : {}).fromTo(element, textFrom, { ...textTo, ease: home ? "none" : MOTION_EASE });
+}
+
 function reveal(root: HTMLElement) {
-    root.querySelectorAll<HTMLElement>("[data-reveal]").forEach((element) => {
-        scrollTimeline(element).fromTo(element, textFrom, textTo);
-    });
+    root.querySelectorAll<HTMLElement>("[data-reveal]").forEach(revealElement);
 }
 
 function intro(root: HTMLElement): Cleanup {
     return section(root, () => {
-        const timeline = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 1.1 } })
-            .fromTo(root.querySelectorAll("[data-line]"), textFrom, { ...textTo, stagger: 0.12 }, 0)
-            .fromTo(root.querySelectorAll("[data-reveal]"), textFrom, textTo, 0.12);
+        const heroFrom = { ...textFrom, filter: "blur(20px)" };
+        const heroTo = { ...textTo, filter: "blur(0px)" };
+        const timeline = gsap
+            .timeline({ paused: true, defaults: { ease: root.closest("main#home") ? "none" : MOTION_EASE, duration: 1.1 } })
+            .fromTo(root.querySelectorAll("[data-line]"), heroFrom, { ...heroTo, stagger: 0.12 }, 0)
+            .fromTo(root.querySelectorAll("[data-reveal]"), heroFrom, heroTo, 0.12);
         const transition = root.closest<HTMLElement>("[data-page-pending]");
-        const play = () => { timeline.play(); };
+        const play = () => {
+            timeline.play();
+        };
         if (transition?.dataset.pagePending === "true") transition.addEventListener("page:reveal", play, { once: true });
         else play();
         const image = root.querySelector<HTMLElement>("[data-image]");
@@ -94,7 +109,85 @@ function intro(root: HTMLElement): Cleanup {
 }
 
 function entrance(root: HTMLElement): Cleanup {
-    return section(root, () => { reveal(root); });
+    return section(root, () => {
+        reveal(root);
+    });
+}
+
+function creatorGallery(root: HTMLElement): Cleanup {
+    return section(root, (_, { desktop }) => {
+        if (!desktop) {
+            reveal(root);
+            return;
+        }
+        const stage = root.querySelector<HTMLElement>("[data-gallery-stage]");
+        const lead = root.querySelector<HTMLElement>("[data-gallery-lead]");
+        const top = root.querySelector<HTMLElement>("[data-gallery-top]");
+        const bottom = root.querySelector<HTMLElement>("[data-gallery-bottom]");
+        const copy = root.querySelector<HTMLElement>("[data-gallery-copy]");
+        const shade = root.querySelector<HTMLElement>("[data-gallery-shade]");
+        const sides = root.querySelectorAll<HTMLElement>("[data-gallery-side]");
+        if (!stage || !lead || !top || !bottom || !copy || !shade) return;
+
+        const cover = root.previousElementSibling?.matches("[data-gallery-cover]") ? root.previousElementSibling : null;
+        root.classList.add("is-gallery");
+        if (cover) {
+            cover.classList.add("is-gallery-cover");
+            root.classList.add("is-gallery-reveal");
+        }
+        const width = () => stage.clientWidth;
+        const height = () => stage.clientHeight;
+        const cardWidth = () => Math.min(width() * 0.29, 560);
+        const cardHeight = () => Math.min((cardWidth() * 2) / 3, height() * 0.4);
+        const smallWidth = () => Math.min(width() * 0.2, 380);
+        const smallHeight = () => (smallWidth() * 2) / 3;
+        const gap = () => Math.min(48, Math.max(24, width() * 0.024));
+        const bottomY = () => -height() * 0.1 + cardHeight() / 2 + gap() + smallHeight() / 2;
+        const measure = () => {
+            gsap.set(stage, {
+                "--gallery-card-width": `${cardWidth()}px`,
+                "--gallery-card-height": `${cardHeight()}px`,
+                "--gallery-small-width": `${smallWidth()}px`,
+                "--gallery-small-height": `${smallHeight()}px`,
+                "--gallery-gap": `${gap()}px`,
+            });
+        };
+        measure();
+        gsap.set([lead, top, bottom], { xPercent: -50, yPercent: -50 });
+        gsap.set(sides, { autoAlpha: 0 });
+        gsap.set(bottom, { autoAlpha: 0 });
+
+        const timeline = scrollTimeline(root, {
+            start: "top top",
+            end: () => `+=${height() * (cover ? 5 : 4)}`,
+            pin: true,
+            scrub: 1.2,
+            onRefreshInit: measure,
+        });
+        timeline
+            // Reserve one viewport for the cover to scroll away before the gallery shrinks.
+            .addLabel("gallery", cover ? 1.275 : 0)
+            .fromTo(
+                lead,
+                { width, height, borderRadius: 0 },
+                { width: () => Math.min(1320, width() * 0.82), height: () => Math.min(height() * 0.76, width() * 0.46), borderRadius: 20, duration: 0.8, ease: "none" },
+                "gallery+=1",
+            )
+            .fromTo(copy, { autoAlpha: 0, y: 72 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "none" }, 0)
+            .to(copy, { autoAlpha: 0, y: -36, duration: 0.35, ease: "none" }, "gallery+=0.65")
+            .to(shade, { autoAlpha: 0, duration: 0.35, ease: "none" }, "gallery+=0.65")
+            .to(lead, { width: cardWidth, height: cardHeight, duration: 0.8, ease: "none" }, "gallery+=1.8")
+            .to([lead, top], { y: () => -height() * 0.1, duration: 0.6, ease: "none" }, "gallery+=2.8")
+            .to(sides, { autoAlpha: 1, stagger: { each: 0.1, from: "center" }, duration: 0.6, ease: "none" }, "gallery+=2.8")
+            .fromTo(bottom, { y: () => bottomY() + 72 }, { y: bottomY, autoAlpha: 1, duration: 0.7, ease: "none" }, "gallery+=3.4")
+            .to([lead, top], { x: () => -cardWidth() * 0.28, duration: 1.2, ease: "none" }, "gallery+=3.9")
+            .to(bottom, { x: () => smallWidth() * 0.55, duration: 1.2, ease: "none" }, "gallery+=3.9");
+
+        return () => {
+            root.classList.remove("is-gallery", "is-gallery-reveal");
+            cover?.classList.remove("is-gallery-cover");
+        };
+    });
 }
 
 /** Images scale 0→1 as they reach viewport center, then stay at 1. */
@@ -103,8 +196,7 @@ function beliefMoments(root: HTMLElement): Cleanup {
         reveal(root);
         root.querySelectorAll<HTMLElement>("[data-float-image]").forEach((frame) => {
             gsap.set(frame, { scale: 0, transformOrigin: "50% 50%" });
-            scrollTimeline(frame, { start: "center bottom", end: "center center" })
-                .fromTo(frame, { scale: 0 }, { scale: 1, ease: "none" });
+            scrollTimeline(frame, { start: "center bottom", end: "center center" }).fromTo(frame, { scale: 0 }, { scale: 1, ease: "none" });
         });
     });
 }
@@ -113,8 +205,12 @@ function imageReveal(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
         const image = root.querySelector<HTMLElement>("[data-image]");
-        if (image) scrollTimeline(image, { start: "clamp(top 85%)", end: "clamp(center center)" })
-            .fromTo(image, { clipPath: "inset(12% 8% 12% 8%)", scale: 0.95 }, { clipPath: "inset(0% 0% 0% 0%)", scale: 1 });
+        if (image)
+            scrollTimeline(image, { start: "clamp(top 85%)", end: "clamp(center center)" }).fromTo(
+                image,
+                { clipPath: "inset(12% 8% 12% 8%)", scale: 0.95 },
+                { clipPath: "inset(0% 0% 0% 0%)", scale: 1 },
+            );
     });
 }
 
@@ -163,23 +259,26 @@ function finalCta(root: HTMLElement): Cleanup {
         gsap.set(ink, { autoAlpha: 1 });
 
         scrollTimeline(root, {
-            start: "top bottom", end: "top top",
+            start: "top bottom",
+            end: "top top",
             scrub: 1.6,
             onRefreshInit: measure,
         })
             .fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0)
             .fromTo(noise, { attr: { baseFrequency: () => frequency } }, { attr: { baseFrequency: () => frequency * 1.3 }, duration: 1, ease: SHIMMER_EASE }, 0);
 
-        scrollTimeline(content).fromTo(content, textFrom, textTo);
+        revealElement(content);
     });
 }
 
 function message(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
-        if (!desktop) { reveal(root); return; }
+        if (!desktop) {
+            reveal(root);
+            return;
+        }
         const words = root.querySelectorAll("[data-word]");
-        scrollTimeline(root, { start: "top top", end: "+=130%", pin: true })
-            .fromTo(words, textFrom, { ...textTo, stagger: 0.6, duration: 0.7 });
+        scrollTimeline(root, { start: "top top", end: "+=130%", pin: true }).fromTo(words, textFrom, { ...textTo, stagger: 0.6, duration: 0.7 });
     });
 }
 
@@ -221,7 +320,10 @@ function serviceOverview(root: HTMLElement): Cleanup {
 
 function horizontal(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
-        if (!desktop) { reveal(root); return; }
+        if (!desktop) {
+            reveal(root);
+            return;
+        }
         const track = root.querySelector<HTMLElement>("[data-track]");
         const viewport = root.querySelector<HTMLElement>("[data-viewport]");
         if (!track || !viewport) return;
@@ -231,8 +333,10 @@ function horizontal(root: HTMLElement): Cleanup {
         const counter = root.querySelector<HTMLElement>("[data-counter]");
         const progress = root.querySelector<HTMLElement>("[data-slider-progress]");
         const timeline = scrollTimeline(root, {
-            start: "top top", end: () => `+=${Math.max(distance(), window.innerHeight)}`, pin: true,
-        // containerAnimation requires linear track movement for correct card measurements.
+            start: "top top",
+            end: () => `+=${Math.max(distance(), window.innerHeight)}`,
+            pin: true,
+            // containerAnimation requires linear track movement for correct card measurements.
         }).to(track, { x: () => -distance(), ease: "none" });
         timeline.eventCallback("onUpdate", () => {
             if (counter) counter.textContent = `${String(Math.round(timeline.progress() * (cards.length - 1)) + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
@@ -240,8 +344,7 @@ function horizontal(root: HTMLElement): Cleanup {
         if (progress) timeline.fromTo(progress, { scaleX: 0 }, { scaleX: 1, ease: "none" }, 0);
         cards.forEach((card) => {
             const image = card.querySelector<HTMLElement>("[data-slide-image]");
-            if (image) scrollTimeline(card, { containerAnimation: timeline, start: "left right", end: "right left" })
-                .fromTo(image, { scale: 1 }, { scale: 1.06 });
+            if (image) scrollTimeline(card, { containerAnimation: timeline, start: "left right", end: "right left" }).fromTo(image, { scale: 1 }, { scale: 1.06 });
         });
         let focusFrame = 0;
         const select = (index: number) => {
@@ -251,7 +354,7 @@ function horizontal(root: HTMLElement): Cleanup {
             focusFrame = requestAnimationFrame(() => {
                 const trigger = timeline.scrollTrigger;
                 if (!trigger) return;
-                window.scrollTo({ top: trigger.start + index / Math.max(1, cards.length - 1) * (trigger.end - trigger.start), behavior: "instant" });
+                window.scrollTo({ top: trigger.start + (index / Math.max(1, cards.length - 1)) * (trigger.end - trigger.start), behavior: "instant" });
                 ScrollTrigger.update();
             });
         };
@@ -273,22 +376,27 @@ function horizontal(root: HTMLElement): Cleanup {
 
 function showcase(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
-        if (!desktop) { reveal(root); return; }
+        if (!desktop) {
+            reveal(root);
+            return;
+        }
         const cards = root.querySelectorAll<HTMLElement>("[data-showcase-card]");
         const indicator = root.querySelector<HTMLElement>("[data-counter]");
         root.classList.add("is-pinned");
         gsap.set(cards, textFrom);
         gsap.set(cards[0], textTo);
         const timeline = scrollTimeline(root, {
-            start: "top top", end: () => `+=${window.innerHeight * 2.5}`, pin: true,
+            start: "top top",
+            end: () => `+=${window.innerHeight * 2.5}`,
+            pin: true,
         });
         timeline.eventCallback("onUpdate", () => {
-            if (indicator) indicator.textContent = `${String(Math.min(cards.length, Math.floor(timeline.progress() * (cards.length - 1)) + 1)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
+            if (indicator)
+                indicator.textContent = `${String(Math.min(cards.length, Math.floor(timeline.progress() * (cards.length - 1)) + 1)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
         });
         cards.forEach((card, index) => {
             if (!index) return;
-            timeline.to(cards[index - 1], { autoAlpha: 0, y: -36, filter: "blur(20px)", duration: 0.35 }, index - 1)
-                .to(card, { ...textTo, duration: 0.5 }, index - 1 + 0.15);
+            timeline.to(cards[index - 1], { autoAlpha: 0, y: -36, duration: 0.35 }, index - 1).to(card, { ...textTo, duration: 0.5 }, index - 1 + 0.15);
         });
         return () => {
             root.classList.remove("is-pinned");
@@ -299,7 +407,10 @@ function showcase(root: HTMLElement): Cleanup {
 
 function stacking(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
-        if (!desktop) { reveal(root); return; }
+        if (!desktop) {
+            reveal(root);
+            return;
+        }
         const cards = root.querySelectorAll<HTMLElement>("[data-stack-card]");
         root.classList.add("is-stacking");
         gsap.set(cards, { zIndex: (index) => index + 1 });
@@ -307,7 +418,8 @@ function stacking(root: HTMLElement): Cleanup {
         const timeline = scrollTimeline(root, { start: "top top", end: () => `+=${window.innerHeight * 2}`, pin: true });
         cards.forEach((card, index) => {
             if (!index) return;
-            timeline.to(cards[index - 1], { scale: 0.94, y: -18 * (cards.length - index), duration: 1 }, index - 1)
+            timeline
+                .to(cards[index - 1], { scale: 0.94, y: -18 * (cards.length - index), duration: 1 }, index - 1)
                 .to(card, { yPercent: 0, duration: 1 }, index - 1)
                 .fromTo(card.firstElementChild, textFrom, textTo, index - 1);
         });
@@ -326,11 +438,22 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     let shimmerDone = reduced;
     let revealing = false;
     let transition: gsap.core.Timeline;
-    const restoreScroll = () => { document.documentElement.style.overflow = previousOverflow; };
+    const restoreScroll = () => {
+        document.documentElement.style.overflow = previousOverflow;
+    };
     const revealPage = () => {
         const panel = content.querySelector<HTMLElement>(".route-panel");
         const image = content.querySelector<HTMLImageElement>(".hero-image img");
-        if (!active || revealing || !shimmerDone || document.fonts.status === "loading" || content.querySelector(".page-loading") || (panel && panel.dataset.animationReady !== "true") || (image && !image.complete)) return;
+        if (
+            !active ||
+            revealing ||
+            !shimmerDone ||
+            document.fonts.status === "loading" ||
+            content.querySelector(".page-loading") ||
+            (panel && panel.dataset.animationReady !== "true") ||
+            (image && !image.complete)
+        )
+            return;
         revealing = true;
         observer.disconnect();
         if (reduced) {
@@ -343,31 +466,48 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     };
     const observer = new MutationObserver(revealPage);
     const context = gsap.context(() => {
-        const reveal = () => { restoreScroll(); root.dispatchEvent(new Event("page:reveal")); ScrollTrigger.refresh(); };
+        const reveal = () => {
+            restoreScroll();
+            root.dispatchEvent(new Event("page:reveal"));
+            ScrollTrigger.refresh();
+        };
         transition = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 0.45 }, onComplete });
         if (waveIntro) {
             // Expose only the wave behind the loader; the rest of the page stays hidden.
-            transition.set(content, { opacity: 1 }, 0)
-                .call(() => {
-                    const wave = content.querySelector<HTMLElement>(".hero [data-gradient-wave]");
-                    if (wave) gsap.set(wave, { visibility: "visible" });
-                    root.dispatchEvent(new Event("page:wave"));
-                }, [], 0)
+            transition
+                .set(content, { opacity: 1 }, 0)
+                .call(
+                    () => {
+                        const wave = content.querySelector<HTMLElement>(".hero [data-gradient-wave]");
+                        if (wave) gsap.set(wave, { visibility: "visible" });
+                        root.dispatchEvent(new Event("page:wave"));
+                    },
+                    [],
+                    0,
+                )
                 .to(overlay, { backgroundColor: "rgba(255, 255, 255, 0)" }, 0)
                 .to(text, { autoAlpha: 0, duration: 0.35 }, 1.8)
                 .set(overlay, { autoAlpha: 0 }, 2.15)
                 .set(content, { visibility: "visible" }, 2.15)
                 .call(reveal, [], 2.15);
         } else {
-            transition.call(reveal)
-                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1 }, 0)
-                .to(overlay, { autoAlpha: 0 }, 0);
+            transition.call(reveal).fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1 }, 0).to(overlay, { autoAlpha: 0 }, 0);
         }
         if (reduced) gsap.set(text, { backgroundPosition: "0% 0%" });
-        else gsap.fromTo(text, { backgroundPosition: "100% 0%" }, {
-            backgroundPosition: "0% 0%", duration: 1.6, ease: SHIMMER_EASE,
-            onComplete: () => { shimmerDone = true; revealPage(); },
-        });
+        else
+            gsap.fromTo(
+                text,
+                { backgroundPosition: "100% 0%" },
+                {
+                    backgroundPosition: "0% 0%",
+                    duration: 1.6,
+                    ease: SHIMMER_EASE,
+                    onComplete: () => {
+                        shimmerDone = true;
+                        revealPage();
+                    },
+                },
+            );
     }, root);
     observer.observe(content, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-animation-ready"] });
     content.addEventListener("load", revealPage, true);
@@ -375,7 +515,9 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     // Route content can start another font load after the initial ready promise resolves.
     document.fonts.addEventListener("loadingdone", revealPage);
     document.fonts.addEventListener("loadingerror", revealPage);
-    document.fonts.ready.then(() => { if (active) revealPage(); });
+    document.fonts.ready.then(() => {
+        if (active) revealPage();
+    });
     revealPage();
     return () => {
         active = false;
@@ -400,19 +542,27 @@ class Animation {
                 lenis.on("scroll", update);
                 const tick = (time: number) => lenis.raf(time * 1000);
                 gsap.ticker.add(tick);
-                return () => { gsap.ticker.remove(tick); lenis.off("scroll", update); lenis.destroy(); };
+                return () => {
+                    gsap.ticker.remove(tick);
+                    lenis.off("scroll", update);
+                    lenis.destroy();
+                };
             });
             return () => media.revert();
         },
-        header: (root: HTMLElement): Cleanup => section(root, () => {
-            // Keep navigation and the logo usable at scroll progress zero.
-            scrollTimeline(root, { start: 0, end: () => `+=${root.offsetHeight}` }).to(root, { y: -20 });
-        }),
+        header: (root: HTMLElement): Cleanup =>
+            section(root, () => {
+                // Keep navigation and the logo usable at scroll progress zero.
+                scrollTimeline(root, { start: 0, end: () => `+=${root.offsetHeight}` }).to(root, { y: -20 });
+            }),
         main: (root: HTMLElement): Cleanup => {
             // Refresh route measurements without overriding Next.js back/forward restoration.
             const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
             root.dataset.animationReady = "true";
-            return () => { cancelAnimationFrame(frame); delete root.dataset.animationReady; };
+            return () => {
+                cancelAnimationFrame(frame);
+                delete root.dataset.animationReady;
+            };
         },
         footer: entrance,
         progress: (root: HTMLElement): Cleanup => {
@@ -423,7 +573,7 @@ class Animation {
         },
     };
 
-    static landing = { section: { heroIntro: intro, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta } };
+    static landing = { section: { heroIntro: intro, creatorGallery, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta } };
     static about = { section: { hero: intro, brandPhilosophy: entrance, brandMessage: message, location: entrance } };
     static services = { section: { hero: intro, overview: serviceOverview, slider: horizontal, closing: imageReveal } };
     static equipment = { section: { hero: intro, showcase, grid: entrance, studioEnvironment: imageReveal } };
