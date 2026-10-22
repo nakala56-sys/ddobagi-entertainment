@@ -7,8 +7,8 @@ import Animation from "@/shared/utils/animation";
 import { PageTransition } from "@/shared/ui/transition/PageTransition";
 import { ApiLoading } from "@/widgets/layout/ApiLoading";
 
-const Header = dynamic(() => import("@/widgets/layout/Header").then((module) => module.Header), { ssr: false });
-const Footer = dynamic(() => import("@/widgets/layout/Footer").then((module) => module.Footer), { ssr: false });
+const Header = dynamic(() => import("@/widgets/layout/Header").then((module) => module.Header));
+const Footer = dynamic(() => import("@/widgets/layout/Footer").then((module) => module.Footer));
 const QuickMenu = dynamic(() => import("@/widgets/layout/QuickMenu").then((module) => module.QuickMenu), { ssr: false });
 const Toast = dynamic(() => import("@/widgets/layout/Toast").then((module) => module.Toast), { ssr: false });
 const Progress = dynamic(() => import("@/widgets/layout/Progress").then((module) => module.Progress), { ssr: false });
