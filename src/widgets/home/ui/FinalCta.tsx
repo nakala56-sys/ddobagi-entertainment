@@ -17,7 +17,7 @@ export function FinalCta() {
         <section
             ref={sectionRef}
             data-cta-wave
-            className="closing relative z-10 overflow-visible bg-white motion-reduce:bg-black section-dark [--accent:#ffffff] text-[var(--paper)]"
+            className="closing relative z-10 overflow-visible bg-white motion-reduce:bg-black section-dark [--accent:#ffffff] text-[#ffffff]"
             aria-labelledby="home-closing-title"
         >
             {/* Fixed to the viewport so parent overflow cannot clip the expanding ink. */}
@@ -75,23 +75,26 @@ export function FinalCta() {
                 </svg>
             </div>
 
-            <div className="relative z-10 flex min-h-[100svh] items-center py-20 tablet:py-30 mix-blend-difference motion-reduce:mix-blend-normal motion-reduce:min-h-[85svh]">
+            <div className="relative z-10 flex min-h-[100svh] items-center py-[8rem] tablet:py-[12rem] mix-blend-difference motion-reduce:mix-blend-normal motion-reduce:min-h-[85svh]">
                 <div
                     data-cta-content
-                    className="closing-content relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] flex-col items-center gap-8 tablet:gap-9 text-center content-width"
+                    className="closing-content relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center gap-[3.2rem] tablet:gap-[3.6rem] text-center content-width"
                 >
-                    <p className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase">06 — YOUR NEXT CHAPTER</p>
                     <h2
-                        className="text-[4rem] tablet:text-[6.8rem] pc:text-[11.2rem] leading-[round(up,1.02em,0.4rem)] tracking-[round(nearest,-0.055em,0.4rem)] font-[550]"
+                        className="text-[2.4rem] min-[343px]:text-[7vw] min-[1372px]:text-[9.6rem] leading-[1.5] font-[550] break-keep"
                         id="home-closing-title"
                     >
-                        LET’S GROW
+                        첫 방송도, 다음 도전도.
                         <br />
-                        TOGETHER.
+                        또바기와 함께하세요.
                     </h2>
-                    <p className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[#b5b5b5]">당신의 다음 이야기를 기다립니다.</p>
+                    <p className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#b5b5b5] break-keep">
+                        방송을 처음 준비하는 분도, 새로운 방향을 고민하는 크리에이터도.
+                        <br />
+                        지금 필요한 지원을 또바기와 상담해보세요.
+                    </p>
                     <div>
-                        <ContactCreatorButton>또바기와 함께 시작하기</ContactCreatorButton>
+                        <ContactCreatorButton />
                     </div>
                 </div>
             </div>

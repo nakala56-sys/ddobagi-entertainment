@@ -37,19 +37,19 @@ export function CreatorGallery() {
         >
             <h2
                 id="home-gallery-title"
-                className="sr-only"
+                className="sr-only leading-[1.5]"
             >
-                당신의 무대가 넓어지는 순간
+                방송이 시작되고, 콘텐츠가 만들어지는 곳.
             </h2>
             <div
                 data-gallery-target
                 data-gallery-stage
-                className="relative overflow-hidden px-5 py-18 data-[gallery=true]:h-svh data-[gallery=true]:p-0"
+                className="relative overflow-hidden px-[2rem] py-[7.2rem] data-[gallery=true]:h-svh data-[gallery=true]:p-0"
             >
                 <div
                     data-gallery-target
                     data-gallery-lead
-                    className="relative z-20 mx-auto aspect-[16/10] w-full max-w-330 overflow-hidden rounded-[2rem] data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:aspect-auto data-[gallery=true]:max-w-none"
+                    className="relative z-20 mx-auto aspect-[16/10] w-full max-w-[132rem] overflow-hidden rounded-[2rem] data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:aspect-auto data-[gallery=true]:max-w-none"
                 >
                     <Image
                         src="/images/landing/studio3.jpg"
@@ -68,16 +68,16 @@ export function CreatorGallery() {
                         data-gallery-copy
                         data-reveal
                         aria-hidden="true"
-                        className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white break-keep text-2xl tablet:text-6xl pc:text-[7.2rem] font-[580] leading-[1.3] tracking-[-0.04em]"
+                        className="absolute inset-0 flex flex-col items-center justify-center px-[2.4rem] text-center text-white break-keep text-[2.4rem] tablet:text-[6rem] pc:text-[7.2rem] font-[580] leading-[1.5]"
                     >
-                        <span>당신의 색깔이 빛나고,</span>
-                        <span>당신의 무대가 넓어지는 곳.</span>
+                        <span>방송이 시작되고,</span>
+                        <span>콘텐츠가 만들어지는 곳.</span>
                     </p>
                 </div>
                 <div
                     data-gallery-target
                     data-gallery-top
-                    className="mx-auto mt-6 grid max-w-330 grid-cols-2 gap-6 data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:flex data-[gallery=true]:max-w-none data-[gallery=true]:gap-[var(--gallery-gap)]"
+                    className="mx-auto mt-[2.4rem] grid max-w-[132rem] grid-cols-2 gap-[2.4rem] data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:flex data-[gallery=true]:max-w-none data-[gallery=true]:gap-[var(--gallery-gap)]"
                 >
                     {TOP_IMAGES.map((image) => (
                         <div
@@ -103,7 +103,7 @@ export function CreatorGallery() {
                 <div
                     data-gallery-target
                     data-gallery-bottom
-                    className="mx-auto mt-6 grid max-w-330 grid-cols-2 gap-6 data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:flex data-[gallery=true]:max-w-none data-[gallery=true]:gap-[var(--gallery-gap)]"
+                    className="mx-auto mt-[2.4rem] grid max-w-[132rem] grid-cols-2 gap-[2.4rem] data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:flex data-[gallery=true]:max-w-none data-[gallery=true]:gap-[var(--gallery-gap)]"
                 >
                     {BOTTOM_IMAGES.map((image) => (
                         <div

@@ -15,18 +15,12 @@ export function CreatorStories() {
     return (
         <section
             ref={sectionRef}
-            className="section py-18 tablet:py-30 content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto"
+            className="section py-[7.2rem] tablet:py-[12rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto"
             aria-labelledby="creator-stories-title"
         >
-            <p
-                className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                data-reveal
-            >
-                05 — REAL CREATORS, REAL STORIES
-            </p>
-            <div className="split-layout grid grid-cols-1 tablet:grid-cols-2 items-center gap-10 pc:gap-18">
+            <div className="split-layout grid grid-cols-1 tablet:grid-cols-2 items-center gap-[4rem] pc:gap-[7.2rem]">
                 <div
-                    className="portrait-image relative h-110 tablet:h-170 overflow-clip"
+                    className="portrait-image relative h-[44rem] tablet:h-[68rem] overflow-clip"
                     data-reveal
                 >
                     <Image
@@ -37,18 +31,18 @@ export function CreatorStories() {
                         sizes="(min-width: 48rem) 45vw, 90vw"
                     />
                 </div>
-                <div className="split-copy flex flex-col items-start gap-6 tablet:gap-8">
+                <div className="split-copy flex flex-col items-start gap-[2.4rem] tablet:gap-[3.2rem]">
                     <h2
                         id="creator-stories-title"
-                        className="display-title text-[4rem] tablet:text-[4.4rem] pc:text-[6.8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] m-0"
+                        className="display-title text-[4rem] tablet:text-[4.4rem] pc:text-[6.8rem] leading-[1.5] font-[580] m-0"
                         data-reveal
                     >
                         각자의 이야기.
                         <br />
-                        함께 만드는 <span className="accent text-[var(--accent)]">다음.</span>
+                        함께 만드는 <span className="accent text-[var(--accent,#000000)]">다음.</span>
                     </h2>
                     <p
-                        className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
                         다양한 콘텐츠, 각자의 방송 스타일.

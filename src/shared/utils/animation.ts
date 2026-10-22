@@ -7,6 +7,7 @@ import { getBreakpointQuery } from "@/shared/lib/breakpoints";
 const MOTION_EASE = "site-motion";
 const SHIMMER_EASE = "site-shimmer";
 const SCROLL_SCRUB = 0.6;
+let smoothScroller: Lenis | undefined;
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger, CustomEase);
     CustomEase.create(MOTION_EASE, "0.22,1,0.36,1");
@@ -89,6 +90,15 @@ function scrollTimeline(trigger: HTMLElement, options: ScrollTrigger.Vars = {}) 
 }
 
 function revealElement(element: HTMLElement) {
+    if (element.closest("main:not(#home)")) {
+        gsap.fromTo(element, textFrom, {
+            ...textTo,
+            duration: 0.65,
+            ease: MOTION_EASE,
+            scrollTrigger: { trigger: element, start: "top 92%", once: true },
+        });
+        return;
+    }
     const home = Boolean(element.closest("main#home"));
     scrollTimeline(element, home ? { end: "clamp(top 55%)", scrub: 0.3 } : {}).fromTo(element, textFrom, { ...textTo, ease: home ? "none" : MOTION_EASE });
 }
@@ -120,6 +130,15 @@ function intro(root: HTMLElement): Cleanup {
 function entrance(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
+    });
+}
+
+function creatorFaq(root: HTMLElement): Cleanup {
+    return section(root, () => {
+        reveal(root);
+        const refresh = () => ScrollTrigger.refresh();
+        root.addEventListener("toggle", refresh, true);
+        return () => root.removeEventListener("toggle", refresh, true);
     });
 }
 
@@ -197,6 +216,126 @@ function creatorGallery(root: HTMLElement): Cleanup {
             setSectionState(root, "gallery-reveal", false);
             if (cover) setSectionState(cover, "gallery-cover", false);
         };
+    });
+}
+
+function creatorEveryday(root: HTMLElement): Cleanup {
+    return section(root, (_, { desktop }) => {
+        if (!desktop) {
+            reveal(root);
+            return;
+        }
+        const stage = root.querySelector<HTMLElement>("[data-everyday-stage]");
+        const intro = root.querySelector<HTMLElement>("[data-everyday-intro]");
+        const outro = root.querySelector<HTMLElement>("[data-everyday-outro]");
+        const fade = root.querySelector<HTMLElement>("[data-everyday-fade]");
+        const photos = root.querySelectorAll<HTMLElement>("[data-everyday-photo]");
+        const tiles = root.querySelectorAll<HTMLElement>("[data-everyday-tile]");
+        const ghosts = root.querySelectorAll<HTMLElement>("[data-everyday-ghost]");
+        const extras = root.querySelectorAll<HTMLElement>("[data-everyday-extra]");
+        if (!stage || !intro || !outro || !fade || !photos.length) return;
+
+        setSectionState(root, "everyday", true);
+        // A pinned stage still has its previous width during refreshInit.
+        const width = () => document.documentElement.clientWidth;
+        const height = () => stage.clientHeight;
+        const gap = () => Math.max(12, Math.min(24, width() * 0.01));
+        const cardWidth = () => Math.min(324, (width() * 0.68 - gap() * 3) / 4, height() * 0.3);
+        const boardWidth = () => cardWidth() * 4 + gap() * 3;
+        const left = () => (width() - boardWidth()) / 2;
+        const columnX = (index: number) => left() + index * (cardWidth() + gap());
+        const photoY = (index: number) => height() * (0.24 + index * 0.053);
+        const startY = (index: number) => Math.max(height() * 0.43, height() * 0.19 + intro.offsetHeight + height() * 0.066 + 24) - index * height() * 0.033;
+        const measure = () => {
+            gsap.set([intro, outro], { width: Math.min(800, cardWidth() * 3 + gap() * 2) });
+            gsap.set(intro, { left: left() + width() * 0.035, top: height() * 0.19 });
+            gsap.set(outro, { left: left(), top: Math.min(height() * 0.74, height() - outro.offsetHeight - 32) });
+            tiles.forEach((tile) => {
+                const column = Number(tile.dataset.column);
+                const above = tile.dataset.side === "top";
+                gsap.set(tile, {
+                    left: columnX(column),
+                    top: photoY(column) + (above ? -cardWidth() - gap() : cardWidth() + gap()),
+                    width: cardWidth(),
+                    height: cardWidth(),
+                });
+            });
+            ghosts.forEach((ghost) => {
+                gsap.set(ghost, {
+                    left: columnX(Number(ghost.dataset.column)),
+                    top: height() * 0.18 + Number(ghost.dataset.row) * (cardWidth() + gap()),
+                    width: cardWidth(),
+                    height: cardWidth(),
+                });
+            });
+        };
+        measure();
+        gsap.set(extras, { autoAlpha: 0, y: 56, scale: 0.96 });
+        gsap.set(outro, { autoAlpha: 0, y: 36 });
+        gsap.set(fade, { autoAlpha: 0 });
+
+        scrollTimeline(root, {
+            start: "top top",
+            end: () => `+=${height() * 2.8}`,
+            pin: true,
+            scrub: 0.8,
+            onRefreshInit: measure,
+        })
+            .fromTo(
+                photos,
+                { left: (index) => columnX(index) + width() * 0.035, top: startY, width: cardWidth, height: () => cardWidth() * 1.36 },
+                { left: columnX, top: photoY, width: cardWidth, height: cardWidth, duration: 1.8, ease: "none" },
+                0.3,
+            )
+            .to(intro, { autoAlpha: 0, y: -40, duration: 0.5, ease: "none" }, 0.3)
+            .to(extras, { autoAlpha: 1, y: 0, scale: 1, duration: 1.2, stagger: 0.045, ease: "none" }, 0.65)
+            .to(fade, { autoAlpha: 1, duration: 1, ease: "none" }, 0.8)
+            .to(outro, { autoAlpha: 1, y: 0, duration: 0.6, ease: "none" }, 1.7)
+            .to({}, { duration: 0.4 });
+
+        return () => setSectionState(root, "everyday", false);
+    });
+}
+
+function creatorSolutions(root: HTMLElement): Cleanup {
+    return section(root, (_, { desktop }) => {
+        reveal(root);
+        const grid = root.querySelector<HTMLElement>("[data-solution-grid]");
+        const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-solution-card]"));
+        const contents = root.querySelectorAll<HTMLElement>("[data-solution-content]");
+        if (!grid || !cards.length) return;
+
+        scrollTimeline(root, { start: "clamp(top 88%)", end: "clamp(top 40%)" }).fromTo(
+            root.querySelectorAll("[data-solution-chip]"),
+            { y: 20, scale: 0.9 },
+            { y: 0, scale: 1, stagger: 0.1, ease: "none" },
+        );
+        if (desktop) {
+            scrollTimeline(grid, { start: "clamp(top 90%)", end: "clamp(top 20%)", scrub: 0.8 }).fromTo(
+                contents,
+                { y: (index) => index * 48, autoAlpha: (index) => 1 - index * 0.35 },
+                { y: 0, autoAlpha: 1, stagger: 0.16, ease: "none" },
+            );
+        } else {
+            cards.forEach((card) => {
+                scrollTimeline(card, { end: "clamp(top 55%)" }).fromTo(card.querySelector("[data-solution-content]"), { y: 40, autoAlpha: 0.35 }, { y: 0, autoAlpha: 1, ease: "none" });
+            });
+        }
+
+        cards.forEach((card) => {
+            const meters = card.querySelectorAll("[data-solution-meter]");
+            const passes = card.querySelectorAll("[data-solution-pass]");
+            const rows = card.querySelectorAll("[data-solution-row]");
+            const checks = card.querySelectorAll("[data-solution-check]");
+            const timeline = scrollTimeline(card, { start: "clamp(top 85%)", end: "clamp(top 15%)" });
+            if (meters.length) timeline.fromTo(meters, { scaleX: 0.18 }, { scaleX: 1, stagger: 0.12, ease: "none" });
+            if (passes.length) timeline.fromTo(passes, { y: 48, rotation: -10, scale: 0.9 }, { y: 0, rotation: (index) => index === 0 ? 3 : -3, scale: 1, stagger: 0.15, ease: "none" });
+            if (rows.length) {
+                timeline
+                    .fromTo(rows, { y: 16, autoAlpha: 0.2 }, { y: 0, autoAlpha: 1, stagger: 0.12, ease: "none" })
+                    .fromTo(checks, { scale: 0 }, { scale: 1, transformOrigin: "center", stagger: 0.12, ease: "none" }, 0.25);
+            }
+        });
     });
 }
 
@@ -280,17 +419,6 @@ function finalCta(root: HTMLElement): Cleanup {
     });
 }
 
-function message(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
-        if (!desktop) {
-            reveal(root);
-            return;
-        }
-        const words = root.querySelectorAll("[data-word]");
-        scrollTimeline(root, { start: "top top", end: "+=130%", pin: true }).fromTo(words, textFrom, { ...textTo, stagger: 0.6, duration: 0.7 });
-    });
-}
-
 function serviceOverview(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
         reveal(root);
@@ -324,115 +452,6 @@ function serviceOverview(root: HTMLElement): Cleanup {
             });
         });
         return () => cleanups.forEach((cleanup) => cleanup());
-    });
-}
-
-function horizontal(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
-        if (!desktop) {
-            reveal(root);
-            return;
-        }
-        const track = root.querySelector<HTMLElement>("[data-track]");
-        const viewport = root.querySelector<HTMLElement>("[data-viewport]");
-        if (!track || !viewport) return;
-        setSectionState(root, "horizontal", true);
-        const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
-        const cards = track.querySelectorAll<HTMLElement>("[data-slide]");
-        const counter = root.querySelector<HTMLElement>("[data-counter]");
-        const progress = root.querySelector<HTMLElement>("[data-slider-progress]");
-        const timeline = scrollTimeline(root, {
-            start: "top top",
-            end: () => `+=${Math.max(distance(), window.innerHeight)}`,
-            pin: true,
-            // containerAnimation requires linear track movement for correct card measurements.
-        }).to(track, { x: () => -distance(), ease: "none" });
-        timeline.eventCallback("onUpdate", () => {
-            if (counter) counter.textContent = `${String(Math.round(timeline.progress() * (cards.length - 1)) + 1).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
-        });
-        if (progress) timeline.fromTo(progress, { scaleX: 0 }, { scaleX: 1, ease: "none" }, 0);
-        cards.forEach((card) => {
-            const image = card.querySelector<HTMLElement>("[data-slide-image]");
-            if (image) scrollTimeline(card, { containerAnimation: timeline, start: "left right", end: "right left" }).fromTo(image, { scale: 1 }, { scale: 1.06 });
-        });
-        let focusFrame = 0;
-        const select = (index: number) => {
-            if (index < 0) return;
-            cancelAnimationFrame(focusFrame);
-            // Native anchor/focus scrolling finishes before we select the horizontal card.
-            focusFrame = requestAnimationFrame(() => {
-                const trigger = timeline.scrollTrigger;
-                if (!trigger) return;
-                window.scrollTo({ top: trigger.start + (index / Math.max(1, cards.length - 1)) * (trigger.end - trigger.start), behavior: "instant" });
-                ScrollTrigger.update();
-            });
-        };
-        const focus = (event: FocusEvent) => select(Array.from(cards).findIndex((card) => card.contains(event.target as Node)));
-        const hash = () => select(Array.from(cards).findIndex((card) => `#${card.id}` === window.location.hash));
-        root.addEventListener("focusin", focus);
-        window.addEventListener("hashchange", hash);
-        hash();
-        return () => {
-            cancelAnimationFrame(focusFrame);
-            root.removeEventListener("focusin", focus);
-            window.removeEventListener("hashchange", hash);
-            setSectionState(root, "horizontal", false);
-            if (counter) counter.textContent = `01 / ${String(cards.length).padStart(2, "0")}`;
-            if (progress) progress.style.removeProperty("transform");
-        };
-    });
-}
-
-function showcase(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
-        if (!desktop) {
-            reveal(root);
-            return;
-        }
-        const cards = root.querySelectorAll<HTMLElement>("[data-showcase-card]");
-        const indicator = root.querySelector<HTMLElement>("[data-counter]");
-        setSectionState(root, "pinned", true);
-        gsap.set(cards, textFrom);
-        gsap.set(cards[0], textTo);
-        const timeline = scrollTimeline(root, {
-            start: "top top",
-            end: () => `+=${window.innerHeight * 2.5}`,
-            pin: true,
-        });
-        timeline.eventCallback("onUpdate", () => {
-            if (indicator)
-                indicator.textContent = `${String(Math.min(cards.length, Math.floor(timeline.progress() * (cards.length - 1)) + 1)).padStart(2, "0")} / ${String(cards.length).padStart(2, "0")}`;
-        });
-        cards.forEach((card, index) => {
-            if (!index) return;
-            timeline.to(cards[index - 1], { autoAlpha: 0, y: -36, duration: 0.35 }, index - 1).to(card, { ...textTo, duration: 0.5 }, index - 1 + 0.15);
-        });
-        return () => {
-            setSectionState(root, "pinned", false);
-            if (indicator) indicator.textContent = `01 / ${String(cards.length).padStart(2, "0")}`;
-        };
-    });
-}
-
-function stacking(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
-        if (!desktop) {
-            reveal(root);
-            return;
-        }
-        const cards = root.querySelectorAll<HTMLElement>("[data-stack-card]");
-        setSectionState(root, "stacking", true);
-        gsap.set(cards, { zIndex: (index) => index + 1 });
-        gsap.set(Array.from(cards).slice(1), { yPercent: 120 });
-        const timeline = scrollTimeline(root, { start: "top top", end: () => `+=${window.innerHeight * 2}`, pin: true });
-        cards.forEach((card, index) => {
-            if (!index) return;
-            timeline
-                .to(cards[index - 1], { scale: 0.94, y: -18 * (cards.length - index), duration: 1 }, index - 1)
-                .to(card, { yPercent: 0, duration: 1 }, index - 1)
-                .fromTo(card.firstElementChild, textFrom, textTo, index - 1);
-        });
-        return () => setSectionState(root, "stacking", false);
     });
 }
 
@@ -540,6 +559,99 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     };
 }
 
+function sectionNavigation(root: HTMLElement): Cleanup {
+    const media = gsap.matchMedia(root);
+    media.add({ desktop: "(min-width: 64rem)", reduced: "(prefers-reduced-motion: reduce)" }, (context) => {
+        const { desktop, reduced } = context.conditions as Conditions;
+        if (!desktop) return;
+        const items = Array.from(root.querySelectorAll<HTMLAnchorElement>("[data-section-target]")).flatMap((link) => {
+            const target = document.getElementById(link.dataset.sectionTarget ?? "")?.closest<HTMLElement>("section");
+            const bar = link.querySelector<HTMLElement>("[data-section-bar]");
+            return target && bar ? [{ link, target, bar }] : [];
+        });
+        if (!items.length) return;
+
+        gsap.set(items.map(({ bar }) => bar), { width: 28 });
+        const widths = items.map(({ bar }) => reduced ? gsap.quickSetter(bar, "width", "px") : gsap.quickTo(bar, "width", { duration: 0.3, ease: MOTION_EASE }));
+        const expand = (pointerY: number) => {
+            items.forEach(({ link }, index) => {
+                const bounds = link.getBoundingClientRect();
+                const distance = (pointerY - bounds.top - bounds.height / 2) / 100;
+                widths[index](28 + 52 * Math.exp(-distance * distance));
+            });
+        };
+        const reset = () => {
+            const focused = items.find(({ link }) => link.matches(":focus-visible"));
+            if (focused) {
+                const bounds = focused.link.getBoundingClientRect();
+                expand(bounds.top + bounds.height / 2);
+            } else widths.forEach((setWidth) => setWidth(28));
+        };
+        const move = (event: PointerEvent) => expand(event.clientY);
+        const focus = (event: FocusEvent) => {
+            if (!(event.target instanceof HTMLElement) || !event.target.matches(":focus-visible")) return;
+            const bounds = event.target.getBoundingClientRect();
+            expand(bounds.top + bounds.height / 2);
+        };
+
+        let positions: number[] = [];
+        const updateCurrent = () => {
+            const position = window.scrollY + window.innerHeight * 0.3;
+            let current = 0;
+            positions.forEach((start, index) => {
+                if (start <= position) current = index;
+            });
+            items.forEach(({ link }, index) => {
+                if (index === current) link.setAttribute("aria-current", "location");
+                else link.removeAttribute("aria-current");
+            });
+        };
+        const measure = () => {
+            const triggers = ScrollTrigger.getAll();
+            positions = items.map(({ target }) => {
+                const pinned = triggers.find((trigger) => trigger.pin === target);
+                // The gallery first lets its preceding cover scroll away for one viewport.
+                if (pinned) return pinned.start + (target.dataset.galleryReveal === "true" ? target.offsetHeight : 0);
+                return target.getBoundingClientRect().top + window.scrollY;
+            });
+            updateCurrent();
+        };
+        const navigate = (event: MouseEvent) => {
+            if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            const index = items.findIndex(({ link }) => event.target instanceof Node && link.contains(event.target));
+            if (index < 0) return;
+            event.preventDefault();
+            const top = Math.max(0, positions[index]);
+            // Keep the scroll target through image/font-triggered ScrollTrigger refreshes.
+            if (!reduced && smoothScroller) smoothScroller.scrollTo(top);
+            else window.scrollTo({ top, behavior: "instant" });
+        };
+
+        ScrollTrigger.create({ start: 0, end: "max", onUpdate: updateCurrent });
+        ScrollTrigger.addEventListener("refresh", measure);
+        root.addEventListener("pointermove", move, { passive: true });
+        root.addEventListener("pointerleave", reset);
+        root.addEventListener("focusin", focus);
+        root.addEventListener("focusout", reset);
+        root.addEventListener("click", navigate);
+        measure();
+
+        return () => {
+            ScrollTrigger.removeEventListener("refresh", measure);
+            root.removeEventListener("pointermove", move);
+            root.removeEventListener("pointerleave", reset);
+            root.removeEventListener("focusin", focus);
+            root.removeEventListener("focusout", reset);
+            root.removeEventListener("click", navigate);
+            items.forEach(({ link }, index) => {
+                if (index === 0) link.setAttribute("aria-current", "location");
+                else link.removeAttribute("aria-current");
+            });
+        };
+    });
+    return () => media.revert();
+}
+
 class Animation {
     static layout = {
         loading: pageLoading,
@@ -547,6 +659,7 @@ class Animation {
             const media = gsap.matchMedia();
             media.add(`${getBreakpointQuery("tablet")} and (prefers-reduced-motion: no-preference)`, () => {
                 const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
+                smoothScroller = lenis;
                 const update = () => ScrollTrigger.update();
                 lenis.on("scroll", update);
                 const tick = (time: number) => lenis.raf(time * 1000);
@@ -554,6 +667,7 @@ class Animation {
                 return () => {
                     gsap.ticker.remove(tick);
                     lenis.off("scroll", update);
+                    if (smoothScroller === lenis) smoothScroller = undefined;
                     lenis.destroy();
                 };
             });
@@ -582,11 +696,27 @@ class Animation {
         },
     };
 
-    static landing = { section: { heroIntro: intro, creatorGallery, brandIntro: entrance, beliefMoments, supportOverview: entrance, studioPreview: imageReveal, creatorStories: entrance, finalCta } };
-    static about = { section: { hero: intro, brandPhilosophy: entrance, brandMessage: message, location: entrance } };
-    static services = { section: { hero: intro, overview: serviceOverview, slider: horizontal, closing: imageReveal } };
-    static equipment = { section: { hero: intro, showcase, grid: entrance, studioEnvironment: imageReveal } };
-    static benefits = { section: { hero: intro, overview: entrance, stickyCards: stacking, closing: imageReveal } };
+    static landing = {
+        navigation: sectionNavigation,
+        section: {
+            heroIntro: intro,
+            creatorGallery,
+            creatorEveryday,
+            creatorSolutions,
+            brandIntro: entrance,
+            beliefMoments,
+            supportOverview: entrance,
+            studioPreview: imageReveal,
+            creatorStories: entrance,
+            creatorJourney: entrance,
+            creatorFaq,
+            finalCta,
+        },
+    };
+    static about = { section: { hero: intro, brandPhilosophy: entrance, location: entrance } };
+    static services = { section: { hero: intro, overview: serviceOverview, closing: entrance } };
+    static equipment = { section: { hero: intro, grid: entrance, studioEnvironment: entrance } };
+    static benefits = { section: { hero: intro, overview: entrance, closing: entrance } };
 }
 
 export default Animation;

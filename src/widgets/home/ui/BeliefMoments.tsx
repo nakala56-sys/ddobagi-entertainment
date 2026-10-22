@@ -17,9 +17,9 @@ const MOMENT_IMAGES = [
 ] as const;
 
 const SIZE_CLASS = {
-    sm: "w-[min(42vw,22rem)] aspect-[3/4]",
-    md: "w-[min(48vw,28rem)] aspect-[4/5]",
-    lg: "w-[min(56vw,34rem)] aspect-[3/4]",
+    sm: "w-[42vw] max-w-[22rem] aspect-[3/4]",
+    md: "w-[48vw] max-w-[28rem] aspect-[4/5]",
+    lg: "w-[56vw] max-w-[34rem] aspect-[3/4]",
 } as const;
 
 export function BeliefMoments() {
@@ -44,37 +44,32 @@ export function BeliefMoments() {
             aria-labelledby="home-belief-moments-title"
         >
             <div className="sticky top-0 z-20 flex h-svh items-center justify-center pointer-events-none">
-                <div className="content-width pointer-events-auto mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] flex-col items-center text-center px-5">
-                    <p
-                        className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                        data-reveal
-                    >
-                        02 — OUR BELIEF
-                    </p>
+                <div className="content-width pointer-events-auto mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center text-center px-[2rem]">
                     <h2
                         id="home-belief-moments-title"
-                        className="display-title mt-5 tablet:mt-7 text-4xl tablet:text-5xl pc:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)]"
+                        className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580]"
                         data-reveal
                     >
-                        가능성은 당신에게.
-                        <br />그 다음은 <span className="accent text-[var(--accent)]">우리 함께.</span>
+                        크리에이터의 방송을,
+                        <br />
+                        함께 기획하고 <span className="accent text-[var(--accent,#000000)]">키웁니다.</span>
                     </h2>
                     <p
-                        className="body-copy mt-10 max-w-150 text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                        className="body-copy mt-[4rem] max-w-[60rem] text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
-                        각자의 매력을 발견하고, 콘텐츠로 연결하고,
+                        방송 스타일과 콘텐츠 방향, 시청자와의 소통까지.
                         <br />
-                        꾸준히 성장할 수 있는 환경을 만듭니다.
+                        크리에이터의 개성에 맞는 방향을 찾고,
                         <br />
-                        또바기는 크리에이터의 다음을 함께하는 파트너입니다.
+                        꾸준한 방송 활동을 지원합니다.
                     </p>
                     <Link
-                        className="text-[inherit] mt-12 inline-flex items-center gap-8 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent py-3 text-base font-[650]"
+                        className="text-[inherit] mt-[4.8rem] inline-flex items-center gap-[3.2rem] border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent py-[1.2rem] text-[1.6rem] font-[650] leading-[1.0]"
                         href="/about"
                         data-reveal
                     >
-                        또바기 알아보기 <span aria-hidden="true">↗</span>
+                        또바기 엔터테인먼트 소개 <span aria-hidden="true">↗</span>
                     </Link>
                 </div>
             </div>

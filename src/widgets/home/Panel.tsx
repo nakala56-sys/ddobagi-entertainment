@@ -22,9 +22,14 @@ export default function Panel() {
                 <Layer.BeliefMoments />
                 <Layer.SupportOverview />
                 <Layer.CreatorGallery />
+                <Layer.CreatorEveryday />
+                <Layer.CreatorSolutions />
                 {/* <Layer.StudioPreview /> */}
                 {/* <Layer.CreatorStories /> */}
+                <Layer.CreatorJourney />
+                <Layer.CreatorFaq />
                 <Layer.FinalCta />
+                <Layer.SectionNavigation />
             </div>
             <Layer.Modal />
         </HomePageProvider>

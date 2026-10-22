@@ -14,26 +14,20 @@ export function BrandIntro() {
     return (
         <section
             ref={sectionRef}
-            className="section relative z-10 py-18 tablet:py-35 content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto brand-intro"
+            className="section relative z-10 py-[7.2rem] tablet:py-[14rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto brand-intro"
             aria-labelledby="home-brand-title"
         >
-            <p
-                className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                data-reveal
-            >
-                02 — OUR BELIEF
-            </p>
             <h2
                 id="home-brand-title"
-                className="display-title text-4xl tablet:text-5xl pc:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] mt-5 tablet:mt-7"
+                className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] mt-[2rem] tablet:mt-[2.8rem]"
                 data-reveal
             >
                 가능성은 당신에게.
-                <br />그 다음은 <span className="accent text-[var(--accent)]">우리 함께.</span>
+                <br />그 다음은 <span className="accent text-[var(--accent,#000000)]">우리 함께.</span>
             </h2>
-            <div className="intro-bottom flex items-start tablet:items-end justify-between gap-8 tablet:gap-10 mt-8 tablet:mt-13 flex-col tablet:flex-row mb-0">
+            <div className="intro-bottom flex items-start tablet:items-end justify-between gap-[3.2rem] tablet:gap-[4rem] mt-[3.2rem] tablet:mt-[5.2rem] flex-col tablet:flex-row mb-0">
                 <p
-                    className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                    className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                     data-reveal
                 >
                     각자의 매력을 발견하고, 콘텐츠로 연결하고,
@@ -43,7 +37,7 @@ export function BrandIntro() {
                     또바기는 크리에이터의 다음을 함께하는 파트너입니다.
                 </p>
                 <Link
-                    className="text-[inherit] inline-flex gap-8 items-center font-[650] text-base py-3 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent"
+                    className="text-[inherit] inline-flex gap-[3.2rem] items-center font-[650] text-[1.6rem] py-[1.2rem] border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent leading-[1.0]"
                     href="/about"
                     data-reveal
                 >
