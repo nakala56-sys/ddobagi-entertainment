@@ -21,13 +21,13 @@ export function ServicesHero() {
                 text={["YOU CREATE.", "WE SUPPORT."]}
                 id="services-hero-title"
                 as="h1"
-                className="px-5 tablet:px-15 pt-38 tablet:pt-40 pb-10 tablet:pb-14 flex flex-col"
-                textClassName="mx-auto w-full max-w-330 text-left text-[5.2rem] leading-[round(up,1.04em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)]"
+                className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
+                textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
                 speed={1}
                 distortion={0.8}
                 before={
                     <p
-                        className="eyebrow mx-auto mb-8 tablet:mb-10 w-full max-w-330 text-left text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
+                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase"
                         data-reveal
                     >
                         OUR SERVICES
@@ -35,12 +35,12 @@ export function ServicesHero() {
                 }
             >
                 <div
-                    className="hero-bottom mx-auto w-full max-w-330 mt-12 tablet:mt-16 text-left break-keep"
+                    className="hero-bottom mx-auto w-full max-w-[132rem] mt-[4.8rem] tablet:mt-[6.4rem] text-left break-keep"
                     data-reveal
                 >
-                    <h2 className="text-2xl tablet:text-3xl font-[550] tracking-[round(nearest,-0.035em,0.4rem)]">당신은 콘텐츠에 집중하세요.</h2>
-                    <p className="mt-4 text-base text-[#53616c]">방송 환경부터 운영과 기획까지, 필요한 순간에 함께합니다.</p>
-                    <span className="scroll-hint inline-flex items-center gap-6 mt-12 tablet:mt-16 text-xs tracking-[round(nearest,0.12em,0.4rem)]">
+                    <h2 className="text-[2.4rem] tablet:text-[3rem] font-[550] leading-[1.5]">크리에이터 매니지먼트부터 브랜드 협업까지.</h2>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#53616c] leading-[1.5]">라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성을 함께합니다.</p>
+                    <span className="scroll-hint inline-flex items-center gap-[2.4rem] mt-[4.8rem] tablet:mt-[6.4rem] text-[1.2rem] leading-[1.0]">
                         SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
                     </span>
                 </div>

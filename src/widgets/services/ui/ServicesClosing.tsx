@@ -15,7 +15,7 @@ export function ServicesClosing() {
     return (
         <section
             ref={sectionRef}
-            className="closing relative overflow-clip min-h-[75svh] tablet:min-h-[85svh] flex items-center py-20 tablet:py-30 section-dark [--accent:#ffffff] text-[var(--paper)] bg-[#000000]"
+            className="closing relative overflow-clip min-h-[75svh] tablet:min-h-[85svh] flex items-center py-[8rem] tablet:py-[12rem] section-dark [--accent:#ffffff] text-[#ffffff] bg-[#000000]"
             aria-labelledby="services-closing-title"
         >
             <div
@@ -30,15 +30,9 @@ export function ServicesClosing() {
                     sizes="100vw"
                 />
             </div>
-            <div className="closing-content relative text-center flex flex-col items-center gap-8 tablet:gap-9 content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto">
-                <p
-                    className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                    data-reveal
-                >
-                    NEXT — CREATE TOGETHER
-                </p>
+            <div className="closing-content relative text-center flex flex-col items-center gap-[3.2rem] tablet:gap-[3.6rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
                 <h2
-                    className="text-[4rem] tablet:text-[6.8rem] pc:text-[11.2rem] leading-[round(up,1.02em,0.4rem)] tracking-[round(nearest,-0.055em,0.4rem)] font-[550]"
+                    className="text-[4rem] tablet:text-[6.8rem] pc:text-[11.2rem] leading-[1.5] font-[550]"
                     id="services-closing-title"
                     data-reveal
                 >
@@ -47,13 +41,13 @@ export function ServicesClosing() {
                     OUR PASSION.
                 </h2>
                 <p
-                    className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[#b5b5b5]"
+                    className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#b5b5b5]"
                     data-reveal
                 >
                     어떤 방송을 만들고 싶은지, 함께 이야기해요.
                 </p>
                 <div data-reveal>
-                    <ContactCreatorButton>또바기와 함께 시작하기</ContactCreatorButton>
+                    <ContactCreatorButton />
                 </div>
             </div>
         </section>

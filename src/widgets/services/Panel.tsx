@@ -19,7 +19,6 @@ export default function Panel() {
             >
                 <Layer.ServicesHero />
                 <Layer.ServicesOverview />
-                <Layer.ServicesSlider />
                 <Layer.ServicesClosing />
             </div>
             <Layer.Modal />

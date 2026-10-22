@@ -15,46 +15,35 @@ export function ServicesOverview() {
     return (
         <section
             ref={sectionRef}
-            className="section overflow-x-clip py-18 tablet:py-30 content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto"
+            className="section overflow-x-clip py-[7.2rem] tablet:py-[12rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto"
             aria-labelledby="services-overview-title"
         >
-            <p
-                className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                data-reveal
-            >
-                01 — WHAT WE DO
-            </p>
             <h2
                 id="services-overview-title"
-                className="display-title text-4xl tablet:text-5xl pc:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] mt-5 tablet:mt-7"
+                className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] mt-[2rem] tablet:mt-[2.8rem]"
                 data-reveal
             >
-                방송의 시작부터,
+                매니지먼트부터
                 <br />
-                콘텐츠의 다음까지.
+                브랜드 협업까지.
             </h2>
-            <div className="service-list mt-15 border-t-[0.4rem] border-solid border-t-[var(--line)]">
+            <div className="service-list mt-[6rem] border-t-[0.4rem] border-solid border-t-[#dedede]">
                 {services.map((item, index) => (
-                    <a
+                    <article
                         key={item.id}
-                        href={`#service-${item.id}`}
-                        className="service-row relative grid [grid-template-columns:3.2rem_1fr_3.2rem] tablet:[grid-template-columns:5.2rem_1fr_5.2rem] items-center gap-3 tablet:gap-5 py-6 tablet:py-9 border-b-[0.4rem] border-solid border-b-[var(--line)]"
+                        id={`service-${item.id}`}
+                        className="service-row relative grid [grid-template-columns:3.2rem_1fr] tablet:[grid-template-columns:5.2rem_1fr] items-start gap-[1.2rem] tablet:gap-[2rem] py-[2.4rem] tablet:py-[3.6rem] border-b-[0.4rem] border-solid border-b-[#dedede]"
                         data-service-row
                         data-reveal
                     >
-                        <span className="card-number text-xs text-[var(--accent)] tracking-[round(nearest,0.12em,0.4rem)]">{String(index + 1).padStart(2, "0")}</span>
+                        <span className="card-number text-[1.2rem] text-[var(--accent,#000000)] leading-[1.0]">{String(index + 1).padStart(2, "0")}</span>
                         <div>
-                            <h3 className="text-2xl tablet:text-3xl pc:text-[5.2rem] tracking-[round(nearest,-0.045em,0.4rem)] font-[550]">{item.englishTitle}</h3>
-                            <p className="text-base text-[var(--muted)] mt-2">{item.title}</p>
+                            <p className="eyebrow text-[1.2rem] text-[#737373] uppercase leading-[1.0]">{item.englishTitle}</p>
+                            <h3 className="mt-[1.2rem] text-[2.4rem] tablet:text-[3rem] pc:text-[5.2rem] font-[550] break-keep leading-[1.5]">{item.title}</h3>
+                            <p className="mt-[1.6rem] max-w-[88rem] text-[1.6rem] leading-[1.5] text-[#737373] break-keep">{item.description}</p>
                         </div>
-                        <span
-                            className="row-arrow text-3xl text-right"
-                            aria-hidden="true"
-                        >
-                            ↗
-                        </span>
                         <div
-                            className="service-preview invisible absolute -top-8 left-[68%] w-70 h-55 pointer-events-none z-[2] overflow-clip hidden tablet:block"
+                            className="service-preview invisible absolute -top-[3.2rem] left-[68%] w-[28rem] h-[22rem] pointer-events-none z-[2] overflow-clip hidden tablet:block"
                             data-preview
                         >
                             <Image
@@ -65,7 +54,7 @@ export function ServicesOverview() {
                                 sizes="280px"
                             />
                         </div>
-                    </a>
+                    </article>
                 ))}
             </div>
         </section>
