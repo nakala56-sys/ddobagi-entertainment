@@ -21,6 +21,9 @@ type Cleanup = () => void;
 type Conditions = { desktop: boolean; reduced: boolean };
 type SectionAnimation = (root: HTMLElement, conditions: Conditions) => void | Cleanup;
 
+const pendingRefreshes = new Set<Cleanup>();
+let refreshFrame: number | undefined;
+
 function setSectionState(root: Element, state: string, enabled: boolean) {
     const targets = [root, ...root.querySelectorAll(`[data-${state}-target]`)];
     targets.forEach((target) => {
@@ -33,11 +36,13 @@ function setSectionState(root: Element, state: string, enabled: boolean) {
 function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     const media = gsap.matchMedia(root);
     let active = true;
-    let refreshFrame = 0;
     const refresh = () => {
-        cancelAnimationFrame(refreshFrame);
+        pendingRefreshes.add(refresh);
+        if (refreshFrame !== undefined) return;
         refreshFrame = requestAnimationFrame(() => {
-            if (active) ScrollTrigger.refresh();
+            refreshFrame = undefined;
+            pendingRefreshes.clear();
+            ScrollTrigger.refresh();
         });
     };
     media.add({ all: "all", desktop: getBreakpointQuery("tablet"), reduced: "(prefers-reduced-motion: reduce)" }, (context) => {
@@ -54,7 +59,11 @@ function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     refresh();
     return () => {
         active = false;
-        cancelAnimationFrame(refreshFrame);
+        pendingRefreshes.delete(refresh);
+        if (!pendingRefreshes.size && refreshFrame !== undefined) {
+            cancelAnimationFrame(refreshFrame);
+            refreshFrame = undefined;
+        }
         images.forEach((image) => image.removeEventListener("load", refresh));
         media.revert();
     };
@@ -574,9 +583,12 @@ function sectionNavigation(root: HTMLElement): Cleanup {
         gsap.set(items.map(({ bar }) => bar), { width: 28 });
         const widths = items.map(({ bar }) => reduced ? gsap.quickSetter(bar, "width", "px") : gsap.quickTo(bar, "width", { duration: 0.3, ease: MOTION_EASE }));
         const expand = (pointerY: number) => {
-            items.forEach(({ link }, index) => {
+            const centers = items.map(({ link }) => {
                 const bounds = link.getBoundingClientRect();
-                const distance = (pointerY - bounds.top - bounds.height / 2) / 100;
+                return bounds.top + bounds.height / 2;
+            });
+            centers.forEach((center, index) => {
+                const distance = (pointerY - center) / 100;
                 widths[index](28 + 52 * Math.exp(-distance * distance));
             });
         };
@@ -595,12 +607,15 @@ function sectionNavigation(root: HTMLElement): Cleanup {
         };
 
         let positions: number[] = [];
+        let currentIndex = -1;
         const updateCurrent = () => {
             const position = window.scrollY + window.innerHeight * 0.3;
             let current = 0;
             positions.forEach((start, index) => {
                 if (start <= position) current = index;
             });
+            if (current === currentIndex) return;
+            currentIndex = current;
             items.forEach(({ link }, index) => {
                 if (index === current) link.setAttribute("aria-current", "location");
                 else link.removeAttribute("aria-current");
