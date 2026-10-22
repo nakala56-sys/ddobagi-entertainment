@@ -2,72 +2,13 @@
 
 /* 62.5% root: 1rem = 10px; each spacing step is 0.4rem (4px). */
 @theme static {
-    --spacing: 0.4rem;
-    --animate-text-shimmer: text-shimmer var(--shimmer-duration, 2s) var(--ease-out) infinite;
-    --font-sans: var(--font-suit), "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
-    --font-nanum: var(--font-nanum-square), sans-serif;
     --breakpoint-*: initial;
     --breakpoint-mobile: 21.5rem; /* 344px */
     --breakpoint-tablet: 48rem; /* 768px */
     --breakpoint-pc: 90rem; /* 1440px */
-    --text-xs: 1.2rem;
-    --text-sm: 1.6rem;
-    --text-base: 1.6rem;
-    --text-lg: 2rem;
-    --text-xl: 2rem;
-    --text-2xl: 2.4rem;
-    --text-3xl: 3.2rem;
-    --text-4xl: 3.6rem;
-    --text-5xl: 4.8rem;
-    --text-6xl: 6rem;
-    --text-7xl: 7.2rem;
-    --text-8xl: 9.6rem;
-    --text-9xl: 12.8rem;
-    --text-xs--line-height: 1.6rem;
-    --text-sm--line-height: 2.4rem;
-    --text-base--line-height: 2.4rem;
-    --text-lg--line-height: 2.8rem;
-    --text-xl--line-height: 2.8rem;
-    --text-2xl--line-height: 3.2rem;
-    --text-3xl--line-height: 4rem;
-    --text-4xl--line-height: 4rem;
-    --text-5xl--line-height: 4.8rem;
-    --text-6xl--line-height: 6rem;
-    --text-7xl--line-height: 7.2rem;
-    --text-8xl--line-height: 9.6rem;
-    --text-9xl--line-height: 12.8rem;
-    --radius-xs: 0.4rem;
-    --radius-sm: 0.4rem;
-    --radius-md: 0.8rem;
-    --radius-lg: 0.8rem;
-    --radius-xl: 1.2rem;
-    --radius-2xl: 1.6rem;
-    --radius-3xl: 2.4rem;
-    --radius-4xl: 3.2rem;
-    --shadow-2xs: 0 0.4rem 0.4rem #0000000d;
-    --shadow-xs: 0 0.4rem 0.8rem #0000000d;
-    --shadow-sm: 0 0.4rem 1.2rem #00000015;
-    --shadow-md: 0 0.4rem 1.6rem #0000001a;
-    --shadow-lg: 0 0.8rem 2.4rem #0000001a;
-    --shadow-xl: 0 1.2rem 3.2rem #0000001a;
-    --shadow-2xl: 0 2.4rem 4.8rem #00000040;
-    --ease-in: cubic-bezier(0.22, 1, 0.36, 1);
-    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --ease-in-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --paper: #ffffff;
-    --ink: #000000;
-    --muted: #737373;
-    --accent: #000000;
-    --line: #dedede;
-    --adaptive-grey50: #ffffff;
-    --adaptive-grey900: #000000;
-    --adaptive-grey500: #737373;
-    --adaptive-black900: #000000;
-    --adaptive-black100: #ededed;
-    --adaptive-black500: #737373;
 }
 
-@layer base {
+/* @layer base {
     html {
         @apply max-w-full bg-white leading-[1.25] scroll-pt-[3.2rem] tablet:scroll-pt-[10rem] [scrollbar-width:none] [-webkit-text-size-adjust:100%] motion-reduce:scroll-auto;
     }
@@ -112,7 +53,7 @@
     :focus-visible {
         @apply outline-[0.4rem] outline-solid outline-[var(--accent)] outline-offset-[0.8rem];
     }
-}
+} */
 
 @keyframes text-shimmer {
     from {
