@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { navigation } from "@/shared/config/navigation";
-import { ContactCreatorButton } from "@/features/contactCreator";
 import Animation from "@/shared/utils/animation";
 import { Sidebar } from "../Sidebar";
 
@@ -17,19 +16,18 @@ export function SiteHeader() {
         if (!headerRef.current) return;
         return Animation.layout.header(headerRef.current);
     }, []);
-    const isHome = pathname === "/";
     return (
         <header
             ref={headerRef}
-            className={`site-header [--accent:#17212b] [--header-ink:#17212b] h-19 tablet:h-23 absolute top-0 left-0 w-full z-[20] flex items-center justify-between py-0 text-[var(--header-ink)] px-5 tablet:px-8 pc:px-10`}
+            className={`site-header [--accent:#17212b] [--header-ink:#17212b] h-[7.6rem] tablet:h-[9.2rem] absolute top-0 left-0 w-full z-[20] flex items-center justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:px-[3.2rem] pc:px-[4rem]`}
         >
             <Link
-                className="brand-logo flex items-center gap-3 text-base tablet:text-lg font-[750] leading-[round(up,1.1em,0.4rem)] tracking-[round(nearest,0.07em,0.4rem)]"
+                className="brand-logo flex items-center gap-[1.2rem] text-[1.6rem] tablet:text-[1.8rem] font-[750] leading-[1.0]"
                 href="/"
                 aria-label="또바기 엔터테인먼트 홈"
             >
                 <Image
-                    className={`logo-symbol w-10 tablet:w-12 h-auto shrink-0 object-contain grayscale ${isHome ? "" : ""} `}
+                    className="logo-symbol w-[4rem] tablet:w-[4.8rem] h-auto shrink-0 object-contain grayscale"
 
                     src="/images/common/tobbagi-logo.webp"
                     alt=""
@@ -38,20 +36,21 @@ export function SiteHeader() {
                     priority
                 />
                 <section className="flex flex-col">
-                    <p className="text-[1.6rem]">TOBBAGI</p>
-                    <p className="text-[1.6rem]">ENTERTAINMENT</p>
+                    <p className="text-[1.6rem] leading-[1.0]">TOBBAGI</p>
+                    <p className="text-[1.6rem] leading-[1.0]">ENTERTAINMENT</p>
                 </section>
                 {/* <span>
                     TOBBAGI<small>ENTERTAINMENT</small>
                 </span> */}
             </Link>
             <nav
-                className="desktop-navigation hidden tablet:flex gap-5 pc:gap-9 text-[1.6rem]"
+                className="desktop-navigation hidden tablet:flex gap-[0.8rem] min-[64rem]:gap-[2rem] pc:gap-[3.6rem] text-[1.4rem] min-[64rem]:text-[1.6rem]"
                 aria-label="주 메뉴"
             >
                 {navigation.map((item) => (
                     <Link
-                        className="aria-[current=page]:text-current aria-[current=page]:underline aria-[current=page]:underline-offset-[0.8rem]"
+                        className="text-[1.8rem] leading-[1.0]"
+                        // className="text-[1.8rem] aria-[current=page]:text-current aria-[current=page]:underline aria-[current=page]:underline-offset-[0.8rem]"
                         key={item.href}
                         href={item.href}
                         aria-current={pathname === item.href ? "page" : undefined}
@@ -60,20 +59,20 @@ export function SiteHeader() {
                     </Link>
                 ))}
             </nav>
-            <div className="header-actions flex items-center gap-5">
-                <ContactCreatorButton className="header-contact [&.header-contact]:text-xs [&.header-contact]:p-[1.2rem_1.6rem] [&.header-contact]:gap-5 [&.header-contact]:hidden tablet:[&.header-contact]:inline-flex">
-                    Let’s Talk
-                </ContactCreatorButton>
+            <div className="header-actions flex items-center gap-[2rem]">
+                {/* <ContactCreatorButton className="header-contact whitespace-nowrap [&.header-contact]:text-[1.2rem] [&.header-contact]:p-[1.2rem_1.6rem] [&.header-contact]:gap-[2rem] [&.header-contact]:hidden tablet:[&.header-contact]:inline-flex">
+                    크리에이터 상담하기
+                </ContactCreatorButton> */}
                 <button
-                    className="menu-toggle block tablet:hidden w-10 h-10 border-0 bg-transparent text-current"
+                    className="menu-toggle block tablet:hidden w-[4rem] h-[4rem] border-0 bg-transparent text-current leading-[1.0]"
                     type="button"
                     aria-label="메뉴 열기"
                     aria-expanded={menuOpen}
                     aria-controls="mobile-menu"
                     onClick={() => setMenuOpen(true)}
                 >
-                    <span className="block h-1 bg-[currentColor] w-7 m-2" />
-                    <span className="block h-1 bg-[currentColor] w-7 m-2" />
+                    <span className="block h-[0.4rem] bg-[currentColor] w-[2.8rem] m-[0.8rem]" />
+                    <span className="block h-[0.4rem] bg-[currentColor] w-[2.8rem] m-[0.8rem]" />
                 </button>
             </div>
             <Sidebar

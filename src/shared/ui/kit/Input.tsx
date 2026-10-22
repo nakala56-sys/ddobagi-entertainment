@@ -10,10 +10,10 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size">
 }
 
 const sizeClasses: Record<InputSize, string> = {
-    sm: "min-h-11",
-    md: "min-h-13",
-    lg: "min-h-13",
-    xlg: "min-h-18",
+    sm: "min-h-[4.4rem]",
+    md: "min-h-[5.2rem]",
+    lg: "min-h-[5.2rem]",
+    xlg: "min-h-[7.2rem]",
 };
 
 const Input = ({ className = "", name, placeholder, type, size = "md", ...props }: InputProps) => {
@@ -22,7 +22,7 @@ const Input = ({ className = "", name, placeholder, type, size = "md", ...props 
     return (
         <input
             {...props}
-            className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[var(--adaptive-black100)] hover:border-[var(--adaptive-black500)] px-4 transition-colors`}
+            className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[#ededed] hover:border-[#737373] px-[1.6rem] transition-colors leading-[1.0]`}
             name={name}
             placeholder={placeholder}
             type={type}

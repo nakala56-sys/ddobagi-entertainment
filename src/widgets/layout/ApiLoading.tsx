@@ -9,7 +9,7 @@ export function ApiLoading() {
         <div
             role="status"
             aria-live="polite"
-            className="fixed bottom-16 left-1/2 z-[150] -translate-x-1/2 rounded-full bg-black px-6 py-3 text-base text-white"
+            className="fixed bottom-[6.4rem] left-1/2 z-[150] -translate-x-1/2 rounded-full bg-black px-[2.4rem] py-[1.2rem] text-[1.6rem] text-white"
         >
             처리 중입니다…
         </div>

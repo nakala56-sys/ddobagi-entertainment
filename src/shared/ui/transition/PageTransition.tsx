@@ -27,7 +27,7 @@ export function PageTransition({ children, waveIntro = true }: { children: React
             </div>
             {!ready ? (
                 <div
-                    className="page-loading min-h-[100svh] grid [place-content:center] text-[#ededed] text-base tracking-[round(nearest,0.08em,0.4rem)] page-loading-overlay fixed inset-0 z-[200] bg-[#ffffff] p-5 text-center"
+                    className="page-loading min-h-[100svh] grid [place-content:center] text-[#ededed] text-[1.6rem] page-loading-overlay fixed inset-0 z-[200] bg-[#ffffff] p-[2rem] text-center"
                     data-page-loader
                     data-lenis-prevent
                     role="status"

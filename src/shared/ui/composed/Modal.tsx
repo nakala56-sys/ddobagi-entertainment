@@ -21,7 +21,7 @@ export default function Modal({ title, open = false, onClose, children }: ModalP
     return (
         <dialog
             ref={ref}
-            className="site-modal w-[min(50rem,_calc(100vw_-_4rem))] max-h-[85svh] p-8 text-[var(--ink)] bg-[var(--paper)] border-[0.4rem] border-solid border-[var(--line)] m-auto backdrop:bg-[#00000080]"
+            className="site-modal w-[calc(100vw_-_4rem)] max-w-[50rem] max-h-[85svh] p-[3.2rem] text-[#000000] bg-[#ffffff] border-[0.4rem] border-solid border-[#dedede] m-auto backdrop:bg-[#00000080]"
             aria-labelledby={titleId}
             data-lenis-prevent
             onCancel={(event) => {
@@ -29,15 +29,15 @@ export default function Modal({ title, open = false, onClose, children }: ModalP
                 onClose();
             }}
         >
-            <div className="modal-header flex items-center justify-between gap-5 mb-8">
+            <div className="modal-header flex items-center justify-between gap-[2rem] mb-[3.2rem]">
                 <h2
-                    className="text-lg"
+                    className="text-[1.8rem] leading-[1.5]"
                     id={titleId}
                 >
                     {title}
                 </h2>
                 <button
-                    className="text-3xl border-0 bg-transparent"
+                    className="text-[3rem] border-0 bg-transparent leading-[1.0]"
                     type="button"
                     aria-label="모달 닫기"
                     onClick={onClose}

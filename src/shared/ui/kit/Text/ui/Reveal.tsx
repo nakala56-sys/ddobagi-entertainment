@@ -265,7 +265,7 @@ function LineOverlay({ highlightColor, subHighlightColor, index, line, progress,
     return (
         <span
             aria-hidden="true"
-            className="pointer-events-none absolute block whitespace-pre text-[length:inherit] [font:inherit] [font-kerning:inherit] [font-stretch:inherit] [font-style:inherit] [font-variant:inherit] [font-weight:inherit] [letter-spacing:inherit] [text-transform:inherit] [word-spacing:inherit]"
+            className="pointer-events-none absolute block whitespace-pre text-[length:inherit] [font:inherit] [font-kerning:inherit] [font-stretch:inherit] [font-style:inherit] [font-variant:inherit] [font-weight:inherit] [text-transform:inherit] [word-spacing:inherit]"
             style={{
                 height: line.height,
                 left: line.left - horizontalInset,

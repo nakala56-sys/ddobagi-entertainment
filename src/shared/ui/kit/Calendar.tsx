@@ -10,10 +10,10 @@ type CalendarProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
 };
 
 const sizeClasses: Record<CalendarSize, string> = {
-    sm: "min-h-11",
-    md: "min-h-13",
-    lg: "min-h-13",
-    xlg: "min-h-18",
+    sm: "min-h-[4.4rem]",
+    md: "min-h-[5.2rem]",
+    lg: "min-h-[5.2rem]",
+    xlg: "min-h-[7.2rem]",
 };
 
 function formatCalendarValue(value: string, type: CalendarProps["type"]) {
@@ -62,7 +62,7 @@ const Calendar = ({ className = "", size = "md", type = "datetime-local", placeh
         <div className="relative w-full">
             <input
                 {...props}
-                className="pointer-events-none absolute h-1 w-1 opacity-0"
+                className="pointer-events-none absolute h-[0.4rem] w-[0.4rem] opacity-0 leading-[1.0]"
                 disabled={disabled}
                 id={inputId}
                 ref={inputRef}
@@ -70,13 +70,13 @@ const Calendar = ({ className = "", size = "md", type = "datetime-local", placeh
                 value={value}
             />
             <button
-                className={`${heightClass} ${className} flex w-full items-center border-[0.4rem] border-[var(--adaptive-black100)] bg-white px-4 text-left transition-colors hover:border-[var(--adaptive-black500)] disabled:cursor-not-allowed disabled:bg-[var(--adaptive-grey100)]`}
+                className={`${heightClass} ${className} flex w-full items-center border-[0.4rem] border-[#ededed] bg-white px-[1.6rem] text-left transition-colors hover:border-[#737373] disabled:cursor-not-allowed disabled:bg-[#ffffff] leading-[1.0]`}
                 disabled={disabled}
                 onClick={handleOpenPicker}
                 style={style}
                 type="button"
             >
-                <span className={displayValue ? "text-inherit" : "text-[var(--adaptive-grey500)]"}>{displayValue || placeholder || "선택해주세요"}</span>
+                <span className={displayValue ? "text-inherit" : "text-[#737373]"}>{displayValue || placeholder || "선택해주세요"}</span>
             </button>
         </div>
     );

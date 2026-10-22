@@ -7,11 +7,11 @@ import { ButtonProps } from "../model/ui-props";
 // Size type and sizeClasses from Input.tsx
 type ButtonSize = "xsm" | "sm" | "md" | "lg" | "xlg";
 const sizeClasses: Record<ButtonSize, string> = {
-    xsm: "min-h-8",
-    sm: "min-h-11",
-    md: "min-h-13",
-    lg: "min-h-13",
-    xlg: "min-h-18",
+    xsm: "min-h-[3.2rem]",
+    sm: "min-h-[4.4rem]",
+    md: "min-h-[5.2rem]",
+    lg: "min-h-[5.2rem]",
+    xlg: "min-h-[7.2rem]",
 };
 
 export const Button = ({
@@ -102,7 +102,7 @@ export const Button = ({
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className={`${getDirectionStyle(direction ?? "top")} flex items-center gap-1 w-max pointer-events-none absolute left-1/2 z-20 mb-2 -translate-x-1/2 p-[0.8rem_1.2rem] rounded-[1.2rem] border-[0.4rem] border-[var(--color-gray-700)] bg-[var(--color-gray-800)] shadow-[0_1.2rem_2rem_0_#9da9ae50] whitespace-pre`}
+                        className={`${getDirectionStyle(direction ?? "top")} flex items-center gap-[0.4rem] w-max pointer-events-none absolute left-1/2 z-20 mb-[0.8rem] -translate-x-1/2 p-[0.8rem_1.2rem] rounded-[1.2rem] border-[0.4rem] border-[var(--color-gray-700)] bg-[var(--color-gray-800)] shadow-[0_1.2rem_2rem_0_#9da9ae50] whitespace-pre`}
                         transition={{
                             type: "spring",
                             stiffness: 200,
@@ -110,7 +110,7 @@ export const Button = ({
                             mass: 0.1,
                         }}
                     >
-                        <p>{message}</p>
+                        <p className="leading-[1.5]">{message}</p>
                     </motion.div>
                 )}
             </AnimatePresence>

@@ -20,10 +20,10 @@ type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> & {
 };
 
 const sizeClasses: Record<SelectSize, string> = {
-    sm: "min-h-11",
-    md: "min-h-13",
-    lg: "min-h-13",
-    xlg: "min-h-18",
+    sm: "min-h-[4.4rem]",
+    md: "min-h-[5.2rem]",
+    lg: "min-h-[5.2rem]",
+    xlg: "min-h-[7.2rem]",
 };
 
 const defaultIcon = (
@@ -52,7 +52,7 @@ const Select = ({ className = "", icon = defaultIcon, iconClassName = "", option
         <div className={`${heightClass} relative ${wrapperClassName}`}>
             <select
                 {...props}
-                className={`${className} w-full appearance-none border-[0.4rem] px-3 cursor-pointer hover:bg-[var(--adaptive-grey100)]`}
+                className={`${className} w-full appearance-none border-[0.4rem] px-[1.2rem] cursor-pointer hover:bg-[#ffffff] leading-[1.0]`}
 
                 onClick={onClick}
             >
@@ -66,7 +66,7 @@ const Select = ({ className = "", icon = defaultIcon, iconClassName = "", option
                 ))}
             </select>
 
-            <span className={`pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[var(--adaptive-black300)] ${iconClassName}`}>{icon}</span>
+            <span className={`pointer-events-none absolute right-[1.6rem] top-1/2 -translate-y-1/2 text-[#d1d6db] ${iconClassName}`}>{icon}</span>
         </div>
     );
 };

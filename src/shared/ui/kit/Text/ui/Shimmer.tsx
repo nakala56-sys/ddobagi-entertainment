@@ -24,7 +24,7 @@ export const Shimmer = ({
     return (
         <Component
             ref={null}
-            className={`inline-block relative text-transparent bg-clip-text bg-size-[400%_100%] bg-repeat bg-position-[0%_0%] animate-text-shimmer bg-[linear-gradient(90deg,var(--shimmer-start)_0%,var(--shimmer-end)_50%,var(--shimmer-start)_100%)] [-webkit-text-fill-color:transparent] ${className}`}
+            className={`inline-block relative text-transparent bg-clip-text bg-size-[400%_100%] bg-repeat bg-position-[0%_0%] animate-[text-shimmer_var(--shimmer-duration,2s)_cubic-bezier(0.22,1,0.36,1)_infinite] bg-[linear-gradient(90deg,var(--shimmer-start)_0%,var(--shimmer-end)_50%,var(--shimmer-start)_100%)] [-webkit-text-fill-color:transparent] ${className}`}
             style={{ ...style, "--shimmer-start": color.start, "--shimmer-end": color.end, "--shimmer-duration": `${duration}s` } as React.CSSProperties}
         >
             {children}

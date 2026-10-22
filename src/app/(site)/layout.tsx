@@ -19,7 +19,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
     return (
         <PageTransition key={pathname}>
             <a
-                className="skip-link fixed left-5 -top-20 z-[200] bg-[var(--paper)] text-[var(--ink)] p-[1.6rem_2rem] focus:top-3"
+                className="skip-link fixed left-[2rem] -top-[8rem] z-[200] bg-[#ffffff] text-[#000000] p-[1.6rem_2rem] focus:top-[1.2rem] leading-[1.0]"
                 href="#main-content"
             >
                 본문 바로가기

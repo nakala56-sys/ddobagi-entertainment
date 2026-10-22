@@ -25,7 +25,7 @@ export class GlobalErrorBoundary extends Component<GlobalErrorBoundaryProps, Glo
 
     render() {
         if (this.state.hasError) {
-            return <main className="grid min-h-screen place-items-center p-8 text-slate-700">화면을 불러오지 못했습니다.</main>;
+            return <main className="grid min-h-screen place-items-center p-[3.2rem] text-slate-700">화면을 불러오지 못했습니다.</main>;
         }
 
         return this.props.children;

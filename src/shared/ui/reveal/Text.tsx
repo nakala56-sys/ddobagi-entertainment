@@ -353,33 +353,33 @@ const Rolling = ({
     const FORMAT_INITIAL_VALUE = formatPriceWithCommas(initialValue).padStart(normalizedLength, "0").split("");
 
     const sizeMap = {
-        12: { text: "1.2", height: "1.2", fontClass: "text-xs", heightClass: "h-3", lineHeightClass: "leading-[1.2rem]" },
-        13: { text: "1.2", height: "1.2", fontClass: "text-xs", heightClass: "h-3", lineHeightClass: "leading-[1.2rem]" },
-        14: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
-        15: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
-        16: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
-        17: { text: "1.6", height: "1.6", fontClass: "text-base", heightClass: "h-4", lineHeightClass: "leading-[1.6rem]" },
-        18: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
-        19: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
-        20: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
-        21: { text: "2", height: "2", fontClass: "text-lg", heightClass: "h-5", lineHeightClass: "leading-[2rem]" },
-        22: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
-        23: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
-        24: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
-        25: { text: "2.4", height: "2.4", fontClass: "text-2xl", heightClass: "h-6", lineHeightClass: "leading-[2.4rem]" },
-        26: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
-        27: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
-        28: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
-        29: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-7", lineHeightClass: "leading-[2.8rem]" },
-        30: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
-        31: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
-        32: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
-        33: { text: "3.2", height: "3.2", fontClass: "text-3xl", heightClass: "h-8", lineHeightClass: "leading-[3.2rem]" },
-        34: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
-        35: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
-        36: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
-        37: { text: "3.6", height: "3.6", fontClass: "text-4xl", heightClass: "h-9", lineHeightClass: "leading-[3.6rem]" },
-        38: { text: "4", height: "4", fontClass: "text-[4rem]", heightClass: "h-10", lineHeightClass: "leading-[4rem]" },
+        12: { text: "1.2", height: "1.2", fontClass: "text-[1.2rem]", heightClass: "h-[1.2rem]", lineHeightClass: "leading-[1.0]" },
+        13: { text: "1.2", height: "1.2", fontClass: "text-[1.2rem]", heightClass: "h-[1.2rem]", lineHeightClass: "leading-[1.0]" },
+        14: { text: "1.6", height: "1.6", fontClass: "text-[1.6rem]", heightClass: "h-[1.6rem]", lineHeightClass: "leading-[1.0]" },
+        15: { text: "1.6", height: "1.6", fontClass: "text-[1.6rem]", heightClass: "h-[1.6rem]", lineHeightClass: "leading-[1.0]" },
+        16: { text: "1.6", height: "1.6", fontClass: "text-[1.6rem]", heightClass: "h-[1.6rem]", lineHeightClass: "leading-[1.0]" },
+        17: { text: "1.6", height: "1.6", fontClass: "text-[1.6rem]", heightClass: "h-[1.6rem]", lineHeightClass: "leading-[1.0]" },
+        18: { text: "2", height: "2", fontClass: "text-[2rem]", heightClass: "h-[2rem]", lineHeightClass: "leading-[1.0]" },
+        19: { text: "2", height: "2", fontClass: "text-[2rem]", heightClass: "h-[2rem]", lineHeightClass: "leading-[1.0]" },
+        20: { text: "2", height: "2", fontClass: "text-[2rem]", heightClass: "h-[2rem]", lineHeightClass: "leading-[1.0]" },
+        21: { text: "2", height: "2", fontClass: "text-[2rem]", heightClass: "h-[2rem]", lineHeightClass: "leading-[1.0]" },
+        22: { text: "2.4", height: "2.4", fontClass: "text-[2.4rem]", heightClass: "h-[2.4rem]", lineHeightClass: "leading-[1.0]" },
+        23: { text: "2.4", height: "2.4", fontClass: "text-[2.4rem]", heightClass: "h-[2.4rem]", lineHeightClass: "leading-[1.0]" },
+        24: { text: "2.4", height: "2.4", fontClass: "text-[2.4rem]", heightClass: "h-[2.4rem]", lineHeightClass: "leading-[1.0]" },
+        25: { text: "2.4", height: "2.4", fontClass: "text-[2.4rem]", heightClass: "h-[2.4rem]", lineHeightClass: "leading-[1.0]" },
+        26: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-[2.8rem]", lineHeightClass: "leading-[1.0]" },
+        27: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-[2.8rem]", lineHeightClass: "leading-[1.0]" },
+        28: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-[2.8rem]", lineHeightClass: "leading-[1.0]" },
+        29: { text: "2.8", height: "2.8", fontClass: "text-[2.8rem]", heightClass: "h-[2.8rem]", lineHeightClass: "leading-[1.0]" },
+        30: { text: "3.2", height: "3.2", fontClass: "text-[3.2rem]", heightClass: "h-[3.2rem]", lineHeightClass: "leading-[1.0]" },
+        31: { text: "3.2", height: "3.2", fontClass: "text-[3.2rem]", heightClass: "h-[3.2rem]", lineHeightClass: "leading-[1.0]" },
+        32: { text: "3.2", height: "3.2", fontClass: "text-[3.2rem]", heightClass: "h-[3.2rem]", lineHeightClass: "leading-[1.0]" },
+        33: { text: "3.2", height: "3.2", fontClass: "text-[3.2rem]", heightClass: "h-[3.2rem]", lineHeightClass: "leading-[1.0]" },
+        34: { text: "3.6", height: "3.6", fontClass: "text-[3.6rem]", heightClass: "h-[3.6rem]", lineHeightClass: "leading-[1.0]" },
+        35: { text: "3.6", height: "3.6", fontClass: "text-[3.6rem]", heightClass: "h-[3.6rem]", lineHeightClass: "leading-[1.0]" },
+        36: { text: "3.6", height: "3.6", fontClass: "text-[3.6rem]", heightClass: "h-[3.6rem]", lineHeightClass: "leading-[1.0]" },
+        37: { text: "3.6", height: "3.6", fontClass: "text-[3.6rem]", heightClass: "h-[3.6rem]", lineHeightClass: "leading-[1.0]" },
+        38: { text: "4", height: "4", fontClass: "text-[4rem]", heightClass: "h-[4rem]", lineHeightClass: "leading-[1.0]" },
     };
 
     const size = sizeMap[textSize] || sizeMap[14]; // fallback
@@ -546,7 +546,7 @@ const TextShimmer = ({
     return (
         <Component
             ref={null}
-            className={`inline-block relative text-transparent bg-clip-text bg-size-[400%_100%] bg-repeat bg-position-[0%_0%] animate-text-shimmer bg-[linear-gradient(90deg,var(--shimmer-start)_0%,var(--shimmer-end)_50%,var(--shimmer-start)_100%)] [-webkit-text-fill-color:transparent] ${className}`}
+            className={`inline-block relative text-transparent bg-clip-text bg-size-[400%_100%] bg-repeat bg-position-[0%_0%] animate-[text-shimmer_var(--shimmer-duration,2s)_cubic-bezier(0.22,1,0.36,1)_infinite] bg-[linear-gradient(90deg,var(--shimmer-start)_0%,var(--shimmer-end)_50%,var(--shimmer-start)_100%)] [-webkit-text-fill-color:transparent] ${className}`}
             style={{ ...style, "--shimmer-start": color.start, "--shimmer-end": color.end, "--shimmer-duration": `${duration}s` } as React.CSSProperties}
         >
             {children}
