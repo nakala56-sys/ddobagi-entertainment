@@ -19,7 +19,6 @@ export default function Panel() {
             >
                 <Layer.AboutHero />
                 <Layer.BrandPhilosophy />
-                <Layer.BrandMessage />
                 <Layer.Location />
             </div>
             <Layer.Modal />

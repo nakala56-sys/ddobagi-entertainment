@@ -14,15 +14,15 @@ export function BrandPhilosophy() {
     return (
         <section
             ref={sectionRef}
-            className="section py-18 tablet:py-30 content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto"
+            className="section py-[7.2rem] tablet:py-[12rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto"
             aria-labelledby="philosophy-title"
         >
-            <div className="split-layout grid grid-cols-1 tablet:grid-cols-2 items-center gap-10 pc:gap-18 philosophy-layout [&.philosophy-layout]:items-start">
+            <div className="split-layout grid grid-cols-1 tablet:grid-cols-2 items-center gap-[4rem] pc:gap-[7.2rem] philosophy-layout [&.philosophy-layout]:items-start">
                 <div
-                    className="philosophy-image relative tablet:sticky top-auto tablet:top-20"
+                    className="philosophy-image relative"
                     data-reveal
                 >
-                    <div className="portrait-image relative h-110 tablet:h-170 overflow-clip">
+                    <div className="portrait-image relative h-[44rem] tablet:h-[68rem] overflow-clip">
                         <Image
                             className="grayscale"
                             src="/images/about/brand.webp"
@@ -32,45 +32,45 @@ export function BrandPhilosophy() {
                         />
                     </div>
                 </div>
-                <div className="split-copy flex flex-col items-start gap-6 tablet:gap-8">
-                    <p
-                        className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                        data-reveal
-                    >
-                        01 — OUR PHILOSOPHY
-                    </p>
+                <div className="split-copy flex flex-col items-start gap-[2.4rem] tablet:gap-[3.2rem] break-keep">
                     <h2
                         id="philosophy-title"
-                        className="display-title text-[4rem] tablet:text-[4.4rem] pc:text-[6.8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] m-0"
+                        className="display-title text-[3.6rem] tablet:text-[4rem] pc:text-[5.6rem] leading-[1.5] font-[580] m-0 break-keep"
                         data-reveal
                     >
-                        Everyone has
+                        또바기
                         <br />
-                        their own <span className="accent text-[var(--accent)]">color.</span>
+                        엔터테인먼트.
                     </h2>
                     <p
-                        className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
-                        각자가 가진 개성과 매력을 소중하게 생각합니다.
+                        또바기 엔터테인먼트는 각자가 가진 개성과 매력을 소중하게 생각합니다.
                     </p>
                     <p
-                        className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
-                        누군가를 보여주는 데서 멈추지 않고,
-                        <br />
-                        자신만의 색깔을 가진 크리에이터로 성장할 수 있도록
-                        <br />
-                        함께 고민하고 만들어갑니다.
+                        누군가를 단순히 보여주는 것에 그치지 않고, 자신만의 색깔을 가진 크리에이터와 아티스트로 성장할 수 있도록 함께 고민하고 만들어갑니다.
                     </p>
                     <p
-                        className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
-                        시작을 위한 환경, 지속을 위한 지원.
-                        <br />
-                        또바기는 오래 함께할 수 있는 방향을 찾습니다.
+                        콘텐츠 기획부터 방송, 매니지먼트까지 각자의 장점이 가장 자연스럽게 빛날 수 있는 방향을 찾고, 오래 함께할 수 있는 환경을 만드는 것이 또바기 엔터테인먼트가 하는 일입니다.
+                    </p>
+                    <p
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5]"
+                        data-reveal
+                    >
+                        <strong>꾸준히, 한결같이, 함께.</strong>
+                    </p>
+                    <p
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
+                        data-reveal
+                    >
+                        ‘또바기’라는 이름처럼 변함없는 마음으로 새로운 가능성을 만들어가겠습니다.
                     </p>
                 </div>
             </div>

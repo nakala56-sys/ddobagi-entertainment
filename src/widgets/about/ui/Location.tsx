@@ -24,51 +24,39 @@ export function Location() {
     return (
         <section
             ref={sectionRef}
-            className="section py-18 tablet:py-30 section-cream bg-[#f5f5f5]"
+            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[#f5f5f5]"
             aria-labelledby="location-title"
         >
-            <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto">
-                <p
-                    className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                    data-reveal
-                >
-                    03 — FIND US
-                </p>
-                <div
-                    data-horizontal-target
-                    data-pinned-target
-                    className="section-heading flex items-start tablet:items-end justify-between gap-8 tablet:gap-10 mb-10 tablet:mb-15 data-[horizontal=true]:mb-8 data-[pinned=true]:mb-8 flex-col tablet:flex-row"
-                >
+            <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
+                <div className="section-heading flex items-start tablet:items-end justify-between gap-[3.2rem] tablet:gap-[4rem] mb-[4rem] tablet:mb-[6rem] flex-col tablet:flex-row">
                     <h2
                         id="location-title"
-                        className="display-title text-4xl tablet:text-5xl pc:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] mt-5 tablet:mt-7"
+                        className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] mt-[2rem] tablet:mt-[2.8rem]"
                         data-reveal
                     >
-                        새로운 시작을
-                        <br />
-                        만나는 곳.
+                        오시는 길.
                     </h2>
                     <div data-reveal>
-                        <address className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]">{company.address}</address>
-                        <div className="button-row flex flex-wrap gap-6 mt-5">
+                        <address className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]">{company.address}</address>
+                        <div className="button-row flex flex-wrap gap-[2.4rem] mt-[2rem]">
                             <a
-                                className="text-[inherit] inline-flex gap-8 items-center font-[650] text-base py-3 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent"
+                                className="text-[inherit] inline-flex gap-[3.2rem] items-center font-[650] text-[1.6rem] py-[1.2rem] border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent leading-[1.0]"
                                 href={company.mapUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                지도에서 보기 ↗<span className="sr-only absolute w-1 h-1 overflow-hidden [clip:rect(0,_0,_0,_0)] whitespace-nowrap"> (새 창)</span>
+                                지도에서 보기 ↗<span className="sr-only absolute w-[0.4rem] h-[0.4rem] overflow-hidden [clip:rect(0,_0,_0,_0)] whitespace-nowrap"> (새 창)</span>
                             </a>
                             <button
                                 type="button"
-                                className="text-[inherit] inline-flex gap-8 items-center font-[650] text-base py-3 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent"
+                                className="text-[inherit] inline-flex gap-[3.2rem] items-center font-[650] text-[1.6rem] py-[1.2rem] border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent leading-[1.0]"
                                 onClick={copyAddress}
                             >
                                 주소 복사
                             </button>
                         </div>
                         <p
-                            className="copy-status min-h-6 text-xs mt-3"
+                            className="copy-status min-h-[2.4rem] text-[1.2rem] mt-[1.2rem] leading-[1.0]"
                             role="status"
                         >
                             {copyMessage}
@@ -79,7 +67,7 @@ export function Location() {
                     href={company.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="location-map block relative h-80 tablet:h-113 border-[0.4rem] border-solid border-[var(--line)] overflow-clip"
+                    className="location-map block relative h-[32rem] tablet:h-[45.2rem] border-[0.4rem] border-solid border-[#dedede] overflow-clip leading-[1.0]"
                     aria-label="네이버 지도에서 또바기 위치 보기 (새 창)"
                     data-reveal
                 >
@@ -90,7 +78,7 @@ export function Location() {
                         fill
                         sizes="90vw"
                     />
-                    <span className="map-label absolute top-5 tablet:top-6 left-5 tablet:left-8 flex gap-5 text-xs tracking-[round(nearest,0.12em,0.4rem)]">
+                    <span className="map-label absolute top-[2rem] tablet:top-[2.4rem] left-[2rem] tablet:left-[3.2rem] flex gap-[2rem] text-[1.2rem]">
                         SEOUL · GANGNAM <span aria-hidden="true">↗</span>
                     </span>
                 </a>
