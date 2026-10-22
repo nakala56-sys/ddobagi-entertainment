@@ -21,7 +21,7 @@ export function StudioEnvironment() {
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
                 <h2
                     id="studio-environment-title"
-                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] mt-[2rem] tablet:mt-[2.8rem]"
+                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
                     data-reveal
                 >
                     콘텐츠가 시작되는 공간.

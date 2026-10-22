@@ -31,7 +31,7 @@ export function Location() {
                 <div className="section-heading flex items-start tablet:items-end justify-between gap-[3.2rem] tablet:gap-[4rem] mb-[4rem] tablet:mb-[6rem] flex-col tablet:flex-row">
                     <h2
                         id="location-title"
-                        className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] mt-[2rem] tablet:mt-[2.8rem]"
+                        className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
                         data-reveal
                     >
                         오시는 길.

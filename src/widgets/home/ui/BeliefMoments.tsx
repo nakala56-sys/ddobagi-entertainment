@@ -22,6 +22,13 @@ const SIZE_CLASS = {
     lg: "w-[56vw] max-w-[34rem] aspect-[3/4]",
 } as const;
 
+// sizes uses the initial font size; caps account for the 62.5% root and object-cover magnification.
+const IMAGE_SIZES: Partial<Record<(typeof MOMENT_IMAGES)[number]["src"], string>> = {
+    "/images/about/brand.webp": "min(45vw, 14.5rem)",
+    "/images/services/directing.webp": "min(60vw, 22rem)",
+    "/images/equipment/studio.webp": "min(60vw, 22rem)",
+};
+
 export function BeliefMoments() {
     const sectionRef = useRef<HTMLElement>(null);
 
@@ -93,7 +100,7 @@ export function BeliefMoments() {
                                 src={image.src}
                                 alt={image.alt}
                                 fill
-                                sizes="(min-width: 48rem) 34rem, 56vw"
+                                sizes={IMAGE_SIZES[image.src] ?? "(min-width: 48rem) 34rem, 56vw"}
                                 className="object-cover grayscale"
                             />
                         </div>
