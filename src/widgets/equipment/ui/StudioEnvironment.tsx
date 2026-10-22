@@ -15,25 +15,19 @@ export function StudioEnvironment() {
     return (
         <section
             ref={sectionRef}
-            className="section py-18 tablet:py-30 section-dark [--accent:#ffffff] text-[var(--paper)] bg-[#000000]"
+            className="section py-[7.2rem] tablet:py-[12rem] section-dark [--accent:#ffffff] text-[#ffffff] bg-[#000000]"
             aria-labelledby="studio-environment-title"
         >
-            <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto">
-                <p
-                    className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                    data-reveal
-                >
-                    03 — YOUR SPACE TO CREATE
-                </p>
+            <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
                 <h2
                     id="studio-environment-title"
-                    className="display-title text-4xl tablet:text-5xl pc:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] mt-5 tablet:mt-7"
+                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] mt-[2rem] tablet:mt-[2.8rem]"
                     data-reveal
                 >
                     콘텐츠가 시작되는 공간.
                 </h2>
                 <div
-                    className="wide-image relative h-75 tablet:h-[min(60vw,_65.2rem)] overflow-clip studio-full-image mt-13"
+                    className="wide-image relative h-[30rem] tablet:h-[60vw] tablet:max-h-[65.2rem] overflow-clip studio-full-image mt-[5.2rem]"
                     data-image
                 >
                     <Image
@@ -44,16 +38,16 @@ export function StudioEnvironment() {
                         sizes="90vw"
                     />
                 </div>
-                <div className="intro-bottom flex items-start tablet:items-end justify-between gap-8 tablet:gap-10 mt-8 tablet:mt-13 flex-col tablet:flex-row mb-0">
+                <div className="intro-bottom flex items-start tablet:items-end justify-between gap-[3.2rem] tablet:gap-[4rem] mt-[3.2rem] tablet:mt-[5.2rem] flex-col tablet:flex-row mb-0">
                     <p
-                        className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[#b5b5b5]"
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#b5b5b5]"
                         data-reveal
                     >
                         개인 방송부터 함께 만드는 라이브 콘텐츠까지.
                         <br />
                         방송과 제작에 집중할 수 있는 공간을 소개합니다.
                     </p>
-                    <ContactCreatorButton>방송 환경 상담하기</ContactCreatorButton>
+                    <ContactCreatorButton />
                 </div>
             </div>
         </section>

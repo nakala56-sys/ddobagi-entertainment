@@ -15,39 +15,33 @@ export function EquipmentGrid() {
     return (
         <section
             ref={sectionRef}
-            className="section py-18 tablet:py-30 section-cream bg-[#f5f5f5]"
+            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[#f5f5f5]"
             aria-labelledby="equipment-grid-title"
         >
-            <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[min(132rem,_calc(100%_-_12rem))] mx-auto">
-                <p
-                    className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
-                    data-reveal
-                >
-                    02 — EQUIPMENT COLLECTION
-                </p>
+            <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
                 <h2
                     id="equipment-grid-title"
-                    className="display-title text-4xl tablet:text-5xl pc:text-[8rem] leading-[round(up,1.13em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)] mt-5 tablet:mt-7"
+                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] mt-[2rem] tablet:mt-[2.8rem]"
                     data-reveal
                 >
-                    작은 디테일이
+                    방송에 필요한 장비와
                     <br />
-                    만드는 <span className="accent text-[var(--accent)]">차이.</span>
+                    <span className="accent text-[var(--accent,#000000)]">제작 환경.</span>
                 </h2>
                 <p
-                    className="body-copy text-base pc:text-lg leading-[round(up,1.9em,0.4rem)] text-[var(--muted)]"
+                    className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                     data-reveal
                 >
-                    방송 환경에 맞춰 장비와 세팅을 안내합니다.
+                    카메라·조명·마이크·방송용 PC부터 스튜디오와 OBS 송출 시스템까지, 방송 환경에 맞춰 장비와 세팅을 안내합니다.
                 </p>
-                <div className="equipment-grid grid grid-cols-1 tablet:grid-cols-2 pc:grid-cols-3 gap-[3.2rem_2rem] tablet:gap-[4rem_2.4rem] mt-15">
+                <div className="equipment-grid grid grid-cols-1 tablet:grid-cols-2 pc:grid-cols-3 gap-[3.2rem_2rem] tablet:gap-[4rem_2.4rem] mt-[6rem]">
                     {equipment.map((item) => (
                         <article
                             key={item.id}
                             className="equipment-card"
                             data-reveal
                         >
-                            <div className="equipment-image relative h-75 tablet:h-70 overflow-clip">
+                            <div className="equipment-image relative h-[30rem] tablet:h-[28rem] overflow-clip">
                                 <Image
                                     className="grayscale"
                                     src={item.image}
@@ -56,10 +50,10 @@ export function EquipmentGrid() {
                                     sizes="(min-width: 90rem) 30vw, (min-width: 48rem) 45vw, 90vw"
                                 />
                             </div>
-                            <div className="equipment-card-copy pt-6">
-                                <span className="eyebrow text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase">{item.englishTitle}</span>
-                                <h3 className="text-2xl font-[600] mt-2">{item.title}</h3>
-                                <p className="mt-3 text-xs tablet:text-base text-[var(--muted)]">{item.description}</p>
+                            <div className="equipment-card-copy pt-[2.4rem]">
+                                <span className="eyebrow text-[1.2rem] font-[650] leading-[1.0] uppercase">{item.englishTitle}</span>
+                                <h3 className="text-[2.4rem] font-[600] mt-[0.8rem] leading-[1.0]">{item.title}</h3>
+                                <p className="mt-[1.2rem] text-[1.2rem] tablet:text-[1.6rem] text-[#737373] leading-[1.5]">{item.description}</p>
                             </div>
                         </article>
                     ))}

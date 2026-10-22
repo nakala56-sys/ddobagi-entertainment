@@ -18,7 +18,6 @@ export default function Panel() {
                 className="route-panel"
             >
                 <Layer.EquipmentHero />
-                <Layer.EquipmentShowcase />
                 <Layer.EquipmentGrid />
                 <Layer.StudioEnvironment />
             </div>
