@@ -19,7 +19,6 @@ export default function Panel() {
             >
                 <Layer.BenefitsHero />
                 <Layer.BenefitsOverview />
-                <Layer.BenefitsStickyCards />
                 <Layer.BenefitsClosing />
             </div>
             <Layer.Modal />

@@ -16,7 +16,7 @@ export function TestModal() {
         <>
             <button
                 type="button"
-                className="scaffold-trigger fixed bottom-5 left-5 z-[30] p-[0.8rem_1.2rem] bg-[var(--ink)] text-[white] border-[0.4rem] border-solid border-[var(--accent)] text-xs"
+                className="scaffold-trigger fixed bottom-[2rem] left-[2rem] z-[30] p-[0.8rem_1.2rem] bg-[#000000] text-[white] border-[0.4rem] border-solid border-[var(--accent,#000000)] text-[1.2rem] leading-[1.0]"
                 onClick={() => open("test")}
             >
                 Benefits 상태 확인
@@ -27,24 +27,24 @@ export function TestModal() {
                 onClose={close}
             >
                 <form
-                    className="scaffold-form flex flex-col gap-5"
+                    className="scaffold-form flex flex-col gap-[2rem]"
                     onSubmit={(event) => {
                         event.preventDefault();
                         state.search();
                     }}
                 >
-                    <label className="flex flex-col gap-1">
+                    <label className="flex flex-col gap-[0.4rem]">
                         키워드
                         <input
-                            className="p-3 border-[0.4rem] border-solid border-[var(--line)] bg-[white] min-w-0"
+                            className="p-[1.2rem] border-[0.4rem] border-solid border-[#dedede] bg-[white] min-w-0 leading-[1.0]"
                             value={state.keyword}
                             onChange={(event) => state.setKeyword(event.target.value)}
                         />
                     </label>
-                    <label className="flex flex-col gap-1">
+                    <label className="flex flex-col gap-[0.4rem]">
                         페이지
                         <input
-                            className="p-3 border-[0.4rem] border-solid border-[var(--line)] bg-[white] min-w-0"
+                            className="p-[1.2rem] border-[0.4rem] border-solid border-[#dedede] bg-[white] min-w-0 leading-[1.0]"
                             type="number"
                             min="1"
                             value={state.page}
@@ -54,16 +54,16 @@ export function TestModal() {
                     <output aria-live="polite">
                         검색: {state.submittedKeyword || "전체"} · 페이지: {state.page}
                     </output>
-                    <div className="button-row flex flex-wrap gap-6 mt-5">
+                    <div className="button-row flex flex-wrap gap-[2.4rem] mt-[2rem]">
                         <button
                             type="submit"
-                            className="text-[inherit] inline-flex gap-8 items-center font-[650] text-base py-3 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent"
+                            className="text-[inherit] inline-flex gap-[3.2rem] items-center font-[650] text-[1.6rem] py-[1.2rem] border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent leading-[1.0]"
                         >
                             검색
                         </button>
                         <button
                             type="button"
-                            className="text-[inherit] inline-flex gap-8 items-center font-[650] text-base py-3 border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent"
+                            className="text-[inherit] inline-flex gap-[3.2rem] items-center font-[650] text-[1.6rem] py-[1.2rem] border-0 border-b-[0.4rem] border-solid border-b-[currentColor] bg-transparent leading-[1.0]"
                             onClick={state.reset}
                         >
                             초기화

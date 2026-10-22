@@ -21,13 +21,13 @@ export function BenefitsHero() {
                 text={["FOCUS ON", "YOUR CREATIVITY."]}
                 id="benefits-hero-title"
                 as="h1"
-                className="px-5 tablet:px-15 pt-38 tablet:pt-40 pb-10 tablet:pb-14 flex flex-col"
-                textClassName="mx-auto w-full max-w-330 text-left text-[5.2rem] leading-[round(up,1.04em,0.4rem)] font-[580] tracking-[round(nearest,-0.055em,0.4rem)]"
+                className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
+                textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
                 speed={1}
                 distortion={0.8}
                 before={
                     <p
-                        className="eyebrow mx-auto mb-8 tablet:mb-10 w-full max-w-330 text-left text-xs tracking-[round(nearest,0.16em,0.4rem)] font-[650] leading-[round(up,1.7em,0.4rem)] uppercase"
+                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase"
                         data-reveal
                     >
                         CREATOR BENEFITS
@@ -35,12 +35,12 @@ export function BenefitsHero() {
                 }
             >
                 <div
-                    className="hero-bottom mx-auto w-full max-w-330 mt-12 tablet:mt-16 text-left break-keep"
+                    className="hero-bottom mx-auto w-full max-w-[132rem] mt-[4.8rem] tablet:mt-[6.4rem] text-left break-keep"
                     data-reveal
                 >
-                    <h2 className="text-2xl tablet:text-3xl font-[550] tracking-[round(nearest,-0.035em,0.4rem)]">성장에 필요한 지원을 함께.</h2>
-                    <p className="mt-4 text-base text-[#53616c]">시작하는 크리에이터도, 다음 단계를 준비하는 크리에이터도.</p>
-                    <span className="scroll-hint inline-flex items-center gap-6 mt-12 tablet:mt-16 text-xs tracking-[round(nearest,0.12em,0.4rem)]">
+                    <h2 className="text-[2.4rem] tablet:text-[3rem] font-[550] leading-[1.5]">방송에 집중할 수 있도록 지원합니다.</h2>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#53616c] leading-[1.5]">스튜디오와 장비부터 콘텐츠 기획, 개인 브랜딩과 제휴 시술까지.</p>
+                    <span className="scroll-hint inline-flex items-center gap-[2.4rem] mt-[4.8rem] tablet:mt-[6.4rem] text-[1.2rem] leading-[1.0]">
                         SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
                     </span>
                 </div>
