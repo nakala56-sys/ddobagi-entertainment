@@ -21,7 +21,7 @@ export default function Modal({ title, open = false, onClose, children }: ModalP
     return (
         <dialog
             ref={ref}
-            className="site-modal w-[calc(100vw_-_4rem)] max-w-[50rem] max-h-[85svh] p-[3.2rem] text-[#000000] bg-[#ffffff] border-[0.4rem] border-solid border-[#dedede] m-auto backdrop:bg-[#00000080]"
+            className="site-modal w-[calc(100vw_-_4rem)] max-w-[50rem] max-h-[85svh] p-[3.2rem] text-[var(--color-text)] bg-[var(--color-background)] border-[0.4rem] border-solid border-[var(--color-line)] m-auto backdrop:bg-[#00000080]"
             aria-labelledby={titleId}
             data-lenis-prevent
             onCancel={(event) => {

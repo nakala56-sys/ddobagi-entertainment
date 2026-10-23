@@ -55,6 +55,58 @@
     }
 } */
 
+/* Pages stay in place. The outgoing snapshot sits on top and a soft mask sweeps right to left, revealing the incoming page underneath. */
+:root::view-transition-group(root) {
+    animation-duration: 0.75s;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root::view-transition-image-pair(root) {
+    isolation: isolate;
+}
+
+:root::view-transition-old(root) {
+    z-index: 2;
+    mix-blend-mode: normal;
+    animation-duration: 0.75s;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+    animation-fill-mode: both;
+    animation-name: view-wipe-right-to-left;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 240% 100%;
+    mask-size: 240% 100%;
+    -webkit-mask-image: linear-gradient(to right, #000 0%, #000 5%, transparent 70%, transparent 100%);
+    mask-image: linear-gradient(to right, #000 0%, #000 5%, transparent 70%, transparent 100%);
+}
+
+:root::view-transition-new(root) {
+    z-index: 1;
+    mix-blend-mode: normal;
+    animation: none;
+}
+
+@keyframes view-wipe-right-to-left {
+    from {
+        -webkit-mask-position: 0% 0;
+        mask-position: 0% 0;
+    }
+    to {
+        -webkit-mask-position: 100% 0;
+        mask-position: 100% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root::view-transition-group(root),
+    :root::view-transition-old(root),
+    :root::view-transition-new(root) {
+        animation: none;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+}
+
 @keyframes text-shimmer {
     from {
         background-position: -200% 0;

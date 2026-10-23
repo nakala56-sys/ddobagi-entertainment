@@ -15,7 +15,7 @@ export function StudioEnvironment() {
     return (
         <section
             ref={sectionRef}
-            className="section py-[7.2rem] tablet:py-[12rem] section-dark [--accent:#ffffff] text-[#ffffff] bg-[#000000]"
+            className="section py-[7.2rem] tablet:py-[12rem] section-dark text-[#ffffff] bg-[#000000]"
             aria-labelledby="studio-environment-title"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">

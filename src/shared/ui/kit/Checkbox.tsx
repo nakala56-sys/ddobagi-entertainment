@@ -13,7 +13,7 @@ const Checkbox = ({ defaultState = false, onClick }: { defaultState: boolean; on
                 onClick(changeState);
             }}
             type="button"
-            className={`w-[2.4rem] h-[2.4rem] cursor-pointer ${isChecked ? "bg-[#737373] hover:bg-[#b0b8c1] border-transparent" : "bg-transparent hover:bg-[#f9fafb] border-[#e5e8eb]"} border-[0.4rem] rounded-[0.8rem] leading-[1.0]`}
+            className={`w-[2.4rem] h-[2.4rem] cursor-pointer ${isChecked ? "bg-[#737373] hover:bg-[#b0b8c1] border-transparent" : "bg-transparent hover:bg-[#1a1a1a] border-[var(--color-line)]"} border-[0.4rem] rounded-[0.8rem] leading-[1.0]`}
         >
             {isChecked ? (
                 <motion.div

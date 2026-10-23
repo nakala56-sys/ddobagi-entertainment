@@ -65,7 +65,7 @@ function DirectionVisual() {
                 className="absolute left-[24%] top-[24%] flex h-[59%] w-[45%] -rotate-[3deg] flex-col justify-between rounded-[5cqw] border-[0.3cqw] border-solid border-white/75 bg-[linear-gradient(145deg,#f4efff,#e0edff_60%,#f6fbff)] p-[5%] shadow-[0_4cqw_8cqw_#6787b51a]"
             >
                 <div className="flex items-center justify-between gap-[2cqw] text-[#9099b1]">
-                    <span className="text-[2.5cqw] font-[650] tracking-[0.12em]">TOBBAGI</span>
+                    <span className="text-[2.5cqw] font-[650] tracking-[0.12em]">TTOBAGI</span>
                     <svg
                         viewBox="0 0 24 24"
                         fill="none"
@@ -165,12 +165,12 @@ export function CreatorSolutions() {
         <section
             ref={sectionRef}
             aria-labelledby="home-solutions-title"
-            className="creator-solutions relative z-10 bg-white py-[8rem] tablet:py-[12rem] text-[#191f28]"
+            className="creator-solutions relative z-10 bg-[var(--color-background)] py-[8rem] tablet:py-[12rem] text-[var(--color-text)]"
         >
             <div className="mx-auto w-[calc(100%_-_4rem)] max-w-[180rem] tablet:w-[calc(100%_-_8rem)] pc:w-[88%]">
                 <h2
                     id="home-solutions-title"
-                    data-reveal
+                    data-title-rise
                     className="mx-auto max-w-[120rem] text-center text-[2.8rem] tablet:text-[3.2rem] pc:text-[4rem] font-[650] leading-[1.8] break-keep"
                 >
                     막막했던{" "}

@@ -24,7 +24,7 @@ export function Location() {
     return (
         <section
             ref={sectionRef}
-            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[#f5f5f5]"
+            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[var(--color-background)]"
             aria-labelledby="location-title"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
@@ -67,7 +67,7 @@ export function Location() {
                     href={company.mapUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="location-map block relative h-[32rem] tablet:h-[45.2rem] border-[0.4rem] border-solid border-[#dedede] overflow-clip leading-[1.0]"
+                    className="location-map block relative h-[32rem] tablet:h-[45.2rem] border-[0.4rem] border-solid border-[var(--color-line)] overflow-clip leading-[1.0]"
                     aria-label="네이버 지도에서 또바기 위치 보기 (새 창)"
                     data-reveal
                 >

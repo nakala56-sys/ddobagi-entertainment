@@ -20,7 +20,7 @@ const TextArea = ({ className = "", name, placeholder, type, size = "md" }: Inpu
 
     return (
         <textarea
-            className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[#ededed] hover:border-[#737373] p-[1.6rem] transition-colors leading-[1.5]`}
+            className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[var(--color-line)] hover:border-[#737373] p-[1.6rem] transition-colors leading-[1.5]`}
             name={name}
             placeholder={placeholder}
         />

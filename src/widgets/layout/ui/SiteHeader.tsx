@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { navigation } from "@/shared/config/navigation";
 import Animation from "@/shared/utils/animation";
 import { Sidebar } from "../Sidebar";
+import { MetallicPaint } from "@/shared/ui/metallic-paint/MetallicPaint";
 
 export function SiteHeader() {
     const pathname = usePathname();
@@ -19,37 +20,33 @@ export function SiteHeader() {
     return (
         <header
             ref={headerRef}
-            className={`site-header [--accent:#17212b] [--header-ink:#17212b] h-[7.6rem] tablet:h-[9.2rem] absolute top-0 left-0 w-full z-[20] flex items-center justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:px-[3.2rem] pc:px-[4rem]`}
+            className={`site-header [--header-ink:var(--color-text)] fixed top-0 left-0 w-full z-[20] flex items-start justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:p-[3.2rem] pc:px-[4rem]`}
         >
             <Link
-                className="brand-logo flex items-center gap-[1.2rem] text-[1.6rem] tablet:text-[1.8rem] font-[750] leading-[1.0]"
+                className="flex-1 brand-logo flex items-start justify-start gap-[1.2rem] text-[1.6rem] tablet:text-[1.8rem] font-[750] leading-[1.0]"
                 href="/"
                 aria-label="또바기 엔터테인먼트 홈"
             >
-                <Image
-                    className="logo-symbol w-[4rem] tablet:w-[4.8rem] h-auto shrink-0 object-contain grayscale"
-
-                    src="/images/common/tobbagi-logo.webp"
-                    alt=""
-                    width={48}
-                    height={47}
-                    priority
+                <MetallicPaint
+                    imageSrc="/images/common/ttobagi-logo.webp"
+                    // color="#ffffff"
+                    color="#ffa16a"
+                    width={52}
+                    height={52}
+                    edgeBend={0.8}
                 />
-                <section className="flex flex-col">
-                    <p className="text-[1.6rem] leading-[1.0]">TOBBAGI</p>
-                    <p className="text-[1.6rem] leading-[1.0]">ENTERTAINMENT</p>
-                </section>
-                {/* <span>
-                    TOBBAGI<small>ENTERTAINMENT</small>
-                </span> */}
+                <p className="text-[2.4rem]">
+                    TTOBAGI_<span className="text-[1.8rem]">ENTERTAINMENT</span>
+                    {/* TTOBAGI<small>ENTERTAINMENT</small> */}
+                </p>
             </Link>
             <nav
-                className="desktop-navigation hidden tablet:flex gap-[0.8rem] min-[64rem]:gap-[2rem] pc:gap-[3.6rem] text-[1.4rem] min-[64rem]:text-[1.6rem]"
+                className="flex-1 desktop-navigation hidden tablet:flex gap-[0.8rem] min-[64rem]:gap-[2rem] pc:gap-[3.6rem] text-[1.4rem] min-[64rem]:text-[1.6rem]"
                 aria-label="주 메뉴"
             >
                 {navigation.map((item) => (
                     <Link
-                        className="text-[1.8rem] leading-[1.0]"
+                        className="text-[2.0rem]"
                         // className="text-[1.8rem] aria-[current=page]:text-current aria-[current=page]:underline aria-[current=page]:underline-offset-[0.8rem]"
                         key={item.href}
                         href={item.href}

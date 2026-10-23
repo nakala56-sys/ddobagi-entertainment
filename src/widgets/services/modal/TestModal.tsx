@@ -36,7 +36,7 @@ export function TestModal() {
                     <label className="flex flex-col gap-[0.4rem]">
                         키워드
                         <input
-                            className="p-[1.2rem] border-[0.4rem] border-solid border-[#dedede] bg-[white] min-w-0 leading-[1.0]"
+                            className="p-[1.2rem] border-[0.4rem] border-solid border-[var(--color-line)] bg-[var(--color-background)] min-w-0 leading-[1.0]"
                             value={state.keyword}
                             onChange={(event) => state.setKeyword(event.target.value)}
                         />
@@ -44,7 +44,7 @@ export function TestModal() {
                     <label className="flex flex-col gap-[0.4rem]">
                         페이지
                         <input
-                            className="p-[1.2rem] border-[0.4rem] border-solid border-[#dedede] bg-[white] min-w-0 leading-[1.0]"
+                            className="p-[1.2rem] border-[0.4rem] border-solid border-[var(--color-line)] bg-[var(--color-background)] min-w-0 leading-[1.0]"
                             type="number"
                             min="1"
                             value={state.page}

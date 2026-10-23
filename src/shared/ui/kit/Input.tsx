@@ -22,7 +22,7 @@ const Input = ({ className = "", name, placeholder, type, size = "md", ...props 
     return (
         <input
             {...props}
-            className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[#ededed] hover:border-[#737373] px-[1.6rem] transition-colors leading-[1.0]`}
+            className={`${heightClass} ${className} rounded-[1.6rem] border-[0.4rem] border-[var(--color-line)] hover:border-[#737373] px-[1.6rem] transition-colors leading-[1.0]`}
             name={name}
             placeholder={placeholder}
             type={type}

@@ -20,14 +20,15 @@ export default function Panel() {
                 <Layer.HeroIntro />
                 {/* <Layer.BrandIntro /> */}
                 <Layer.BeliefMoments />
+                <Layer.CreatorReel />
                 <Layer.SupportOverview />
-                <Layer.CreatorGallery />
-                <Layer.CreatorEveryday />
+                {/* <Layer.CreatorEveryday /> */}
                 <Layer.CreatorSolutions />
                 {/* <Layer.StudioPreview /> */}
                 {/* <Layer.CreatorStories /> */}
-                <Layer.CreatorJourney />
                 <Layer.CreatorFaq />
+                <Layer.CreatorJourney />
+                <Layer.CreatorGallery />
                 <Layer.FinalCta />
                 <Layer.SectionNavigation />
             </div>

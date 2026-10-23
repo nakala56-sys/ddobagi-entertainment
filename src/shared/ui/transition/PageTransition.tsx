@@ -27,13 +27,13 @@ export function PageTransition({ children, waveIntro = true }: { children: React
             </div>
             {!ready ? (
                 <div
-                    className="page-loading min-h-[100svh] grid [place-content:center] text-[#ededed] text-[1.6rem] page-loading-overlay fixed inset-0 z-[200] bg-[#ffffff] p-[2rem] text-center"
+                    className="page-loading min-h-[100svh] grid [place-content:center] text-[var(--color-text)] text-[1.6rem] page-loading-overlay fixed inset-0 z-[200] bg-[var(--color-background)] p-[2rem] text-center"
                     data-page-loader
                     data-lenis-prevent
                     role="status"
                 >
                     <span
-                        className="page-loading-text inline-block text-[transparent] bg-[linear-gradient(90deg,_#000000_0%,_#000000_33.333%,_#8b5cf6_38%,_#3b82f6_43%,_#22c55e_48%,_#facc15_53%,_#fb923c_58%,_#f472b6_63%,_#ededed_66.667%,_#ededed_100%)] bg-size-[300%_100%] bg-position-[100%_0%] bg-no-repeat bg-clip-text [-webkit-text-fill-color:transparent]"
+                        className="page-loading-text inline-block text-[transparent] bg-[linear-gradient(90deg,var(--color-text)_0%,var(--color-text)_33.333%,var(--color-point)_48%,var(--color-text)_66.667%,var(--color-text)_100%)] bg-size-[300%_100%] bg-position-[100%_0%] bg-no-repeat bg-clip-text [-webkit-text-fill-color:transparent]"
                         data-loading-text
                     >
                         CONNECTING TO DDOBAGI <span aria-hidden="true"> · · ·</span>

@@ -14,7 +14,7 @@ export function Progress() {
     return (
         <div
             ref={ref}
-            className="site-progress fixed top-0 left-0 right-0 h-[0.4rem] z-[50] bg-[#ffffff] mix-blend-difference scale-x-0 origin-left"
+            className="site-progress fixed top-0 left-0 right-0 h-[0.4rem] z-[50] bg-[var(--color-point)] scale-x-0 origin-left"
             aria-hidden="true"
         />
     );

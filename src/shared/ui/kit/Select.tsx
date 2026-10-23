@@ -52,7 +52,7 @@ const Select = ({ className = "", icon = defaultIcon, iconClassName = "", option
         <div className={`${heightClass} relative ${wrapperClassName}`}>
             <select
                 {...props}
-                className={`${className} w-full appearance-none border-[0.4rem] px-[1.2rem] cursor-pointer hover:bg-[#ffffff] leading-[1.0]`}
+                className={`${className} w-full appearance-none border-[0.4rem] px-[1.2rem] cursor-pointer hover:bg-[var(--color-background)] leading-[1.0]`}
 
                 onClick={onClick}
             >

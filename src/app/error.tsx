@@ -16,13 +16,13 @@ export default function AppError({ error, reset }: AppErrorProps) {
     }, [error]);
 
     return (
-        <main className="grid min-h-screen place-items-center bg-slate-50 p-[2.4rem] text-slate-900">
-            <section className="w-full max-w-[42rem] rounded-[1.6rem] border-[0.4rem] border-slate-200 bg-white p-[2.8rem] shadow-[0_1.6rem_4rem_rgba(15,23,42,0.1)]">
-                <span className="mb-[1.2rem] block text-[1.2rem] font-bold text-red-600">Application Error</span>
+        <main className="grid min-h-screen place-items-center bg-[var(--color-background)] p-[2.4rem] text-[var(--color-text)]">
+            <section className="w-full max-w-[42rem] rounded-[1.6rem] border-[0.4rem] border-[var(--color-line)] bg-[var(--color-background)] p-[2.8rem]">
+                <span className="mb-[1.2rem] block text-[1.2rem] font-bold text-[var(--color-point)]">Application Error</span>
                 <h1 className="mt-0 mb-[1.2rem] text-[2.4rem] leading-[1.5]">일시적인 오류가 발생했습니다</h1>
-                <p className="mt-0 mb-[2rem] leading-[1.5] text-slate-600">운영 로그에 오류 정보가 기록되었습니다. 잠시 후 다시 시도해주세요.</p>
+                <p className="mt-0 mb-[2rem] leading-[1.5] text-[#b5b5b5]">운영 로그에 오류 정보가 기록되었습니다. 잠시 후 다시 시도해주세요.</p>
                 <button
-                    className="min-h-[4.4rem] w-full rounded-[1.2rem] bg-slate-900 font-bold text-white leading-[1.0]"
+                    className="min-h-[4.4rem] w-full rounded-[1.2rem] bg-[var(--color-point)] font-bold text-[var(--color-text)] leading-[1.0]"
                     onClick={reset}
                     type="button"
                 >

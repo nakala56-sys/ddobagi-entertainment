@@ -21,7 +21,7 @@ export default function NotFound() {
                 <h1 className="m-0 text-[3rem] font-[900] leading-[1.5]">페이지를 찾을 수 없습니다</h1>
                 <p className="m-0 text-[1.8rem] leading-[1.5] text-[#737373]">주소가 변경되었거나 더 이상 제공되지 않는 페이지입니다.</p>
                 <Link
-                    className="rounded-full bg-black px-[2.4rem] py-[1.6rem] text-[1.6rem] font-[700] text-white leading-[1.0]"
+                    className="rounded-full bg-[var(--color-point)] px-[2.4rem] py-[1.6rem] text-[1.6rem] font-[700] text-[var(--color-text)] leading-[1.0]"
                     href="/"
                 >
                     메인으로 돌아가기

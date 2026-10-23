@@ -195,7 +195,7 @@ export function GradientWave({ text, id, as: Heading = "h2", className = "", tex
             data-gradient-wave
             data-wave-ready={ready}
             style={{ "--wave-color-0": colors[0] } as CSSProperties}
-            className={`relative isolate overflow-visible bg-[radial-gradient(ellipse_100%_140%_at_50%_-60%,var(--wave-color-0)_40%,white_75%)] text-[#17212b] ${className}`}
+            className={`relative isolate overflow-visible bg-[radial-gradient(ellipse_100%_140%_at_50%_-60%,var(--wave-color-0)_40%,var(--color-background)_75%)] text-[var(--color-text)] ${className}`}
         >
             <canvas
                 ref={backgroundRef}

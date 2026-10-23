@@ -2,9 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
 import Animation from "@/shared/utils/animation";
 import { PageTransition } from "@/shared/ui/transition/PageTransition";
+import { ViewTransitionNavigation } from "@/shared/ui/transition/ViewTransitionNavigation";
 import { ApiLoading } from "@/widgets/layout/ApiLoading";
 
 const Header = dynamic(() => import("@/widgets/layout/Header").then((module) => module.Header));
@@ -14,12 +14,12 @@ const Toast = dynamic(() => import("@/widgets/layout/Toast").then((module) => mo
 const Progress = dynamic(() => import("@/widgets/layout/Progress").then((module) => module.Progress), { ssr: false });
 
 export default function SiteLayout({ children }: { children: ReactNode }) {
-    const pathname = usePathname();
     useEffect(() => Animation.layout.common(), []);
     return (
-        <PageTransition key={pathname}>
+        <PageTransition>
+            <ViewTransitionNavigation />
             <a
-                className="skip-link fixed left-[2rem] -top-[8rem] z-[200] bg-[#ffffff] text-[#000000] p-[1.6rem_2rem] focus:top-[1.2rem] leading-[1.0]"
+                className="skip-link fixed left-[2rem] -top-[8rem] z-[200] bg-[var(--color-point)] text-[var(--color-text)] p-[1.6rem_2rem] focus:top-[1.2rem] leading-[1.0]"
                 href="#main-content"
             >
                 본문 바로가기
@@ -27,7 +27,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
             <Header />
             <div id="main-content">{children}</div>
             <Footer />
-            <QuickMenu />
+            {/* <QuickMenu /> */}
             <Toast />
             <Progress />
             <ApiLoading />

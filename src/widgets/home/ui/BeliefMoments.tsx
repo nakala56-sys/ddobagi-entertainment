@@ -7,13 +7,13 @@ import Animation from "@/shared/utils/animation";
 
 /** Deterministic horizontal slots so SSR and client match. */
 const MOMENT_IMAGES = [
-    { src: "/images/home/studio.webp", alt: "또바기 방송 스튜디오", x: 14, size: "md" },
-    { src: "/images/home/creator-stories.webp", alt: "크리에이터와 함께한 순간", x: 72, size: "lg" },
-    { src: "/images/about/brand.webp", alt: "브랜드와 함께하는 방송 환경", x: 28, size: "sm" },
-    { src: "/images/services/directing.webp", alt: "디렉팅 지원 현장", x: 78, size: "md" },
-    { src: "/images/equipment/streaming.webp", alt: "스트리밍 장비 세팅", x: 18, size: "lg" },
-    { src: "/images/landing/bj.jpg", alt: "방송 중인 크리에이터", x: 58, size: "sm" },
-    { src: "/images/equipment/studio.webp", alt: "스튜디오 전경", x: 38, size: "md" },
+    { src: "/images/home/moment-desk.jpg", alt: "마이크 앞에서 방송하는 크리에이터", x: 14, size: "md" },
+    { src: "/images/home/moment-set.jpg", alt: "촬영 현장에서 포즈를 취한 크리에이터", x: 72, size: "lg" },
+    { src: "/images/home/moment-camera.jpg", alt: "분홍 조명 아래에서 출연진을 촬영하는 장면", x: 28, size: "md" },
+    { src: "/images/home/moment-monitor.jpg", alt: "모니터를 함께 확인하는 장면", x: 78, size: "md" },
+    { src: "/images/home/moment-script.jpg", alt: "대본을 두고 이야기하는 장면", x: 18, size: "lg" },
+    { src: "/images/home/moment-studio-wait.jpg", alt: "분홍 스튜디오에서 대기하는 출연진", x: 58, size: "sm" },
+    { src: "/images/home/moment-studio-pose.jpg", alt: "분홍 스튜디오에서 포즈를 취한 출연진", x: 38, size: "md" },
 ] as const;
 
 const SIZE_CLASS = {
@@ -21,13 +21,6 @@ const SIZE_CLASS = {
     md: "w-[48vw] max-w-[28rem] aspect-[4/5]",
     lg: "w-[56vw] max-w-[34rem] aspect-[3/4]",
 } as const;
-
-// sizes uses the initial font size; caps account for the 62.5% root and object-cover magnification.
-const IMAGE_SIZES: Partial<Record<(typeof MOMENT_IMAGES)[number]["src"], string>> = {
-    "/images/about/brand.webp": "min(45vw, 14.5rem)",
-    "/images/services/directing.webp": "min(60vw, 22rem)",
-    "/images/equipment/studio.webp": "min(60vw, 22rem)",
-};
 
 export function BeliefMoments() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -55,7 +48,7 @@ export function BeliefMoments() {
                     <h2
                         id="home-belief-moments-title"
                         className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580]"
-                        data-reveal
+                        data-title-rise
                     >
                         크리에이터의 방송을,
                         <br />
@@ -100,7 +93,7 @@ export function BeliefMoments() {
                                 src={image.src}
                                 alt={image.alt}
                                 fill
-                                sizes={IMAGE_SIZES[image.src] ?? "(min-width: 48rem) 34rem, 56vw"}
+                                sizes="(min-width: 48rem) 34rem, 56vw"
                                 className="object-cover grayscale"
                             />
                         </div>

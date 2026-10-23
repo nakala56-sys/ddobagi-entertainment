@@ -15,7 +15,7 @@ export function EquipmentGrid() {
     return (
         <section
             ref={sectionRef}
-            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[#f5f5f5]"
+            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[var(--color-background)]"
             aria-labelledby="equipment-grid-title"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">

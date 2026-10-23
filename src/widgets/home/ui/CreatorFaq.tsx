@@ -37,7 +37,7 @@ export function CreatorFaq() {
     return (
         <section
             ref={sectionRef}
-            className="section relative z-10 bg-white py-[7.2rem] tablet:py-[12rem]"
+            className="section relative z-10 bg-[var(--color-background)] py-[7.2rem] tablet:py-[12rem]"
             aria-labelledby="home-faq-title"
         >
             <div className="content-width mx-auto grid w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] grid-cols-1 tablet:grid-cols-[0.8fr_1.2fr] items-start gap-[4rem] pc:gap-[7.2rem]">
@@ -45,7 +45,7 @@ export function CreatorFaq() {
                     <h2
                         id="home-faq-title"
                         className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3.6rem] tablet:text-[4rem] pc:text-[5.6rem] leading-[1.5] font-[580] break-keep"
-                        data-reveal
+                        data-title-rise
                     >
                         자주 묻는
                         <br />
@@ -58,11 +58,11 @@ export function CreatorFaq() {
                         방송을 시작하기 전, 궁금한 내용을 확인해보세요.
                     </p>
                 </div>
-                <div className="border-t border-solid border-[#dedede]">
+                <div className="border-t border-solid border-[var(--color-line)]">
                     {QUESTIONS.map((item) => (
                         <details
                             key={item.question}
-                            className="group border-b border-solid border-[#dedede]"
+                            className="group border-b border-solid border-[var(--color-line)]"
                             data-reveal
                         >
                             <summary className="flex cursor-pointer list-none items-center justify-between gap-[2.4rem] py-[2.8rem] text-[1.8rem] tablet:text-[2.4rem] font-[600] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent,#000000)] [&::-webkit-details-marker]:hidden leading-[1.5]">

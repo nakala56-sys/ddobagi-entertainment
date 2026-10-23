@@ -1,11 +1,45 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import Animation from "@/shared/utils/animation";
-import { GradientWave } from "@/shared/ui/gradient-wave/GradientWave";
+import { GradientWaveSettle } from "@/shared/ui/gradient-wave/GradientWaveSettle";
+import { MetallicPaint } from "@/shared/ui/metallic-paint/MetallicPaint";
+
+const HIDDEN_MASK = "linear-gradient(#0000, #0000)";
+
+const HERO_ROLLS = [
+    {
+        lines: ["크리에이터 매니지먼트부터", "브랜드 협업까지."],
+        body: ["라이브 방송 기획·운영부터 콘텐츠 제작, 크리에이터 육성,", "그리고 브랜드와의 협업까지.", "성장하는 크리에이터를 위한 모든 과정을 저희가 함께합니다."],
+    },
+    {
+        lines: ["크리에이터의 방송을,", "함께 기획하고 키웁니다."],
+        body: ["방송 스타일과 콘텐츠 방향, 시청자와의 소통까지.", "크리에이터의 개성에 맞는 방향을 찾고,", "꾸준한 방송 활동을 지원합니다."],
+    },
+    {
+        lines: ["상담부터 활동까지,", "차근차근 함께합니다."],
+        body: ["지금의 방송 경험과 준비 상황을 들려주세요.", "필요한 지원과 활동 방향을 함께 이야기합니다."],
+    },
+] as const;
+
+function revealBackdrop(backdrop: HTMLElement, progress: number) {
+    if (progress >= 1) {
+        backdrop.style.maskImage = "";
+        backdrop.style.setProperty("-webkit-mask-image", "");
+        return;
+    }
+    const edge = 0.22;
+    const front = Math.max(progress, 0);
+    const solid = Math.max(0, front - edge);
+    const mask = front <= 0 ? HIDDEN_MASK : `linear-gradient(to bottom, #000 ${solid * 100}%, transparent ${front * 100}%)`;
+    backdrop.style.maskImage = mask;
+    backdrop.style.setProperty("-webkit-mask-image", mask);
+}
 
 export function HeroIntro() {
     const sectionRef = useRef<HTMLElement>(null);
+    const backdropRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!sectionRef.current) return;
@@ -14,37 +48,111 @@ export function HeroIntro() {
     return (
         <section
             ref={sectionRef}
-            className="hero relative overflow-visible"
+            className="hero relative min-h-[100svh] overflow-hidden"
             aria-labelledby="home-hero-title"
         >
-            <GradientWave
-                text={["YOUR COLOR.", "ON AIR."]}
-                id="home-hero-title"
-                as="h1"
-                className="min-h-[100svh] px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col justify-center"
-                textClassName="mx-auto w-full max-w-[132rem] text-center text-[3.6rem] mobile:text-[4.8rem] tablet:text-[8.4rem] pc:text-[15.2rem] leading-[1.5] font-[580]"
+            <div
+                ref={backdropRef}
+                className="absolute inset-0"
+                style={{ maskImage: HIDDEN_MASK, WebkitMaskImage: HIDDEN_MASK }}
+            >
+                <Image
+                    src="/images/home/hero-creator.png"
+                    alt=""
+                    fill
+                    priority
+                    sizes="100vw"
+                    data-image
+                    className="object-cover object-[34%_center]"
+                />
+                <div
+                    className="absolute inset-0 bg-black/40"
+                    aria-hidden="true"
+                />
+            </div>
+            <GradientWaveSettle
+                text=""
+                overlay
+                onProgress={(progress) => {
+                    if (backdropRef.current) revealBackdrop(backdropRef.current, progress);
+                }}
+                // colors={["#245bff", "#2fbf6a", "#ff4321", "#6d4aff"]}
+                colors={["#0a0a0a", "#0a0a0a", "#0a0a0a", "#0a0a0a"]}
+                className="flex min-h-[100svh] flex-col items-end justify-center px-[2rem] pt-[15.2rem] pb-[4rem] tablet:px-[6rem] tablet:pt-[16rem] tablet:pb-[5.6rem]"
                 speed={1}
                 distortion={0.8}
+                settleAt={2.75}
             >
                 <div
-                    className="hero-bottom mx-auto w-full max-w-[132rem] mt-[4.8rem] tablet:mt-[6.4rem] text-center break-keep"
+                    className="w-[50%] absolute top-[50%] right-0 transform translate-y-[-50%] flex flex-col items-start justify-start text-center"
                     data-reveal
                 >
-                    <h2 className="text-[2.4rem] tablet:text-[3rem] font-[550] leading-[1.5]">
-                        라이브 방송 크리에이터를 위한
-                        <br />
-                        또바기 엔터테인먼트.
+                    <h2
+                        id="home-hero-title"
+                        className="w-full text-left text-[2.8rem] font-[500] leading-[1.4]"
+                        data-hero-roll
+                    >
+                        <span
+                            data-hero-mask
+                            className="relative block w-full overflow-hidden"
+                            style={{ height: "2.8em" }}
+                        >
+                            {HERO_ROLLS.map((roll, index) => (
+                                <span
+                                    key={roll.lines[0]}
+                                    data-hero-slide
+                                    data-hero-body={roll.body.join("\n")}
+                                    aria-hidden={index === 0 ? undefined : true}
+                                    className="absolute inset-x-0 top-0 block"
+                                >
+                                    {roll.lines.map((line) => (
+                                        <span
+                                            key={line}
+                                            className="block whitespace-nowrap"
+                                        >
+                                            {line}
+                                        </span>
+                                    ))}
+                                </span>
+                            ))}
+                        </span>
                     </h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#53616c] leading-[1.5]">
-                        방송 준비부터 콘텐츠 제작, 맞춤 디렉팅까지.
-                        <br />
-                        크리에이터의 시작과 성장을 함께합니다.
+                    <p
+                        className="mt-[1.6rem] text-left text-[1.6rem] leading-[1.5]"
+                        data-hero-copy
+                    >
+                        {HERO_ROLLS[0].body.map((line, index) => (
+                            <span key={line}>
+                                {index > 0 ? <br /> : null}
+                                {line}
+                            </span>
+                        ))}
                     </p>
-                    <span className="scroll-hint inline-flex items-center gap-[2.4rem] mt-[4.8rem] tablet:mt-[6.4rem] text-[1.2rem] leading-[1.0]">
+
+                    {/* <span className="scroll-hint mt-[4.8rem] inline-flex items-center gap-[2.4rem] text-[1.2rem] leading-[1.0] tablet:mt-[6.4rem]">
                         SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
-                    </span>
+                    </span> */}
+                    <div className="flex flex-col items-center mt-[4.8rem]">
+                        {/* 꼬리가 긴 선 */}
+                        <div className="w-[0.2rem] h-[5.2rem] bg-[#ede9d7] rounded-full" />
+                        {/* 화살촉 (두 개의 막대를 45도와 -45도로 기울임) */}
+                        <div
+                            className="relative h-[1.3rem] flex items-center justify-center"
+                            style={{ marginTop: "-0.1rem" }}
+                            aria-hidden="true"
+                        >
+                            <div
+                                className="absolute bottom-[1.4rem] left-[-1.2rem] w-[1.4rem] h-[0.18rem] bg-[#ede9d7] rounded-full"
+                                style={{ transform: "rotate(45deg)" }}
+                            ></div>
+                            {/* <div
+                                className="absolute bottom-[1.4rem] right-[-1.2rem] w-[1.4rem] h-[0.18rem] bg-[#ede9d7] rounded-full"
+                                style={{ transform: "rotate(-45deg)" }}
+                            ></div> */}
+                        </div>
+                    </div>
                 </div>
-            </GradientWave>
+            </GradientWaveSettle>
         </section>
     );
 }

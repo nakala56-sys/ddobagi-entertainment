@@ -17,7 +17,7 @@ export function FinalCta() {
         <section
             ref={sectionRef}
             data-cta-wave
-            className="closing relative z-10 overflow-visible bg-white motion-reduce:bg-black section-dark [--accent:#ffffff] text-[#ffffff]"
+            className="closing relative z-10 overflow-visible bg-[var(--color-background)] motion-reduce:bg-[var(--color-background)] section-dark text-[#ffffff]"
             aria-labelledby="home-closing-title"
         >
             {/* Fixed to the viewport so parent overflow cannot clip the expanding ink. */}
@@ -69,7 +69,7 @@ export function FinalCta() {
                         cx="50"
                         cy="108"
                         r="0"
-                        fill="#000000"
+                        fill="#ffffff"
                         filter={`url(#cta-ink-wobble-${wobbleId})`}
                     />
                 </svg>
@@ -83,17 +83,21 @@ export function FinalCta() {
                     <h2
                         className="text-[2.4rem] min-[343px]:text-[7vw] min-[1372px]:text-[9.6rem] leading-[1.5] font-[550] break-keep"
                         id="home-closing-title"
+                        data-title-rise
                     >
                         첫 방송도, 다음 도전도.
                         <br />
                         또바기와 함께하세요.
                     </h2>
-                    <p className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#b5b5b5] break-keep">
+                    <p
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#b5b5b5] break-keep"
+                        data-reveal
+                    >
                         방송을 처음 준비하는 분도, 새로운 방향을 고민하는 크리에이터도.
                         <br />
                         지금 필요한 지원을 또바기와 상담해보세요.
                     </p>
-                    <div>
+                    <div data-reveal>
                         <ContactCreatorButton />
                     </div>
                 </div>

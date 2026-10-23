@@ -21,14 +21,14 @@ export function CreatorJourney() {
     return (
         <section
             ref={sectionRef}
-            className="section relative z-10 bg-[#f5f5f5] py-[7.2rem] tablet:py-[12rem]"
+            className="section relative z-10 bg-[var(--color-background)] py-[7.2rem] tablet:py-[12rem]"
             aria-labelledby="home-journey-title"
         >
             <div className="content-width mx-auto w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem]">
                 <h2
                     id="home-journey-title"
                     className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580] break-keep"
-                    data-reveal
+                    data-title-rise
                 >
                     상담부터 활동까지,
                     <br />
@@ -46,7 +46,7 @@ export function CreatorJourney() {
                     {STEPS.map((step, index) => (
                         <li
                             key={step.title}
-                            className="border-t border-solid border-[#dedede] pt-[2.8rem]"
+                            className="border-t border-solid border-[var(--color-line)] pt-[2.8rem]"
                             data-reveal
                         >
                             <span

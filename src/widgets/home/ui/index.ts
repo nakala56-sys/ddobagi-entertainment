@@ -4,6 +4,7 @@ export { CreatorEveryday } from "./CreatorEveryday";
 export { CreatorSolutions } from "./CreatorSolutions";
 export { BrandIntro } from "./BrandIntro";
 export { BeliefMoments } from "./BeliefMoments";
+export { CreatorReel } from "./CreatorReel";
 export { SupportOverview } from "./SupportOverview";
 export { StudioPreview } from "./StudioPreview";
 export { CreatorStories } from "./CreatorStories";

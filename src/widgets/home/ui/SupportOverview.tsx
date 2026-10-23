@@ -16,7 +16,7 @@ export function SupportOverview() {
         <section
             ref={sectionRef}
             data-gallery-cover-anchor
-            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[#f5f5f5] data-[gallery-cover=true]:relative data-[gallery-cover=true]:z-20 data-[gallery-cover=true]:min-h-svh"
+            className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[var(--color-background)] data-[gallery-cover=true]:relative data-[gallery-cover=true]:z-20 data-[gallery-cover=true]:min-h-svh"
             aria-labelledby="home-support-title"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
@@ -29,7 +29,7 @@ export function SupportOverview() {
                         <h2
                             id="home-support-title"
                             className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
-                            data-reveal
+                            data-title-rise
                         >
                             방송 준비부터 운영까지,
                             <br />

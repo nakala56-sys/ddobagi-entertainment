@@ -12,7 +12,7 @@ export function Toast() {
         >
             {toasts.map((toast) => (
                 <div
-                    className="toast-message flex justify-between gap-[2rem] bg-[#ffffff] text-[#000000] border-[0.4rem] border-solid border-[#dedede] p-[1.6rem_2rem] mb-[1.2rem]"
+                    className="toast-message flex justify-between gap-[2rem] bg-[var(--color-background)] text-[var(--color-text)] border-[0.4rem] border-solid border-[var(--color-line)] p-[1.6rem_2rem] mb-[1.2rem]"
                     key={toast.id}
                 >
                     <p className="leading-[1.5]">{toast.msg}</p>

@@ -6,6 +6,7 @@ import Animation from "@/shared/utils/animation";
 const SECTIONS = [
     { id: "home-hero-title", label: "또바기" },
     { id: "home-belief-moments-title", label: "크리에이터" },
+    { id: "home-reel-title", label: "현장" },
     { id: "home-support-title", label: "지원" },
     { id: "home-gallery-title", label: "스튜디오" },
     { id: "home-everyday-title", label: "일상" },
@@ -27,7 +28,7 @@ export function SectionNavigation() {
         <nav
             ref={navigationRef}
             aria-label="랜딩 섹션 이동"
-            className="home-section-navigation fixed right-[2rem] top-1/2 z-30 hidden w-[19.2rem] -translate-y-1/2 text-white mix-blend-difference min-[64rem]:block pc:right-[3.2rem]"
+            className="home-section-navigation fixed left-[2rem] top-1/2 z-30 hidden w-[19.2rem] -translate-y-1/2 text-white mix-blend-difference min-[64rem]:block pc:right-[3.2rem]"
         >
             <ol>
                 {SECTIONS.map((section, index) => (
@@ -42,7 +43,7 @@ export function SectionNavigation() {
                             <span
                                 data-section-bar
                                 aria-hidden="true"
-                                className="block h-[0.4rem] w-[2.8rem] bg-white opacity-20 group-hover:opacity-100 group-focus-visible:opacity-100 group-aria-[current=location]:opacity-100"
+                                className="block h-[0.4rem] w-[2.8rem] bg-[var(--color-point)] opacity-20 group-hover:opacity-100 group-focus-visible:opacity-100 group-aria-[current=location]:opacity-100"
                             />
                             <span
                                 aria-hidden="true"

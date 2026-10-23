@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Animation from "@/shared/utils/animation";
-import { GradientWave } from "@/shared/ui/gradient-wave/GradientWave";
+import { GradientWaveSettle } from "@/shared/ui/gradient-wave/GradientWaveSettle";
 
 export function ServicesHero() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -17,12 +17,13 @@ export function ServicesHero() {
             className="hero relative overflow-visible"
             aria-labelledby="services-hero-title"
         >
-            <GradientWave
+            <GradientWaveSettle
                 text={["YOU CREATE.", "WE SUPPORT."]}
                 id="services-hero-title"
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
+                colors={["#245bff", "#2fbf6a", "#ff4321", "#6d4aff"]}
                 speed={1}
                 distortion={0.8}
                 before={
@@ -38,13 +39,13 @@ export function ServicesHero() {
                     className="hero-bottom mx-auto w-full max-w-[132rem] mt-[4.8rem] tablet:mt-[6.4rem] text-left break-keep"
                     data-reveal
                 >
-                    <h2 className="text-[2.4rem] tablet:text-[3rem] font-[550] leading-[1.5]">크리에이터 매니지먼트부터 브랜드 협업까지.</h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#53616c] leading-[1.5]">라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성을 함께합니다.</p>
+                    <h2 className="text-[2.0rem] font-[500]">크리에이터 매니지먼트부터 브랜드 협업까지.</h2>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성을 함께합니다.</p>
                     <span className="scroll-hint inline-flex items-center gap-[2.4rem] mt-[4.8rem] tablet:mt-[6.4rem] text-[1.2rem] leading-[1.0]">
                         SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
                     </span>
                 </div>
-            </GradientWave>
+            </GradientWaveSettle>
         </section>
     );
 }

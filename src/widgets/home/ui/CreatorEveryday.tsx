@@ -84,7 +84,7 @@ export function CreatorEveryday() {
     return (
         <section
             ref={sectionRef}
-            className="creator-everyday relative z-10 bg-white text-[#191f28]"
+            className="creator-everyday relative z-10 bg-[var(--color-background)] text-[var(--color-text)]"
             aria-labelledby="home-everyday-title"
         >
             <div

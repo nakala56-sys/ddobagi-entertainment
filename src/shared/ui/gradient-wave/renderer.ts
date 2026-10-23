@@ -1,6 +1,7 @@
 export type WaveColors = readonly [string, string, string, string];
 
-export const DEFAULT_WAVE_COLORS: WaveColors = ["#91dff2", "#c8b9f4", "#eef08b", "#f5b8bd"];
+export const DEFAULT_WAVE_COLORS: WaveColors = ["#ff4321", "#ff4321", "#ff4321", "#ff4321"];
+// export const DEFAULT_WAVE_COLORS: WaveColors = ["#91dff2", "#c8b9f4", "#eef08b", "#f5b8bd"];
 
 const vertexSource = `
 attribute vec2 a_position;
@@ -18,8 +19,10 @@ uniform vec4 u_region;
 uniform vec2 u_resolution;
 uniform vec3 u_colors[4];
 uniform float u_time;
+uniform float u_flow;
 uniform float u_distortion;
 uniform float u_text;
+uniform float u_overlay;
 
 vec3 palette(float step) {
     float index = mod(step, 4.0);
@@ -27,6 +30,14 @@ vec3 palette(float step) {
     if (index < 2.0) return u_colors[1];
     if (index < 3.0) return u_colors[2];
     return u_colors[3];
+}
+
+vec3 paletteBlend(float step) {
+    float wrapped = mod(step, 4.0);
+    if (wrapped < 0.0) wrapped += 4.0;
+    float amount = fract(wrapped);
+    amount = amount * amount * (3.0 - 2.0 * amount);
+    return mix(palette(floor(wrapped)), palette(floor(wrapped) + 1.0), amount);
 }
 
 void main() {
@@ -54,12 +65,15 @@ void main() {
     float period = 2.4;
     float trail = 0.85;
     float expand = 4.2;
-    vec3 background = vec3(1.0);
+    vec3 background = vec3(0.0);
     vec3 inkColor = u_colors[0];
     float fill = 0.0;
     float crest = 0.0;
     float edgeDistance = 0.0;
     float edgeWidth = feather * 0.55;
+    // Horizontal phase keeps sliding after the radial spread is frozen. Adding time moves the bands right to left.
+    float drift = uv.x * 4.6 + u_flow;
+    float ripple = sin(drift * 1.6 + uv.y * 2.4) * 0.7 + sin(drift * 3.8 - uv.y * 1.7 + u_flow * 0.35) * 0.38 + sin(drift * 7.2 + uv.y * 5.0) * 0.16;
 
     for (int i = 3; i >= 0; i--) {
         float cycle = floor(u_time / period) - float(i);
@@ -70,7 +84,7 @@ void main() {
         float colorProgress = smoothstep(0.0, expand, localT);
         float colorRadius = mix(startRadius, endRadius, colorProgress);
         float colorMask = 1.0 - smoothstep(colorRadius - feather, colorRadius + feather, distance);
-        vec3 waveColor = palette(cycle);
+        vec3 waveColor = paletteBlend(cycle + drift * 0.42 + ripple);
         background = mix(background, waveColor, colorMask);
         fill = mix(fill, 1.0, colorMask);
         inkColor = mix(inkColor, waveColor, colorMask);
@@ -85,7 +99,7 @@ void main() {
         float whiteProgress = smoothstep(0.0, expand, localT - trail);
         float whiteRadius = mix(startRadius, endRadius, whiteProgress);
         float whiteMask = 1.0 - smoothstep(whiteRadius - feather, whiteRadius + feather, distance);
-        background = mix(background, vec3(1.0), whiteMask);
+        background = mix(background, vec3(0.0), whiteMask);
         fill *= 1.0 - whiteMask;
 
         float whiteEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - whiteRadius));
@@ -96,7 +110,8 @@ void main() {
     }
 
     if (u_text < 0.5) {
-        gl_FragColor = vec4(background, 1.0);
+        // Overlay keeps only the colored band, so a backdrop shows through the cleared field.
+        gl_FragColor = u_overlay > 0.5 ? vec4(background, fill) : vec4(background, 1.0);
         return;
     }
 
@@ -112,9 +127,8 @@ void main() {
     float alpha = max(red, max(green, blue));
     float lowest = min(inkColor.r, min(inkColor.g, inkColor.b));
     float chroma = max(inkColor.r, max(inkColor.g, inkColor.b)) - lowest;
-    vec3 hue = (inkColor - vec3(lowest)) / max(chroma, 0.001);
-    vec3 baseInk = vec3(0.09, 0.13, 0.17);
-    vec3 coloredInk = mix(baseInk, hue * 0.55 + vec3(0.02), smoothstep(0.02, 0.18, chroma));
+    vec3 baseInk = vec3(1.0);
+    vec3 coloredInk = mix(baseInk, inkColor, smoothstep(0.02, 0.18, chroma));
     vec3 ink = mix(baseInk, coloredInk, fill);
     float ribbon = sin(edgeDistance * 120.0) * 0.5 + 0.5;
     ink = mix(ink, mix(coloredInk, inkColor, ribbon), crest * 0.82);
@@ -128,8 +142,8 @@ function rgb(hex: string, fallback: string) {
 }
 
 /** A small fullscreen shader; no scene graph or extra runtime dependency. */
-export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors, text: boolean, distortion: number) {
-    const gl = canvas.getContext("webgl", { alpha: text, antialias: false, depth: false, stencil: false, premultipliedAlpha: false });
+export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors, text: boolean, distortion: number, overlay = false) {
+    const gl = canvas.getContext("webgl", { alpha: text || overlay, antialias: false, depth: false, stencil: false, premultipliedAlpha: false });
     if (!gl) return null;
     const shaders: WebGLShader[] = [];
     const program = gl.createProgram();
@@ -185,8 +199,15 @@ export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors
         colors.flatMap((color, index) => rgb(color, DEFAULT_WAVE_COLORS[index])),
     );
     gl.uniform1f(gl.getUniformLocation(program, "u_text"), Number(text));
+    gl.uniform1f(gl.getUniformLocation(program, "u_overlay"), Number(overlay));
     gl.uniform1f(gl.getUniformLocation(program, "u_distortion"), distortion);
+    if (overlay) {
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.clearColor(0, 0, 0, 0);
+    }
     const timeLocation = gl.getUniformLocation(program, "u_time");
+    const flowLocation = gl.getUniformLocation(program, "u_flow");
     const regionLocation = gl.getUniformLocation(program, "u_region");
     const resolutionLocation = gl.getUniformLocation(program, "u_resolution");
     const maxSize = Math.min(3200, gl.getParameter(gl.MAX_TEXTURE_SIZE), gl.getParameter(gl.MAX_RENDERBUFFER_SIZE));
@@ -206,9 +227,11 @@ export function createWaveRenderer(canvas: HTMLCanvasElement, colors: WaveColors
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
         },
-        render(time: number) {
+        render(time: number, flow = 0) {
+            if (overlay) gl.clear(gl.COLOR_BUFFER_BIT);
             // Keep mediump precision stable; window covers several overlapping wave cycles.
             gl.uniform1f(timeLocation, time % 48);
+            gl.uniform1f(flowLocation, flow);
             gl.drawArrays(gl.TRIANGLES, 0, 6);
         },
     };

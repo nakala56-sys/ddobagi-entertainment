@@ -18,22 +18,22 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
 
-        background: var(--color-background-light);
-
-        color: var(--color-gray-1000);
+        background: var(--color-background);
+        color: var(--color-text);
+        color-scheme: dark;
     }
 
     html {
         line-height: 1.5; /* 1 */
         -webkit-text-size-adjust: 100%; /* 2 */
         max-width: 100%;
-        background: var(--color-background-light);
+        background: var(--color-background);
         scrollbar-width: none;
     }
 
     ::selection {
-        background: var(--color-brand-100);
-        color: var(--color-brand-700);
+        background: var(--color-point);
+        color: var(--color-text);
     }
 
     * {
@@ -46,7 +46,8 @@
         // overflow-y: hidden;
         min-height: 100dvh;
         width: 100%;
-        background-color: var(--color-background-light);
+        background-color: var(--color-background);
+        color: var(--color-text);
 
         display: block;
 

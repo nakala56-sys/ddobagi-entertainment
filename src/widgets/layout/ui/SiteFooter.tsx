@@ -15,7 +15,7 @@ export function SiteFooter() {
     return (
         <footer
             ref={footerRef}
-            className="site-footer relative z-10 pt-[6rem] pb-[3.2rem] tablet:pt-[8rem] section-dark [--accent:#ffffff] text-[#ffffff] bg-[#000000]"
+            className="site-footer relative z-10 pt-[6rem] pb-[3.2rem] tablet:pt-[8rem] section-dark text-[#ffffff] bg-[#000000]"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
                 <div className="footer-top flex justify-between items-start gap-[4rem] pb-[4rem] tablet:pb-[6rem] flex-col tablet:flex-row">
@@ -25,7 +25,7 @@ export function SiteFooter() {
                             href="/"
                             className="footer-wordmark block text-[5.2rem] tablet:text-[7.2rem] pc:text-[12rem] leading-[1.0] font-[600] mt-[2rem]"
                         >
-                            TOBBAGI<span className="text-[var(--accent,#000000)] ml-[2rem]">↗</span>
+                            TTOBAGI<span className="text-[var(--accent,#000000)] ml-[2rem]">↗</span>
                         </Link>
                     </div>
                     <nav
@@ -35,7 +35,8 @@ export function SiteFooter() {
                         {navigation.map((item) => (
                             <Link
                                 href={item.href}
-                                key={item.href} className="leading-[1.0]"
+                                key={item.href}
+                                className="leading-[1.0]"
                             >
                                 {item.label}
                             </Link>
@@ -46,9 +47,14 @@ export function SiteFooter() {
                     <address className="flex flex-col gap-[0.4rem]">
                         <strong className="text-[#ffffff] font-[550] mb-[0.8rem]">{company.name}</strong>
                         <span>{company.address}</span>
-                        <a href={`tel:${company.phone.replaceAll("-", "")}`} className="leading-[1.0]">{company.phone}</a>
+                        <a
+                            href={`tel:${company.phone.replaceAll("-", "")}`}
+                            className="leading-[1.0]"
+                        >
+                            {company.phone}
+                        </a>
                     </address>
-                    <p className="leading-[1.0]">© {new Date().getFullYear()} TOBBAGI ENTERTAINMENT</p>
+                    <p className="leading-[1.0]">© {new Date().getFullYear()} TTOBAGI ENTERTAINMENT</p>
                 </div>
             </div>
         </footer>

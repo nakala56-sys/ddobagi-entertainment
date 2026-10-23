@@ -70,7 +70,7 @@ const Calendar = ({ className = "", size = "md", type = "datetime-local", placeh
                 value={value}
             />
             <button
-                className={`${heightClass} ${className} flex w-full items-center border-[0.4rem] border-[#ededed] bg-white px-[1.6rem] text-left transition-colors hover:border-[#737373] disabled:cursor-not-allowed disabled:bg-[#ffffff] leading-[1.0]`}
+                className={`${heightClass} ${className} flex w-full items-center border-[0.4rem] border-[var(--color-line)] bg-[var(--color-background)] px-[1.6rem] text-left transition-colors hover:border-[#737373] disabled:cursor-not-allowed disabled:bg-[var(--color-background)] leading-[1.0]`}
                 disabled={disabled}
                 onClick={handleOpenPicker}
                 style={style}

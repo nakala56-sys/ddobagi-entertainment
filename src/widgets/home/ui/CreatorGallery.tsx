@@ -32,7 +32,7 @@ export function CreatorGallery() {
     return (
         <section
             ref={sectionRef}
-            className="creator-gallery relative z-10 bg-white data-[gallery-reveal=true]:-mt-[100svh]"
+            className="creator-gallery relative z-10 bg-[var(--color-background)] data-[gallery-reveal=true]:-mt-[100svh]"
             aria-labelledby="home-gallery-title"
         >
             <h2
