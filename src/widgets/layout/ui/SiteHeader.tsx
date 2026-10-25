@@ -3,16 +3,26 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { navigation } from "@/shared/config/navigation";
+import { showToast } from "@/shared/lib/toast";
 import Animation from "@/shared/utils/animation";
 import { Sidebar } from "../Sidebar";
 import { MetallicPaint } from "@/shared/ui/metallic-paint/MetallicPaint";
+
+function isPlainClick(event: MouseEvent<HTMLAnchorElement>) {
+    return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+}
 
 export function SiteHeader() {
     const pathname = usePathname();
     const headerRef = useRef<HTMLElement>(null);
     const [menuOpen, setMenuOpen] = useState(false);
+    const blockSameRoute = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+        if (!isPlainClick(event) || pathname !== href) return;
+        event.preventDefault();
+        showToast({ msg: "이미 해당 페이지를 보고 있어요" });
+    };
     useEffect(() => {
         if (!headerRef.current) return;
         return Animation.layout.header(headerRef.current);
@@ -22,60 +32,56 @@ export function SiteHeader() {
             ref={headerRef}
             className={`site-header [--header-ink:var(--color-text)] fixed top-0 left-0 w-full z-[20] flex items-start justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:p-[3.2rem] pc:px-[4rem]`}
         >
-            <Link
-                className="flex-1 brand-logo flex items-start justify-start gap-[1.2rem] text-[1.6rem] tablet:text-[1.8rem] font-[750] leading-[1.0]"
-                href="/"
-                aria-label="또바기 엔터테인먼트 홈"
-            >
-                <MetallicPaint
-                    imageSrc="/images/common/ttobagi-logo.webp"
-                    // color="#ffffff"
-                    color="#ffa16a"
-                    width={52}
-                    height={52}
-                    edgeBend={0.8}
-                />
-                <p className="text-[2.4rem]">
-                    TTOBAGI_<span className="text-[1.8rem]">ENTERTAINMENT</span>
-                    {/* TTOBAGI<small>ENTERTAINMENT</small> */}
-                </p>
-            </Link>
-            <nav
-                className="flex-1 desktop-navigation hidden tablet:flex gap-[0.8rem] min-[64rem]:gap-[2rem] pc:gap-[3.6rem] text-[1.4rem] min-[64rem]:text-[1.6rem]"
-                aria-label="주 메뉴"
-            >
-                {navigation.map((item) => (
-                    <Link
-                        className="text-[2.0rem]"
-                        // className="text-[1.8rem] aria-[current=page]:text-current aria-[current=page]:underline aria-[current=page]:underline-offset-[0.8rem]"
-                        key={item.href}
-                        href={item.href}
-                        aria-current={pathname === item.href ? "page" : undefined}
-                    >
-                        {item.label}
-                    </Link>
-                ))}
-            </nav>
-            <div className="header-actions flex items-center gap-[2rem]">
-                {/* <ContactCreatorButton className="header-contact whitespace-nowrap [&.header-contact]:text-[1.2rem] [&.header-contact]:p-[1.2rem_1.6rem] [&.header-contact]:gap-[2rem] [&.header-contact]:hidden tablet:[&.header-contact]:inline-flex">
-                    크리에이터 상담하기
-                </ContactCreatorButton> */}
-                <button
-                    className="menu-toggle block tablet:hidden w-[4rem] h-[4rem] border-0 bg-transparent text-current leading-[1.0]"
-                    type="button"
-                    aria-label="메뉴 열기"
-                    aria-expanded={menuOpen}
-                    aria-controls="mobile-menu"
-                    onClick={() => setMenuOpen(true)}
+            <section className="flex items-center justify-between max-w-[1440px] w-full h-full gap-[12.1rem] mx-auto">
+                <Link
+                    className="flex-1 brand-logo flex items-end justify-start gap-[1.2rem] text-[1.6rem] tablet:text-[1.8rem] font-[750] leading-[1.0]"
+                    href="/"
+                    aria-label="또바기 엔터테인먼트 홈"
+                    onClick={(event) => blockSameRoute(event, "/")}
                 >
-                    <span className="block h-[0.4rem] bg-[currentColor] w-[2.8rem] m-[0.8rem]" />
-                    <span className="block h-[0.4rem] bg-[currentColor] w-[2.8rem] m-[0.8rem]" />
-                </button>
-            </div>
-            <Sidebar
-                open={menuOpen}
-                onClose={() => setMenuOpen(false)}
-            />
+                    <MetallicPaint
+                        imageSrc="/images/common/ttobagi-logo.webp"
+                        // color="#ffffff"
+                        color="#ffa16a"
+                        width={52}
+                        height={52}
+                        edgeBend={0.8}
+                    />
+                    <p className="text-[2.4rem]">
+                        TTOBAGI_<span className="text-[1.8rem]">ENTERTAINMENT</span>
+                        {/* TTOBAGI<small>ENTERTAINMENT</small> */}
+                    </p>
+                </Link>
+
+                <nav
+                    className="flex-1 desktop-navigation hidden tablet:flex gap-[0.8rem] min-[64rem]:gap-[2rem] pc:gap-[3.6rem] text-[1.4rem] min-[64rem]:text-[1.6rem]"
+                    aria-label="주 메뉴"
+                >
+                    {navigation.map((item) => {
+                        const current = pathname === item.href;
+                        return (
+                            <Link
+                                className={`group relative text-[2.0rem] ${current ? "text-[#ff4321]" : ""}`}
+                                key={item.href}
+                                href={item.href}
+                                aria-current={current ? "page" : undefined}
+                                onClick={(event) => blockSameRoute(event, item.href)}
+                            >
+                                {item.label}
+                                <span
+                                    aria-hidden
+                                    className="pointer-events-none absolute bottom-[-0.35rem] left-0 h-[0.2rem] w-full origin-left scale-x-0 bg-[#ff4321] transition-transform duration-300 ease-out group-hover:scale-x-100 group-focus-visible:scale-x-100 motion-reduce:transition-none"
+                                />
+                            </Link>
+                        );
+                    })}
+                </nav>
+
+                <Sidebar
+                    open={menuOpen}
+                    onClose={() => setMenuOpen(false)}
+                />
+            </section>
         </header>
     );
 }
