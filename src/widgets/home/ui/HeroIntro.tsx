@@ -51,26 +51,26 @@ export function HeroIntro() {
             className="hero relative min-h-[100svh] overflow-hidden"
             aria-labelledby="home-hero-title"
         >
-            <div
+            {/* <div
                 ref={backdropRef}
                 className="absolute inset-0"
                 style={{ maskImage: HIDDEN_MASK, WebkitMaskImage: HIDDEN_MASK }}
             >
                 <Image
-                    src="/images/home/hero-creator.png"
+                    src="/images/home/hero-landing.jpg"
                     alt=""
                     fill
                     priority
                     sizes="100vw"
                     data-image
-                    className="object-cover object-[34%_center]"
+                    className="object-cover object-[32%_center]"
                 />
                 <div
                     className="absolute inset-0 bg-black/40"
                     aria-hidden="true"
                 />
-            </div>
-            <GradientWaveSettle
+            </div> */}
+            {/* <GradientWaveSettle
                 text=""
                 overlay
                 onProgress={(progress) => {
@@ -83,13 +83,36 @@ export function HeroIntro() {
                 distortion={0.8}
                 settleAt={2.75}
             >
+            </GradientWaveSettle> */}
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 h-full mix-blend-exclusion">
+                <Image
+                    src="/images/home/hero-wide.png"
+                    alt=""
+                    width={1915}
+                    height={821}
+                    priority
+                    unoptimized
+                    data-image
+                    className="block h-[100%] object-cover w-full max-w-none brightness-70"
+                    style={{ width: "100%" }}
+                />
+            </div>
+            <section className="relative z-10 flex min-h-[100svh] flex-col items-end justify-center px-[2rem] pt-[15.2rem] pb-[4rem] tablet:px-[6rem] tablet:pt-[16rem] tablet:pb-[5.6rem] [filter:drop-shadow(0px_0px_10px_black)]">
                 <div
                     className="w-[50%] absolute top-[50%] right-0 transform translate-y-[-50%] flex flex-col items-start justify-start text-center"
                     data-reveal
                 >
+                    {/* <MetallicPaint
+                            imageSrc="/images/common/ttobagi-logo.webp"
+                            // color="#ffffff"
+                            color="#ffa16a"
+                            width={52}
+                            height={52}
+                            edgeBend={0.8}
+                        /> */}
                     <h2
                         id="home-hero-title"
-                        className="w-full text-left text-[2.8rem] font-[500] leading-[1.4]"
+                        className="w-full text-left text-[2.8rem] font-semibold leading-[1.4]"
                         data-hero-roll
                     >
                         <span
@@ -118,7 +141,7 @@ export function HeroIntro() {
                         </span>
                     </h2>
                     <p
-                        className="mt-[1.6rem] text-left text-[1.6rem] leading-[1.5]"
+                        className="mt-[1.6rem] text-left text-[2.0rem] leading-[1.5]"
                         data-hero-copy
                     >
                         {HERO_ROLLS[0].body.map((line, index) => (
@@ -129,9 +152,6 @@ export function HeroIntro() {
                         ))}
                     </p>
 
-                    {/* <span className="scroll-hint mt-[4.8rem] inline-flex items-center gap-[2.4rem] text-[1.2rem] leading-[1.0] tablet:mt-[6.4rem]">
-                        SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
-                    </span> */}
                     <div className="flex flex-col items-center mt-[4.8rem]">
                         {/* 꼬리가 긴 선 */}
                         <div className="w-[0.2rem] h-[5.2rem] bg-[#ede9d7] rounded-full" />
@@ -146,13 +166,13 @@ export function HeroIntro() {
                                 style={{ transform: "rotate(45deg)" }}
                             ></div>
                             {/* <div
-                                className="absolute bottom-[1.4rem] right-[-1.2rem] w-[1.4rem] h-[0.18rem] bg-[#ede9d7] rounded-full"
-                                style={{ transform: "rotate(-45deg)" }}
-                            ></div> */}
+                                    className="absolute bottom-[1.4rem] right-[-1.2rem] w-[1.4rem] h-[0.18rem] bg-[#ede9d7] rounded-full"
+                                    style={{ transform: "rotate(-45deg)" }}
+                                ></div> */}
                         </div>
                     </div>
                 </div>
-            </GradientWaveSettle>
+            </section>
         </section>
     );
 }

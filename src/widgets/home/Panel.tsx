@@ -20,7 +20,7 @@ export default function Panel() {
                 <Layer.HeroIntro />
                 {/* <Layer.BrandIntro /> */}
                 <Layer.BeliefMoments />
-                <Layer.CreatorReel />
+                {/* <Layer.CreatorReel /> */}
                 <Layer.SupportOverview />
                 {/* <Layer.CreatorEveryday /> */}
                 <Layer.CreatorSolutions />
