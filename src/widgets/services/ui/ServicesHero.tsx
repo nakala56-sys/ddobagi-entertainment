@@ -23,7 +23,7 @@ export function ServicesHero() {
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
-                colors={["#245bff", "#2fbf6a", "#ff4321", "#6d4aff"]}
+                colors={["#135c74", "#134974", "#135c74", "#134974"]}
                 speed={1}
                 distortion={0.8}
                 before={

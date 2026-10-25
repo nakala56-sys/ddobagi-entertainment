@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Animation from "@/shared/utils/animation";
-import { GradientWave } from "@/shared/ui/gradient-wave/GradientWave";
+import { GradientWaveSettle } from "@/shared/ui/gradient-wave/GradientWaveSettle";
 
 export function EquipmentHero() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -17,12 +17,13 @@ export function EquipmentHero() {
             className="hero relative overflow-visible"
             aria-labelledby="equipment-hero-title"
         >
-            <GradientWave
+            <GradientWaveSettle
                 text={["READY FOR", "YOUR NEXT."]}
                 id="equipment-hero-title"
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
+                colors={["#137456", "#136874", "#137456", "#136874"]}
                 speed={1}
                 distortion={0.8}
                 before={
@@ -44,7 +45,7 @@ export function EquipmentHero() {
                         SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
                     </span>
                 </div>
-            </GradientWave>
+            </GradientWaveSettle>
         </section>
     );
 }

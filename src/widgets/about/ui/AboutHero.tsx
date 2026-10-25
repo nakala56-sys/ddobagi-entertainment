@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Animation from "@/shared/utils/animation";
-import { GradientWave } from "@/shared/ui/gradient-wave/GradientWave";
+import { GradientWaveSettle } from "@/shared/ui/gradient-wave/GradientWaveSettle";
 
 export function AboutHero() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -17,12 +17,13 @@ export function AboutHero() {
             className="hero relative overflow-visible"
             aria-labelledby="about-hero-title"
         >
-            <GradientWave
+            <GradientWaveSettle
                 text={["EVERY COLOR", "HAS A STORY."]}
                 id="about-hero-title"
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
+                colors={["#745213", "#743413", "#745213", "#743413"]}
                 speed={1}
                 distortion={0.8}
                 before={
@@ -47,7 +48,7 @@ export function AboutHero() {
                         SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
                     </span>
                 </div>
-            </GradientWave>
+            </GradientWaveSettle>
         </section>
     );
 }
