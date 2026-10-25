@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Animation from "@/shared/utils/animation";
-import { EquipmentPageProvider } from "./model/EquipmentContext";
 import * as Layer from "@/widgets/equipment/ui";
 
 export default function Panel() {
@@ -12,16 +11,13 @@ export default function Panel() {
         return Animation.layout.main(panelRef.current);
     }, []);
     return (
-        <EquipmentPageProvider>
-            <div
-                ref={panelRef}
-                className="route-panel"
-            >
-                <Layer.EquipmentHero />
-                <Layer.EquipmentGrid />
-                <Layer.StudioEnvironment />
-            </div>
-            <Layer.Modal />
-        </EquipmentPageProvider>
+        <div
+            ref={panelRef}
+            className="route-panel"
+        >
+            <Layer.EquipmentHero />
+            <Layer.EquipmentGrid />
+            <Layer.StudioEnvironment />
+        </div>
     );
 }

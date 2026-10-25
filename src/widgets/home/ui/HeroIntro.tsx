@@ -3,10 +3,6 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Animation from "@/shared/utils/animation";
-import { GradientWaveSettle } from "@/shared/ui/gradient-wave/GradientWaveSettle";
-import { MetallicPaint } from "@/shared/ui/metallic-paint/MetallicPaint";
-
-const HIDDEN_MASK = "linear-gradient(#0000, #0000)";
 
 const HERO_ROLLS = [
     {
@@ -23,23 +19,8 @@ const HERO_ROLLS = [
     },
 ] as const;
 
-function revealBackdrop(backdrop: HTMLElement, progress: number) {
-    if (progress >= 1) {
-        backdrop.style.maskImage = "";
-        backdrop.style.setProperty("-webkit-mask-image", "");
-        return;
-    }
-    const edge = 0.22;
-    const front = Math.max(progress, 0);
-    const solid = Math.max(0, front - edge);
-    const mask = front <= 0 ? HIDDEN_MASK : `linear-gradient(to bottom, #000 ${solid * 100}%, transparent ${front * 100}%)`;
-    backdrop.style.maskImage = mask;
-    backdrop.style.setProperty("-webkit-mask-image", mask);
-}
-
 export function HeroIntro() {
     const sectionRef = useRef<HTMLElement>(null);
-    const backdropRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!sectionRef.current) return;
@@ -53,39 +34,6 @@ export function HeroIntro() {
             className="hero relative min-h-[100svh] overflow-hidden"
             aria-labelledby="home-hero-title"
         >
-            {/* <div
-                ref={backdropRef}
-                className="absolute inset-0"
-                style={{ maskImage: HIDDEN_MASK, WebkitMaskImage: HIDDEN_MASK }}
-            >
-                <Image
-                    src="/images/home/hero-landing.jpg"
-                    alt=""
-                    fill
-                    priority
-                    sizes="100vw"
-                    data-image
-                    className="object-cover object-[32%_center]"
-                />
-                <div
-                    className="absolute inset-0 bg-black/40"
-                    aria-hidden="true"
-                />
-            </div> */}
-            {/* <GradientWaveSettle
-                text=""
-                overlay
-                onProgress={(progress) => {
-                    if (backdropRef.current) revealBackdrop(backdropRef.current, progress);
-                }}
-                // colors={["#245bff", "#2fbf6a", "#ff4321", "#6d4aff"]}
-                colors={["#0a0a0a", "#0a0a0a", "#0a0a0a", "#0a0a0a"]}
-                className="flex min-h-[100svh] flex-col items-end justify-center px-[2rem] pt-[15.2rem] pb-[4rem] tablet:px-[6rem] tablet:pt-[16rem] tablet:pb-[5.6rem]"
-                speed={1}
-                distortion={0.8}
-                settleAt={2.75}
-            >
-            </GradientWaveSettle> */}
             <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 h-full mix-blend-exclusion">
                 <Image
                     src="/images/home/hero-wide.png"
@@ -103,14 +51,6 @@ export function HeroIntro() {
                     className="absolute top-1/2 right-[2rem] flex w-[calc(100%-4rem)] -translate-y-1/2 flex-col items-start justify-start text-left tablet:right-0 tablet:w-1/2 tablet:text-center"
                     data-reveal
                 >
-                    {/* <MetallicPaint
-                            imageSrc="/images/common/ttobagi-logo.webp"
-                            // color="#ffffff"
-                            color="#ffa16a"
-                            width={52}
-                            height={52}
-                            edgeBend={0.8}
-                        /> */}
                     <h2
                         id="home-hero-title"
                         className="w-full text-left text-[clamp(1.7rem,4.8vw,2.8rem)] font-semibold leading-[1.4] [text-shadow:0_0_1rem_#000]"
@@ -166,10 +106,6 @@ export function HeroIntro() {
                                 className="absolute bottom-[1.4rem] left-[-1.2rem] w-[1.4rem] h-[0.18rem] bg-[#ede9d7] rounded-full"
                                 style={{ transform: "rotate(45deg)" }}
                             ></div>
-                            {/* <div
-                                    className="absolute bottom-[1.4rem] right-[-1.2rem] w-[1.4rem] h-[0.18rem] bg-[#ede9d7] rounded-full"
-                                    style={{ transform: "rotate(-45deg)" }}
-                                ></div> */}
                         </div>
                     </div>
                 </div>

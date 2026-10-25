@@ -401,84 +401,6 @@ function creatorGallery(root: HTMLElement): Cleanup {
     });
 }
 
-function creatorEveryday(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
-        if (!desktop) {
-            reveal(root);
-            return;
-        }
-        const stage = root.querySelector<HTMLElement>("[data-everyday-stage]");
-        const intro = root.querySelector<HTMLElement>("[data-everyday-intro]");
-        const outro = root.querySelector<HTMLElement>("[data-everyday-outro]");
-        const fade = root.querySelector<HTMLElement>("[data-everyday-fade]");
-        const photos = root.querySelectorAll<HTMLElement>("[data-everyday-photo]");
-        const tiles = root.querySelectorAll<HTMLElement>("[data-everyday-tile]");
-        const ghosts = root.querySelectorAll<HTMLElement>("[data-everyday-ghost]");
-        const extras = root.querySelectorAll<HTMLElement>("[data-everyday-extra]");
-        if (!stage || !intro || !outro || !fade || !photos.length) return;
-
-        setSectionState(root, "everyday", true);
-        // A pinned stage still has its previous width during refreshInit.
-        const width = () => document.documentElement.clientWidth;
-        const height = () => stage.clientHeight;
-        const gap = () => Math.max(12, Math.min(24, width() * 0.01));
-        const cardWidth = () => Math.min(324, (width() * 0.68 - gap() * 3) / 4, height() * 0.3);
-        const boardWidth = () => cardWidth() * 4 + gap() * 3;
-        const left = () => (width() - boardWidth()) / 2;
-        const columnX = (index: number) => left() + index * (cardWidth() + gap());
-        const photoY = (index: number) => height() * (0.24 + index * 0.053);
-        const startY = (index: number) => Math.max(height() * 0.43, height() * 0.19 + intro.offsetHeight + height() * 0.066 + 24) - index * height() * 0.033;
-        const measure = () => {
-            gsap.set([intro, outro], { width: Math.min(800, cardWidth() * 3 + gap() * 2) });
-            gsap.set(intro, { left: left() + width() * 0.035, top: height() * 0.19 });
-            gsap.set(outro, { left: left(), top: Math.min(height() * 0.74, height() - outro.offsetHeight - 32) });
-            tiles.forEach((tile) => {
-                const column = Number(tile.dataset.column);
-                const above = tile.dataset.side === "top";
-                gsap.set(tile, {
-                    left: columnX(column),
-                    top: photoY(column) + (above ? -cardWidth() - gap() : cardWidth() + gap()),
-                    width: cardWidth(),
-                    height: cardWidth(),
-                });
-            });
-            ghosts.forEach((ghost) => {
-                gsap.set(ghost, {
-                    left: columnX(Number(ghost.dataset.column)),
-                    top: height() * 0.18 + Number(ghost.dataset.row) * (cardWidth() + gap()),
-                    width: cardWidth(),
-                    height: cardWidth(),
-                });
-            });
-        };
-        measure();
-        gsap.set(extras, { autoAlpha: 0, y: 56, scale: 0.96 });
-        gsap.set(outro, { autoAlpha: 0, y: 36 });
-        gsap.set(fade, { autoAlpha: 0 });
-
-        scrollTimeline(root, {
-            start: "top top",
-            end: () => `+=${height() * 2.8}`,
-            pin: true,
-            scrub: 1.25,
-            onRefreshInit: measure,
-        })
-            .fromTo(
-                photos,
-                { left: (index) => columnX(index) + width() * 0.035, top: startY, width: cardWidth, height: () => cardWidth() * 1.36 },
-                { left: columnX, top: photoY, width: cardWidth, height: cardWidth, duration: 1.8, ease: "none" },
-                0.3,
-            )
-            .to(intro, { autoAlpha: 0, y: -40, duration: 0.5, ease: "none" }, 0.3)
-            .to(extras, { autoAlpha: 1, y: 0, scale: 1, duration: 1.2, stagger: 0.045, ease: "none" }, 0.65)
-            .to(fade, { autoAlpha: 1, duration: 1, ease: "none" }, 0.8)
-            .to(outro, { autoAlpha: 1, y: 0, duration: 0.6, ease: "none" }, 1.7)
-            .to({}, { duration: 0.4 });
-
-        return () => setSectionState(root, "everyday", false);
-    });
-}
-
 function creatorSolutions(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
         reveal(root);
@@ -517,7 +439,7 @@ function creatorSolutions(root: HTMLElement): Cleanup {
 }
 
 function beliefMoments(root: HTMLElement): Cleanup {
-    return section(root, () => {
+    return section(root, (_, { desktop }) => {
         reveal(root);
         const copy = root.querySelector<HTMLElement>("[data-belief-copy]");
         const frames = root.querySelectorAll<HTMLElement>("[data-float-image]");
@@ -530,10 +452,14 @@ function beliefMoments(root: HTMLElement): Cleanup {
             end: "bottom bottom",
             pin: copy,
             pinSpacing: false,
-            anticipatePin: 1,
+            anticipatePin: desktop ? 1 : 0,
             invalidateOnRefresh: true,
         });
 
+        // Scaling filtered photos on every scroll tick is what stutters phones.
+        if (!desktop) return;
+
+        gsap.set(frames, { willChange: "transform", force3D: true });
         frames.forEach((frame) => {
             scrollTimeline(frame, { start: "top bottom", end: "bottom top" })
                 .fromTo(frame, { scale: 0.94 }, { scale: 1, ease: "none", duration: 0.5 })
@@ -857,125 +783,6 @@ function sectionNavigation(root: HTMLElement): Cleanup {
     return () => media.revert();
 }
 
-// Cards sit on a vertical cylinder. Distance from the viewport center is the arc length.
-function creatorReel(root: HTMLElement): Cleanup {
-    return section(root, () => {
-        const viewport = root.querySelector<HTMLElement>("[data-reel-viewport]");
-        const track = root.querySelector<HTMLElement>("[data-reel-track]");
-        const loopSet = root.querySelector<HTMLElement>("[data-reel-set]");
-        const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-reel-card]"));
-        if (!viewport || !track || !loopSet || !cards.length) return;
-
-        const BASE_SPEED = 36;
-        const trackX = gsap.quickSetter(track, "x", "px");
-        const placeCard = cards.map((card) => ({
-            x: gsap.quickSetter(card, "x", "px"),
-            z: gsap.quickSetter(card, "z", "px"),
-            rotationY: gsap.quickSetter(card, "rotationY", "deg"),
-            opacity: gsap.quickSetter(card, "opacity"),
-        }));
-        let offset = 0;
-        let direction = -1;
-        let velocity = -BASE_SPEED;
-        let boost = 0;
-        let lastScroll = window.scrollY;
-        let dragging = false;
-        let dragOffset = 0;
-        let dragX = 0;
-        let lastPointerX = 0;
-        let lastPointerTime = 0;
-
-        const render = () => {
-            const loop = loopSet.offsetWidth;
-            if (loop <= 0) return;
-            const shown = gsap.utils.wrap(-loop, 0, offset);
-            if (!dragging) offset = shown;
-            trackX(shown);
-            const radius = Math.max(viewport.clientWidth * 0.7, 680);
-            const center = viewport.clientWidth / 2;
-            cards.forEach((card, index) => {
-                const arc = shown + card.offsetLeft + card.offsetWidth / 2 - center;
-                const angle = arc / radius;
-                const onCurve = Math.abs(angle) <= 0.82;
-                placeCard[index].opacity(onCurve ? 1 : 0);
-                placeCard[index].x(Math.sin(angle) * radius - arc);
-                placeCard[index].z((Math.cos(angle) - 1) * radius);
-                placeCard[index].rotationY((angle * 180) / Math.PI);
-            });
-        };
-
-        const tick = (_time: number, deltaMs: number) => {
-            const dt = Math.min(Math.max(deltaMs, 0) / 1000, 0.05);
-            const rect = root.getBoundingClientRect();
-            const visible = rect.bottom > 0 && rect.top < window.innerHeight;
-            if (!dragging) {
-                const dy = window.scrollY - lastScroll;
-                const targetBoost = visible ? Math.min(Math.max(dy, 0) * 8, 320) : 0;
-                boost += (targetBoost - boost) * Math.min(1, dt * 4);
-                const target = direction * (BASE_SPEED + boost);
-                velocity += (target - velocity) * Math.min(1, dt * 8);
-                offset += velocity * dt;
-            }
-            lastScroll = window.scrollY;
-            if (visible || dragging) render();
-        };
-
-        const onDown = (event: PointerEvent) => {
-            if (event.button !== 0) return;
-            dragging = true;
-            dragX = event.clientX;
-            dragOffset = offset;
-            lastPointerX = event.clientX;
-            lastPointerTime = performance.now();
-            velocity = 0;
-            viewport.dataset.dragging = "true";
-            try {
-                viewport.setPointerCapture(event.pointerId);
-            } catch {
-                // Synthetic pointers have no capture target. The drag still tracks pointermove.
-            }
-        };
-        const onMove = (event: PointerEvent) => {
-            if (!dragging) return;
-            const now = performance.now();
-            const dt = Math.max((now - lastPointerTime) / 1000, 0.001);
-            velocity = gsap.utils.clamp(-720, 720, (event.clientX - lastPointerX) / dt);
-            lastPointerX = event.clientX;
-            lastPointerTime = now;
-            offset = dragOffset + (event.clientX - dragX);
-            render();
-        };
-        const onUp = (event: PointerEvent) => {
-            if (!dragging) return;
-            dragging = false;
-            delete viewport.dataset.dragging;
-            const dragged = event.clientX - dragX;
-            if (Math.abs(dragged) > 6) direction = Math.sign(dragged);
-            else if (Math.abs(velocity) > 24) direction = Math.sign(velocity) || direction;
-            if (Math.sign(velocity) !== direction) velocity = direction * BASE_SPEED;
-            velocity = gsap.utils.clamp(-720, 720, velocity);
-            if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
-        };
-
-        gsap.set(cards, { transformOrigin: "50% 50%", force3D: true });
-        gsap.ticker.add(tick);
-        viewport.addEventListener("pointerdown", onDown);
-        viewport.addEventListener("pointermove", onMove);
-        viewport.addEventListener("pointerup", onUp);
-        viewport.addEventListener("pointercancel", onUp);
-        render();
-
-        return () => {
-            gsap.ticker.remove(tick);
-            viewport.removeEventListener("pointerdown", onDown);
-            viewport.removeEventListener("pointermove", onMove);
-            viewport.removeEventListener("pointerup", onUp);
-            viewport.removeEventListener("pointercancel", onUp);
-            delete viewport.dataset.dragging;
-        };
-    });
-}
-
 class Animation {
     static layout = {
         loading: pageLoading,
@@ -986,19 +793,26 @@ class Animation {
         },
         common: (): Cleanup => {
             const media = gsap.matchMedia();
-            media.add(`${getBreakpointQuery("tablet")} and (prefers-reduced-motion: no-preference)`, () => {
-                const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
-                smoothScroller = lenis;
-                const update = () => ScrollTrigger.update();
-                lenis.on("scroll", update);
-                const tick = (time: number) => lenis.raf(time * 1000);
-                gsap.ticker.add(tick);
-                return () => {
-                    gsap.ticker.remove(tick);
-                    lenis.off("scroll", update);
-                    if (smoothScroller === lenis) smoothScroller = undefined;
-                    lenis.destroy();
-                };
+            media.add({ smooth: "(prefers-reduced-motion: no-preference)", desktop: getBreakpointQuery("tablet") }, (context) => {
+                const { smooth, desktop } = context.conditions as { smooth: boolean; desktop: boolean };
+                if (!smooth) return;
+                if (desktop) {
+                    const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
+                    smoothScroller = lenis;
+                    const update = () => ScrollTrigger.update();
+                    lenis.on("scroll", update);
+                    const tick = (time: number) => lenis.raf(time * 1000);
+                    gsap.ticker.add(tick);
+                    return () => {
+                        gsap.ticker.remove(tick);
+                        lenis.off("scroll", update);
+                        if (smoothScroller === lenis) smoothScroller = undefined;
+                        lenis.destroy();
+                    };
+                }
+                // Mobile browsers scroll off the main thread, so a pinned layer otherwise lags a frame behind.
+                ScrollTrigger.normalizeScroll({ allowNestedScroll: true, lockAxis: true });
+                return () => ScrollTrigger.normalizeScroll(false);
             });
             return () => media.revert();
         },
@@ -1030,21 +844,16 @@ class Animation {
         section: {
             heroIntro: intro,
             creatorGallery,
-            creatorEveryday,
             creatorSolutions,
-            brandIntro: entrance,
             beliefMoments,
-            creatorReel,
             supportOverview: entrance,
-            studioPreview: imageReveal,
-            creatorStories: entrance,
             creatorJourney: entrance,
             creatorFaq,
             finalCta,
         },
     };
     static about = { section: { hero: intro, brandPhilosophy: entrance, location: entrance } };
-    static services = { section: { hero: intro, overview: serviceOverview, closing: entrance } };
+    static services = { section: { hero: intro, overview: serviceOverview } };
     static equipment = { section: { hero: intro, grid: entrance, studioEnvironment: entrance } };
     static benefits = { section: { hero: intro, overview: entrance, closing: entrance } };
 }

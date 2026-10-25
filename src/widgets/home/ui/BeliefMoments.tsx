@@ -92,7 +92,7 @@ export function BeliefMoments() {
                     >
                         <div
                             data-float-image
-                            className={`relative overflow-hidden rounded-[0.4rem] will-change-transform ${SIZE_CLASS[image.size]}`}
+                            className={`relative overflow-hidden rounded-[0.4rem] ${SIZE_CLASS[image.size]}`}
                         >
                             <Image
                                 src={image.src}
@@ -100,7 +100,7 @@ export function BeliefMoments() {
                                 fill
                                 sizes="(min-width: 48rem) 34rem, 56vw"
                                 loading={index === 0 ? "eager" : "lazy"}
-                                className="object-cover grayscale"
+                                className="object-cover tablet:grayscale"
                             />
                         </div>
                     </div>

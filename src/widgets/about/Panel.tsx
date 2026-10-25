@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Animation from "@/shared/utils/animation";
-import { AboutPageProvider } from "./model/AboutContext";
 import * as Layer from "@/widgets/about/ui";
 
 export default function Panel() {
@@ -12,16 +11,13 @@ export default function Panel() {
         return Animation.layout.main(panelRef.current);
     }, []);
     return (
-        <AboutPageProvider>
-            <div
-                ref={panelRef}
-                className="route-panel"
-            >
-                <Layer.AboutHero />
-                <Layer.BrandPhilosophy />
-                <Layer.Location />
-            </div>
-            <Layer.Modal />
-        </AboutPageProvider>
+        <div
+            ref={panelRef}
+            className="route-panel"
+        >
+            <Layer.AboutHero />
+            <Layer.BrandPhilosophy />
+            <Layer.Location />
+        </div>
     );
 }
