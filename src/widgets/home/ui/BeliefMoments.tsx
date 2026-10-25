@@ -89,7 +89,7 @@ export function BeliefMoments() {
                     >
                         <div
                             data-float-image
-                            className={`relative overflow-hidden rounded-[0.4rem] [content-visibility:auto] [contain-intrinsic-size:56vw_75vw] ${SIZE_CLASS[image.size]}`}
+                            className={`relative overflow-hidden rounded-[0.4rem] will-change-transform ${SIZE_CLASS[image.size]}`}
                         >
                             <Image
                                 src={image.src}

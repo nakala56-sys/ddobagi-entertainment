@@ -616,12 +616,11 @@ export function MetallicPaint({
             alive: true,
         };
 
-        const compact = window.matchMedia("(max-width: 767px)").matches;
         const resize = () => {
             const s = settingsRef.current;
             const rect = container.getBoundingClientRect();
-            const base = s.dpr ?? Math.min(window.devicePixelRatio || 1, compact ? 1.25 : 2);
-            let ratio = compact ? base : Math.max(base, 2);
+            const base = s.dpr ?? Math.min(window.devicePixelRatio || 1, 2);
+            let ratio = Math.max(base, 2);
             const pixels = rect.width * rect.height * ratio * ratio;
             if (pixels > MAX_PIXELS) ratio *= Math.sqrt(MAX_PIXELS / pixels);
             const width = Math.max(1, Math.round(rect.width * ratio));
@@ -665,16 +664,9 @@ export function MetallicPaint({
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         };
 
-        let lastDraw = 0;
         const frame = (now: number) => {
             state.raf = 0;
             if (!state.alive) return;
-            // Keep the logo moving, but draw at 30fps on phones so scroll can use the frame.
-            if (compact && lastDraw && now - lastDraw < 32) {
-                state.raf = requestAnimationFrame(frame);
-                return;
-            }
-            lastDraw = now;
             const s = settingsRef.current;
             const dt = state.last ? Math.min(0.05, (now - state.last) / 1000) : 1 / 60;
             state.last = now;
