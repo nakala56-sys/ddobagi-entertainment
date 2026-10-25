@@ -15,6 +15,8 @@ export function ServicesOverview() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="services-overview"
+            data-report-type="group"
             className="section overflow-x-clip py-[7.2rem] tablet:py-[12rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto"
             aria-labelledby="services-overview-title"
         >
@@ -23,6 +25,8 @@ export function ServicesOverview() {
                     <article
                         key={item.id}
                         id={`service-${item.id}`}
+                        data-report-id={`service-${item.id}`}
+                        data-report-type="item"
                         className="service-row relative grid [grid-template-columns:3.2rem_1fr] tablet:[grid-template-columns:5.2rem_1fr] items-start gap-[1.2rem] tablet:gap-[2rem] py-[2.4rem] tablet:py-[3.6rem] border-b-[0.1rem] border-solid border-b-[var(--color-line)]"
                         data-service-row
                         data-reveal

@@ -14,6 +14,8 @@ export function ServicesHero() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="services-hero"
+            data-report-type="group"
             className="hero relative overflow-visible"
             aria-labelledby="services-hero-title"
         >

@@ -13,6 +13,8 @@ export function SiteFooter() {
     return (
         <footer
             ref={footerRef}
+            data-report-id="site-footer"
+            data-report-type="group"
             className="site-footer relative z-10 pt-[4.8rem] pb-[3.2rem] tablet:pt-[6.4rem] section-dark text-[#ffffff] bg-[#000000]"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">

@@ -9,6 +9,7 @@ supabase/.temp/
 next-env.d.ts
 .DS_Store
 docs/
+feedback-kit/
 *.zip
 *.tar
 *.tar.gz

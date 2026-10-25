@@ -32,6 +32,8 @@ export function CreatorGallery() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="home-gallery"
+            data-report-type="group"
             className="creator-gallery relative z-10 bg-[var(--color-background)] data-[gallery-reveal=true]:-mt-[100svh]"
             aria-labelledby="home-gallery-title"
         >

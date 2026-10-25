@@ -15,6 +15,8 @@ export function SupportOverview() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="home-support"
+            data-report-type="group"
             data-gallery-cover-anchor
             className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[var(--color-background)] data-[gallery-cover=true]:relative data-[gallery-cover=true]:z-20 data-[gallery-cover=true]:min-h-svh"
             aria-labelledby="home-support-title"

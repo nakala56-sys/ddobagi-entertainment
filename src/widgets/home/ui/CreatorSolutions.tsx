@@ -164,6 +164,8 @@ export function CreatorSolutions() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="home-solutions"
+            data-report-type="group"
             aria-labelledby="home-solutions-title"
             className="creator-solutions relative z-10 bg-[var(--color-background)] py-[8rem] tablet:py-[12rem] text-[var(--color-text)]"
         >

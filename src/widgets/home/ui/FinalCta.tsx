@@ -16,6 +16,8 @@ export function FinalCta() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="home-closing"
+            data-report-type="group"
             data-cta-wave
             className="closing relative z-10 overflow-visible bg-[var(--color-background)] motion-reduce:bg-[var(--color-background)] section-dark text-[#ffffff]"
             aria-labelledby="home-closing-title"

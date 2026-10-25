@@ -14,6 +14,8 @@ export function BrandPhilosophy() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="about-philosophy"
+            data-report-type="group"
             className="section py-[7.2rem] tablet:py-[12rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto"
             aria-labelledby="philosophy-title"
         >

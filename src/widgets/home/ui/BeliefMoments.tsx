@@ -40,6 +40,8 @@ export function BeliefMoments() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="home-belief-moments"
+            data-report-type="group"
             className="belief-moments relative z-10 overflow-x-clip"
             aria-labelledby="home-belief-moments-title"
         >

@@ -15,6 +15,8 @@ export function BenefitsOverview() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="benefits-overview"
+            data-report-type="group"
             className="section py-[7.2rem] tablet:py-[12rem] content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto"
             aria-labelledby="benefits-overview-title"
         >
@@ -31,6 +33,8 @@ export function BenefitsOverview() {
                 {benefitDetails.map((item, index) => (
                     <article
                         key={item.id}
+                        data-report-id={`benefit-${item.id}`}
+                        data-report-type="item"
                         className="benefit-card [&:nth-child(6n_+_1)]:col-span-2 [&:nth-child(6n_+_4)]:col-span-2 [&:nth-child(n)]:col-auto"
                         data-reveal
                     >

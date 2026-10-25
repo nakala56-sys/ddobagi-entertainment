@@ -21,6 +21,8 @@ export function CreatorJourney() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="home-journey"
+            data-report-type="group"
             className="section relative z-10 bg-[var(--color-background)] py-[7.2rem] tablet:py-[12rem]"
             aria-labelledby="home-journey-title"
         >

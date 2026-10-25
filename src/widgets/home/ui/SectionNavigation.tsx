@@ -27,6 +27,8 @@ export function SectionNavigation() {
     return (
         <nav
             ref={navigationRef}
+            data-report-id="home-section-navigation"
+            data-report-type="group"
             aria-label="랜딩 섹션 이동"
             className="home-section-navigation fixed left-[2rem] top-1/2 z-30 hidden w-[19.2rem] -translate-y-1/2 text-white mix-blend-difference min-[64rem]:block pc:right-[3.2rem]"
         >
@@ -35,6 +37,8 @@ export function SectionNavigation() {
                     <li key={section.id}>
                         <a
                             href={`#${section.id}`}
+                            data-report-id={`home-section-nav-${section.id}`}
+                            data-report-type="item"
                             data-section-target={section.id}
                             aria-label={`${section.label} 섹션으로 이동`}
                             aria-current={index === 0 ? "location" : undefined}

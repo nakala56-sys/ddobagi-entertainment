@@ -24,6 +24,8 @@ export function Location() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="about-location"
+            data-report-type="group"
             className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[var(--color-background)]"
             aria-labelledby="location-title"
         >

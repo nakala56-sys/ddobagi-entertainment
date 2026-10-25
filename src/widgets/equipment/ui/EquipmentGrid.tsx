@@ -15,6 +15,8 @@ export function EquipmentGrid() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="equipment-grid"
+            data-report-type="group"
             className="section py-[7.2rem] tablet:py-[12rem] section-cream bg-[var(--color-background)]"
             aria-labelledby="equipment-grid-title"
         >
@@ -38,6 +40,8 @@ export function EquipmentGrid() {
                     {equipment.map((item) => (
                         <article
                             key={item.id}
+                            data-report-id={`equipment-${item.id}`}
+                            data-report-type="item"
                             className="equipment-card"
                             data-reveal
                         >

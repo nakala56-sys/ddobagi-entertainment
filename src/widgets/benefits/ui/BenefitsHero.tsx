@@ -14,6 +14,8 @@ export function BenefitsHero() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="benefits-hero"
+            data-report-type="group"
             className="hero relative overflow-visible"
             aria-labelledby="benefits-hero-title"
         >

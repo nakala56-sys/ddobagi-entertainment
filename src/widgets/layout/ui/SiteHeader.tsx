@@ -30,10 +30,14 @@ export function SiteHeader() {
     return (
         <header
             ref={headerRef}
+            data-report-id="site-header"
+            data-report-type="group"
             className={`site-header [--header-ink:var(--color-text)] fixed top-0 left-0 w-full z-[20] flex items-start justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:p-[3.2rem] pc:px-[4rem]`}
         >
             <section className="flex items-center justify-between max-w-[1440px] w-full h-full gap-[12.1rem] mx-auto">
                 <Link
+                    data-report-id="nav-home"
+                    data-report-type="item"
                     className="flex-1 brand-logo flex items-end justify-start gap-[1.2rem] text-[1.6rem] tablet:text-[1.8rem] font-[750] leading-[1.0]"
                     href="/"
                     aria-label="또바기 엔터테인먼트 홈"
@@ -61,6 +65,8 @@ export function SiteHeader() {
                         const current = pathname === item.href;
                         return (
                             <Link
+                                data-report-id={`nav-${item.href.slice(1)}`}
+                                data-report-type="item"
                                 className={`group relative text-[2.0rem] ${current ? "text-[#ff4321]" : ""}`}
                                 key={item.href}
                                 href={item.href}

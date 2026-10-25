@@ -15,6 +15,8 @@ export function BenefitsClosing() {
     return (
         <section
             ref={sectionRef}
+            data-report-id="benefits-closing"
+            data-report-type="group"
             className="closing relative overflow-clip min-h-[75svh] tablet:min-h-[85svh] flex items-center py-[8rem] tablet:py-[12rem] section-dark text-[#ffffff] bg-[#000000]"
             aria-labelledby="benefits-closing-title"
         >
