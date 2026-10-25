@@ -514,14 +514,9 @@ function creatorSolutions(root: HTMLElement): Cleanup {
     });
 }
 
-/** Images scale 0→1 as they reach viewport center, then stay at 1. */
 function beliefMoments(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
-        root.querySelectorAll<HTMLElement>("[data-float-image]").forEach((frame) => {
-            gsap.set(frame, { scale: 0, transformOrigin: "50% 50%" });
-            scrollTimeline(frame, { start: "center bottom", end: "center center" }).fromTo(frame, { scale: 0 }, { scale: 1, ease: "none" });
-        });
     });
 }
 
@@ -669,32 +664,36 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     };
     const observer = new MutationObserver(revealPage);
     const context = gsap.context(() => {
-        const reveal = () => {
+        const fadeAt = 0.15;
+        const fadeDuration = 0.9;
+        const finishReveal = () => {
             restoreScroll();
-            root.dispatchEvent(new Event("page:reveal"));
             ScrollTrigger.refresh();
         };
-        transition = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 0.45 }, onComplete });
+        transition = gsap.timeline({ paused: true, onComplete });
         if (waveIntro) {
-            // Expose only the wave behind the loader; the rest of the page stays hidden.
             transition
-                .set(content, { opacity: 1 }, 0)
                 .call(
                     () => {
                         const wave = content.querySelector<HTMLElement>(".hero [data-gradient-wave]");
                         if (wave) gsap.set(wave, { visibility: "visible" });
                         root.dispatchEvent(new Event("page:wave"));
+                        root.dispatchEvent(new Event("page:reveal"));
                     },
                     [],
-                    0,
+                    fadeAt,
                 )
-                .to(overlay, { backgroundColor: "rgba(0, 0, 0, 0)" }, 0)
-                .to(text, { autoAlpha: 0, duration: 0.35 }, 1.8)
-                .set(overlay, { autoAlpha: 0 }, 2.15)
-                .set(content, { visibility: "visible" }, 2.15)
-                .call(reveal, [], 2.15);
+                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, fadeAt)
+                .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, fadeAt)
+                .call(finishReveal, [], fadeAt + fadeDuration);
         } else {
-            transition.call(reveal).fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1 }, 0).to(overlay, { autoAlpha: 0 }, 0);
+            transition
+                .call(() => {
+                    root.dispatchEvent(new Event("page:reveal"));
+                })
+                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, 0)
+                .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, 0)
+                .call(finishReveal);
         }
         if (reduced) gsap.set(text, { backgroundPosition: "0% 0%" });
         else
@@ -958,6 +957,11 @@ function creatorReel(root: HTMLElement): Cleanup {
 class Animation {
     static layout = {
         loading: pageLoading,
+        scrollToTop: () => {
+            if (smoothScroller) smoothScroller.scrollTo(0, { immediate: true, force: true });
+            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+            ScrollTrigger.update();
+        },
         common: (): Cleanup => {
             const media = gsap.matchMedia();
             media.add(`${getBreakpointQuery("tablet")} and (prefers-reduced-motion: no-preference)`, () => {

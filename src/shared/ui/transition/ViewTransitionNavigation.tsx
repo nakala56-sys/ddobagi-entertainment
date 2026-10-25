@@ -1,16 +1,29 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Animation from "@/shared/utils/animation";
 
 export function ViewTransitionNavigation() {
     const router = useRouter();
     const pathname = usePathname();
     const pending = useRef<(() => void) | null>(null);
+    const scrollTopOnNavigation = useRef(false);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        if (scrollTopOnNavigation.current) Animation.layout.scrollToTop();
         pending.current?.();
         pending.current = null;
+    }, [pathname]);
+
+    useEffect(() => {
+        if (!scrollTopOnNavigation.current) return;
+        const frame = window.requestAnimationFrame(() => {
+            if (!scrollTopOnNavigation.current) return;
+            Animation.layout.scrollToTop();
+            scrollTopOnNavigation.current = false;
+        });
+        return () => window.cancelAnimationFrame(frame);
     }, [pathname]);
 
     useEffect(() => {
@@ -27,6 +40,7 @@ export function ViewTransitionNavigation() {
             const url = new URL(anchor.href);
             if (url.origin !== window.location.origin) return;
             if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+            if (!url.hash) scrollTopOnNavigation.current = true;
             if (typeof document.startViewTransition !== "function") return;
 
             event.preventDefault();
@@ -38,7 +52,7 @@ export function ViewTransitionNavigation() {
                         window.clearTimeout(timer);
                         resolve();
                     };
-                    router.push(next);
+                    router.push(next, { scroll: false });
                 });
             });
         };
