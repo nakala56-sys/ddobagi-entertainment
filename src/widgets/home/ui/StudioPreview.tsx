@@ -27,7 +27,7 @@ export function StudioPreview() {
                     <div>
                         <h2
                             id="home-studio-title"
-                            className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
+                            className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
                             data-reveal
                         >
                             새로운 무대가

@@ -81,7 +81,7 @@ export function FinalCta() {
                     className="closing-content relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center gap-[3.2rem] tablet:gap-[3.6rem] text-center content-width"
                 >
                     <h2
-                        className="text-[2.4rem] min-[343px]:text-[7vw] min-[1372px]:text-[9.6rem] leading-[1.5] font-[550] break-keep"
+                        className="text-[2.4rem] min-[343px]:text-[7vw] pc:text-[5.8rem] leading-[1.5] font-[550] break-keep"
                         id="home-closing-title"
                         data-title-rise
                     >

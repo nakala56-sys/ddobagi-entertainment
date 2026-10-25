@@ -47,7 +47,7 @@ export function BeliefMoments() {
                 <div className="content-width pointer-events-auto mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center text-center px-[2rem]">
                     <h2
                         id="home-belief-moments-title"
-                        className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] leading-[1.5] font-[580]"
+                        className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] leading-[1.5] font-[580]"
                         data-title-rise
                     >
                         크리에이터의 방송을,

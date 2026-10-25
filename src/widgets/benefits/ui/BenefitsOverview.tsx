@@ -20,7 +20,7 @@ export function BenefitsOverview() {
         >
             <h2
                 id="benefits-overview-title"
-                className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
+                className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
                 data-reveal
             >
                 크리에이터를 위한

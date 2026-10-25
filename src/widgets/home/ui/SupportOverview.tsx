@@ -28,7 +28,7 @@ export function SupportOverview() {
                     <div>
                         <h2
                             id="home-support-title"
-                            className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
+                            className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
                             data-title-rise
                         >
                             방송 준비부터 운영까지,
