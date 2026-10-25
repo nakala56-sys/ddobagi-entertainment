@@ -33,7 +33,7 @@ export function BeliefMoments() {
     const imageGap = 70;
     const firstTop = 12;
     // Extra room after the last image so it can fully exit above the viewport
-    // before sticky copy releases and the next section scrolls in.
+    // before the pinned copy releases and the next section scrolls in.
     const exitPad = 180;
     const trackHeight = `${firstTop + (MOMENT_IMAGES.length - 1) * imageGap + exitPad}vh`;
 
@@ -42,10 +42,13 @@ export function BeliefMoments() {
             ref={sectionRef}
             data-report-id="home-belief-moments"
             data-report-type="group"
-            className="belief-moments relative z-10 overflow-x-clip"
+            className="belief-moments relative z-10"
             aria-labelledby="home-belief-moments-title"
         >
-            <div className="sticky top-0 z-20 flex h-svh items-center justify-center pointer-events-none">
+            <div
+                data-belief-copy
+                className="relative z-20 flex h-svh w-full items-center justify-center pointer-events-none"
+            >
                 <div className="content-width pointer-events-auto mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center text-center px-[2rem]">
                     <h2
                         id="home-belief-moments-title"
@@ -77,7 +80,7 @@ export function BeliefMoments() {
             </div>
 
             <div
-                className="relative z-0 -mt-[100svh]"
+                className="relative z-0 -mt-[100svh] overflow-x-clip"
                 style={{ height: trackHeight }}
                 aria-hidden="true"
             >

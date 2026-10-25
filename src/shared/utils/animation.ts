@@ -519,6 +519,26 @@ function creatorSolutions(root: HTMLElement): Cleanup {
 function beliefMoments(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
+        const copy = root.querySelector<HTMLElement>("[data-belief-copy]");
+        const frames = root.querySelectorAll<HTMLElement>("[data-float-image]");
+        if (!copy || !frames.length) return;
+
+        // position:sticky cannot stick while html/body use overflow-x:hidden.
+        ScrollTrigger.create({
+            trigger: root,
+            start: "top top",
+            end: "bottom bottom",
+            pin: copy,
+            pinSpacing: false,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+        });
+
+        frames.forEach((frame) => {
+            scrollTimeline(frame, { start: "top bottom", end: "bottom top" })
+                .fromTo(frame, { scale: 0.94 }, { scale: 1, ease: "none", duration: 0.5 })
+                .to(frame, { scale: 0.94, ease: "none", duration: 0.5 });
+        });
     });
 }
 
