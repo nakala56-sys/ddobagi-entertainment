@@ -22,7 +22,7 @@ export function BenefitsOverview() {
         >
             <h2
                 id="benefits-overview-title"
-                className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
+                className="display-title text-[3rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580] break-keep"
                 data-reveal
             >
                 크리에이터를 위한
@@ -35,7 +35,7 @@ export function BenefitsOverview() {
                         key={item.id}
                         data-report-id={`benefit-${item.id}`}
                         data-report-type="item"
-                        className="benefit-card [&:nth-child(6n_+_1)]:col-span-2 [&:nth-child(6n_+_4)]:col-span-2 [&:nth-child(n)]:col-auto"
+                        className="benefit-card tablet:[&:nth-child(6n_+_1)]:col-span-2 tablet:[&:nth-child(6n_+_4)]:col-span-2"
                         data-reveal
                     >
                         <div className="benefit-image relative h-[30rem] tablet:h-[32rem] overflow-clip">

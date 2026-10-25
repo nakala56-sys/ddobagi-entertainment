@@ -17,9 +17,9 @@ const MOMENT_IMAGES = [
 ] as const;
 
 const SIZE_CLASS = {
-    sm: "w-[42vw] max-w-[22rem] aspect-[3/4]",
-    md: "w-[48vw] max-w-[28rem] aspect-[4/5]",
-    lg: "w-[56vw] max-w-[34rem] aspect-[3/4]",
+    sm: "w-[34vw] tablet:w-[42vw] max-w-[22rem] aspect-[3/4]",
+    md: "w-[38vw] tablet:w-[48vw] max-w-[28rem] aspect-[4/5]",
+    lg: "w-[44vw] tablet:w-[56vw] max-w-[34rem] aspect-[3/4]",
 } as const;
 
 export function BeliefMoments() {
@@ -49,7 +49,7 @@ export function BeliefMoments() {
                 <div className="content-width pointer-events-auto mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center text-center px-[2rem]">
                     <h2
                         id="home-belief-moments-title"
-                        className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] leading-[1.5] font-[580]"
+                        className="display-title mt-[2rem] tablet:mt-[2.8rem] text-[3rem] tablet:text-[4.8rem] pc:text-[5.8rem] leading-[1.5] font-[580] break-keep"
                         data-title-rise
                     >
                         크리에이터의 방송을,
@@ -89,13 +89,14 @@ export function BeliefMoments() {
                     >
                         <div
                             data-float-image
-                            className={`relative overflow-hidden rounded-[0.4rem] will-change-transform ${SIZE_CLASS[image.size]}`}
+                            className={`relative overflow-hidden rounded-[0.4rem] [content-visibility:auto] [contain-intrinsic-size:56vw_75vw] ${SIZE_CLASS[image.size]}`}
                         >
                             <Image
                                 src={image.src}
                                 alt={image.alt}
                                 fill
                                 sizes="(min-width: 48rem) 34rem, 56vw"
+                                loading={index === 0 ? "eager" : "lazy"}
                                 className="object-cover grayscale"
                             />
                         </div>

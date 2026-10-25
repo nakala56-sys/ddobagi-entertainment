@@ -12,6 +12,12 @@ if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger, CustomEase);
     CustomEase.create(MOTION_EASE, "0.22,1,0.36,1");
     CustomEase.create(SHIMMER_EASE, "0.65,0,0.35,1");
+    // The mobile address bar resize should not rebuild every scroll animation.
+    ScrollTrigger.config?.({ ignoreMobileResize: true });
+}
+
+function compactViewport() {
+    return !window.matchMedia(getBreakpointQuery("tablet")).matches;
 }
 
 const textFrom = { autoAlpha: 0, y: 72 };
@@ -156,7 +162,13 @@ function titlePieces(title: HTMLElement) {
 }
 
 function titleRise(root: HTMLElement) {
+    const compact = compactViewport();
     root.querySelectorAll<HTMLElement>("[data-title-rise]").forEach((title) => {
+        if (compact) {
+            // One transform keeps the rise without splitting every glyph into its own layer.
+            scrollTimeline(title, { end: "clamp(top 35%)", scrub: true }).fromTo(title, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "none" });
+            return;
+        }
         const pieces = titlePieces(title);
         const chars = pieces.flatMap((piece) => (piece.kind === "char" ? [piece.element] : []));
         if (!pieces.length) return;
@@ -218,7 +230,8 @@ function revealElement(element: HTMLElement) {
         return;
     }
     const home = Boolean(element.closest("main#home"));
-    scrollTimeline(element, home ? { end: "clamp(top 22%)", scrub: 1.4 } : {}).fromTo(element, textFrom, textTo);
+    const compact = compactViewport();
+    scrollTimeline(element, home ? { end: compact ? "clamp(top 55%)" : "clamp(top 22%)", scrub: compact ? true : 1.4 } : {}).fromTo(element, textFrom, textTo);
 }
 
 function reveal(root: HTMLElement) {
@@ -282,9 +295,10 @@ function heroTitleRoll(root: HTMLElement) {
 }
 
 function intro(root: HTMLElement): Cleanup {
-    return section(root, () => {
-        const heroFrom = { ...textFrom, filter: "blur(20px)" };
-        const heroTo = { ...textTo, filter: "blur(0px)" };
+    return section(root, (_, { desktop }) => {
+        // Blur forces a repaint on every frame. Opacity and movement stay on the compositor.
+        const heroFrom = desktop ? { ...textFrom, filter: "blur(20px)" } : textFrom;
+        const heroTo = desktop ? { ...textTo, filter: "blur(0px)" } : textTo;
         const lines = root.querySelectorAll<HTMLElement>("[data-line]");
         const reveals = root.querySelectorAll<HTMLElement>("[data-reveal]");
         const timeline = gsap.timeline({ paused: true, defaults: { ease: root.closest("main#home") ? "none" : MOTION_EASE, duration: 1.1 } });
@@ -299,7 +313,7 @@ function intro(root: HTMLElement): Cleanup {
         if (transition?.dataset.pagePending === "true") transition.addEventListener("page:reveal", play, { once: true });
         else play();
         const image = root.querySelector<HTMLElement>("[data-image]");
-        if (image) scrollTimeline(root, { start: "top top", end: "bottom top" }).to(image, { scale: 1.12 });
+        if (image) scrollTimeline(root, { start: "top top", end: "bottom top", scrub: desktop ? SCROLL_SCRUB : true }).to(image, { scale: desktop ? 1.12 : 1.04, force3D: true });
         return () => {
             roll.stop();
             transition?.removeEventListener("page:reveal", play);
@@ -521,21 +535,25 @@ function beliefMoments(root: HTMLElement): Cleanup {
 }
 
 function imageReveal(root: HTMLElement): Cleanup {
-    return section(root, () => {
+    return section(root, (_, { desktop }) => {
         reveal(root);
         const image = root.querySelector<HTMLElement>("[data-image]");
-        if (image)
-            scrollTimeline(image, { start: "clamp(top 85%)", end: "clamp(center center)" }).fromTo(
-                image,
-                { clipPath: "inset(12% 8% 12% 8%)", scale: 0.95 },
-                { clipPath: "inset(0% 0% 0% 0%)", scale: 1 },
-            );
+        if (!image) return;
+        if (!desktop) {
+            scrollTimeline(image, { start: "clamp(top 85%)", end: "clamp(center center)", scrub: true }).fromTo(image, { autoAlpha: 0.65, scale: 0.97, force3D: true }, { autoAlpha: 1, scale: 1, ease: "none" });
+            return;
+        }
+        scrollTimeline(image, { start: "clamp(top 85%)", end: "clamp(center center)" }).fromTo(
+            image,
+            { clipPath: "inset(12% 8% 12% 8%)", scale: 0.95 },
+            { clipPath: "inset(0% 0% 0% 0%)", scale: 1 },
+        );
     });
 }
 
 /** The slow ink and the normally scrolling CTA have independent playheads. */
 function finalCta(root: HTMLElement): Cleanup {
-    return section(root, () => {
+    return section(root, (_, { desktop }) => {
         const ink = root.querySelector<HTMLElement>("[data-cta-ink]");
         const svg = root.querySelector<SVGSVGElement>("[data-cta-svg]");
         const circle = root.querySelector<SVGCircleElement>("[data-cta-circle]");
@@ -577,15 +595,22 @@ function finalCta(root: HTMLElement): Cleanup {
         measure();
 
         gsap.set(ink, { autoAlpha: 1 });
+        // Turbulence and displacement repaint the full viewport on every scroll tick.
+        // The rising circle stays; only the wobble filter is skipped on small screens.
+        const circleFilter = circle.getAttribute("filter");
+        if (!desktop && circleFilter) circle.removeAttribute("filter");
 
         scrollTimeline(root, {
             start: "top bottom",
             end: "top top",
-            scrub: 1.6,
+            scrub: desktop ? 1.6 : true,
             onRefreshInit: measure,
         }).fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0);
 
         reveal(root);
+        return () => {
+            if (circleFilter) circle.setAttribute("filter", circleFilter);
+        };
     });
 }
 

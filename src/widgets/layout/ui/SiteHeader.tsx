@@ -34,11 +34,11 @@ export function SiteHeader() {
             data-report-type="group"
             className={`site-header [--header-ink:var(--color-text)] fixed top-0 left-0 w-full z-[20] flex items-start justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:p-[3.2rem] pc:px-[4rem]`}
         >
-            <section className="flex items-center justify-between max-w-[1440px] w-full h-full gap-[12.1rem] mx-auto">
+            <section className="mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-[1.2rem] tablet:gap-[4rem] pc:gap-[12.1rem]">
                 <Link
                     data-report-id="nav-home"
                     data-report-type="item"
-                    className="flex-1 brand-logo flex items-end justify-start gap-[1.2rem] text-[1.6rem] tablet:text-[1.8rem] font-[750] leading-[1.0]"
+                    className="brand-logo flex min-w-0 flex-1 items-end justify-start gap-[1.2rem] text-[1.6rem] font-[750] leading-[1.0] tablet:text-[1.8rem]"
                     href="/"
                     aria-label="또바기 엔터테인먼트 홈"
                     onClick={(event) => blockSameRoute(event, "/")}
@@ -51,11 +51,29 @@ export function SiteHeader() {
                         height={52}
                         edgeBend={0.8}
                     />
-                    <p className="text-[2.4rem]">
-                        TTOBAGI_<span className="text-[1.8rem]">ENTERTAINMENT</span>
+                    <p className="truncate text-[1.6rem] tablet:text-[2.4rem]">
+                        TTOBAGI_<span className="text-[1.2rem] tablet:text-[1.8rem]">ENTERTAINMENT</span>
                         {/* TTOBAGI<small>ENTERTAINMENT</small> */}
                     </p>
                 </Link>
+
+                <button
+                    type="button"
+                    className="inline-flex h-[4.4rem] w-[4.4rem] shrink-0 items-center justify-center tablet:hidden"
+                    aria-label="메뉴 열기"
+                    aria-expanded={menuOpen}
+                    aria-controls="mobile-menu"
+                    onClick={() => setMenuOpen(true)}
+                >
+                    <span
+                        className="flex w-[2rem] flex-col gap-[0.5rem]"
+                        aria-hidden="true"
+                    >
+                        <span className="block h-[0.2rem] w-full bg-current" />
+                        <span className="block h-[0.2rem] w-full bg-current" />
+                        <span className="block h-[0.2rem] w-full bg-current" />
+                    </span>
+                </button>
 
                 <nav
                     className="flex-1 desktop-navigation hidden tablet:flex gap-[0.8rem] min-[64rem]:gap-[2rem] pc:gap-[3.6rem] text-[1.4rem] min-[64rem]:text-[1.6rem]"

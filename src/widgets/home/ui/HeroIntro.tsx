@@ -93,15 +93,14 @@ export function HeroIntro() {
                     width={1915}
                     height={821}
                     priority
-                    unoptimized
+                    sizes="100vw"
                     data-image
-                    className="block h-[100%] object-cover w-full max-w-none brightness-70"
-                    style={{ width: "100%" }}
+                    className="block h-full w-full max-w-none object-cover brightness-70"
                 />
             </div>
-            <section className="relative z-10 flex min-h-[100svh] flex-col items-end justify-center px-[2rem] pt-[15.2rem] pb-[4rem] tablet:px-[6rem] tablet:pt-[16rem] tablet:pb-[5.6rem] [filter:drop-shadow(0px_0px_10px_black)]">
+            <section className="relative z-10 flex min-h-[100svh] flex-col items-end justify-center px-[2rem] pt-[15.2rem] pb-[4rem] tablet:px-[6rem] tablet:pt-[16rem] tablet:pb-[5.6rem]">
                 <div
-                    className="w-[50%] absolute top-[50%] right-0 transform translate-y-[-50%] flex flex-col items-start justify-start text-center"
+                    className="absolute top-1/2 right-[2rem] flex w-[calc(100%-4rem)] -translate-y-1/2 flex-col items-start justify-start text-left tablet:right-0 tablet:w-1/2 tablet:text-center"
                     data-reveal
                 >
                     {/* <MetallicPaint
@@ -114,7 +113,7 @@ export function HeroIntro() {
                         /> */}
                     <h2
                         id="home-hero-title"
-                        className="w-full text-left text-[2.8rem] font-semibold leading-[1.4]"
+                        className="w-full text-left text-[clamp(1.7rem,4.8vw,2.8rem)] font-semibold leading-[1.4] [text-shadow:0_0_1rem_#000]"
                         data-hero-roll
                     >
                         <span
@@ -143,7 +142,7 @@ export function HeroIntro() {
                         </span>
                     </h2>
                     <p
-                        className="mt-[1.6rem] text-left text-[2.0rem] leading-[1.5]"
+                        className="mt-[1.6rem] text-left text-[1.5rem] leading-[1.5] break-keep tablet:text-[2rem]"
                         data-hero-copy
                     >
                         {HERO_ROLLS[0].body.map((line, index) => (

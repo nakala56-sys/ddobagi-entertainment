@@ -24,9 +24,12 @@
     }
 
     html {
+        height: 100%;
         line-height: 1.5; /* 1 */
         -webkit-text-size-adjust: 100%; /* 2 */
         max-width: 100%;
+        overflow-x: hidden;
+        overscroll-behavior-y: none;
         background: var(--color-background);
         scrollbar-width: none;
     }
@@ -43,9 +46,9 @@
 
     body {
         position: relative;
-        // overflow-y: hidden;
-        min-height: 100dvh;
+        min-height: 100svh;
         width: 100%;
+        overflow-x: hidden;
         background-color: var(--color-background);
         color: var(--color-text);
 
@@ -53,6 +56,17 @@
 
         &::-webkit-scrollbar {
             display: none;
+        }
+    }
+
+    // iOS Safari: size to the visible height while the address bar is shown.
+    @supports (-webkit-touch-callout: none) {
+        html {
+            height: -webkit-fill-available;
+        }
+
+        body {
+            min-height: -webkit-fill-available;
         }
     }
 

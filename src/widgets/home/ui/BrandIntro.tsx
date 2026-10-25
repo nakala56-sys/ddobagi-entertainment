@@ -19,7 +19,7 @@ export function BrandIntro() {
         >
             <h2
                 id="home-brand-title"
-                className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
+                className="display-title text-[3rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580] break-keep"
                 data-reveal
             >
                 가능성은 당신에게.
