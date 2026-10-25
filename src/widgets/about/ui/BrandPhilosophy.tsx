@@ -24,23 +24,22 @@ export function BrandPhilosophy() {
                 >
                     <div className="portrait-image relative h-[44rem] tablet:h-[68rem] overflow-clip">
                         <Image
-                            className="grayscale"
-                            src="/images/about/brand.webp"
-                            alt="회사소개서의 다양한 개인 방송 세팅 사례"
+                            src="/images/about/brand-set.jpg"
+                            alt="촬영 현장에서 대본을 두고 이야기하는 장면"
                             fill
+                            unoptimized
                             sizes="(min-width: 48rem) 45vw, 90vw"
+                            className="object-cover object-[-110px]"
                         />
                     </div>
                 </div>
                 <div className="split-copy flex flex-col items-start gap-[2.4rem] tablet:gap-[3.2rem] break-keep">
                     <h2
                         id="philosophy-title"
-                        className="display-title text-[3.6rem] tablet:text-[4rem] pc:text-[5.6rem] leading-[1.5] font-[580] m-0 break-keep"
+                        className="display-title text-[3.6rem] tablet:text-[4rem] pc:text-[3.2rem] leading-[1.5] font-[580] m-0 break-keep"
                         data-reveal
                     >
-                        또바기
-                        <br />
-                        엔터테인먼트.
+                        안녕하세요
                     </h2>
                     <p
                         className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
@@ -61,10 +60,10 @@ export function BrandPhilosophy() {
                         콘텐츠 기획부터 방송, 매니지먼트까지 각자의 장점이 가장 자연스럽게 빛날 수 있는 방향을 찾고, 오래 함께할 수 있는 환경을 만드는 것이 또바기 엔터테인먼트가 하는 일입니다.
                     </p>
                     <p
-                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5]"
+                        className="body-copy font-semibold text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#ff4321]"
                         data-reveal
                     >
-                        <strong>꾸준히, 한결같이, 함께.</strong>
+                        꾸준히, 한결같이, 함께.
                     </p>
                     <p
                         className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"

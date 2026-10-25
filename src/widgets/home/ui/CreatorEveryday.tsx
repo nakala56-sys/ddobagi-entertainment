@@ -7,8 +7,8 @@ import Animation from "@/shared/utils/animation";
 const PHOTOS = [
     { src: "/images/landing/bj.jpg", alt: "나만의 콘텐츠로 방송하는 크리에이터", position: "65% center" },
     { src: "/images/landing/room.jpg", alt: "방송에 집중할 수 있도록 준비된 개인 스튜디오", position: "center" },
-    { src: "/images/landing/optimized/meeting.50114570.avif", alt: "새로운 활동을 함께 준비하는 크리에이터와 파트너", position: "55% center" },
-    { src: "/images/services/directing.webp", alt: "콘텐츠 방향을 함께 이야기하는 제작 현장", position: "42% center" },
+    { src: "/images/services/management.jpg", alt: "새로운 활동을 함께 준비하는 크리에이터와 파트너", position: "55% center" },
+    { src: "/images/home/moment-script.jpg", alt: "콘텐츠 방향을 함께 이야기하는 제작 현장", position: "42% center" },
 ] as const;
 
 const TILES = [

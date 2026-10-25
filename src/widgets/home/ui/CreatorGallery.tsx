@@ -5,20 +5,20 @@ import Image from "next/image";
 import Animation from "@/shared/utils/animation";
 
 const TOP_IMAGES = [
-    { src: "/images/landing/studio2.jpg", alt: "또바기 방송 제작 공간" },
-    { src: "/images/services/directing.webp", alt: "크리에이터 디렉팅 현장" },
+    { src: "/images/home/moment-set.jpg", alt: "촬영 현장에서 포즈를 취한 크리에이터" },
+    { src: "/images/services/live.jpg", alt: "라이브 방송 현장" },
     null,
-    { src: "/images/home/creator-stories.webp", alt: "다양한 크리에이터의 방송 활동" },
-    { src: "/images/services/events.webp", alt: "함께 만드는 방송 콘텐츠" },
+    { src: "/images/home/moment-camera.jpg", alt: "분홍 조명 아래에서 출연진을 촬영하는 장면" },
+    { src: "/images/services/production.jpg", alt: "편집 모니터가 놓인 제작 공간" },
 ] as const;
 
 const BOTTOM_IMAGES = [
-    { src: "/images/equipment/camera.webp", alt: "방송 촬영 장비" },
-    { src: "/images/landing/room.jpg", alt: "콘텐츠에 집중하는 방송 공간" },
-    { src: "/images/about/brand.webp", alt: "또바기와 함께하는 크리에이터" },
-    { src: "/images/landing/optimized/meeting.50114570.avif", alt: "함께 준비하는 방송 제작 환경" },
-    { src: "/images/equipment/streaming.webp", alt: "크리에이터를 위한 스트리밍 환경" },
-    { src: "/images/home/studio.webp", alt: "또바기 방송 스튜디오 전경" },
+    { src: "/images/equipment/setup-mic.jpg", alt: "마이크와 조명이 놓인 방송 데스크" },
+    { src: "/images/home/moment-desk.jpg", alt: "마이크 앞에서 방송하는 크리에이터" },
+    { src: "/images/about/brand-set.jpg", alt: "촬영 현장에서 대본을 두고 이야기하는 장면" },
+    { src: "/images/home/moment-script.jpg", alt: "대본을 두고 이야기하는 장면" },
+    { src: "/images/equipment/setup-desk.jpg", alt: "블라인드와 분홍 책상이 있는 방송 공간" },
+    { src: "/images/equipment/studio-space.jpg", alt: "분홍 조명과 거울, LED 바닥이 있는 또바기 방송 스튜디오" },
 ] as const;
 
 export function CreatorGallery() {
@@ -52,9 +52,10 @@ export function CreatorGallery() {
                     className="relative z-20 mx-auto aspect-[16/10] w-full max-w-[132rem] overflow-hidden rounded-[2rem] data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:aspect-auto data-[gallery=true]:max-w-none"
                 >
                     <Image
-                        src="/images/landing/studio3.jpg"
-                        alt="또바기 크리에이터의 콘텐츠가 만들어지는 방송 스튜디오"
+                        src="/images/home/gallery-stage.jpg"
+                        alt="분홍 Butterfly 무대와 카메라가 준비된 방송 현장"
                         fill
+                        unoptimized
                         sizes="100vw"
                         loading="eager"
                         className="object-cover filter-none! grayscale"
@@ -93,6 +94,7 @@ export function CreatorGallery() {
                                     src={image.src}
                                     alt={image.alt}
                                     fill
+                                    unoptimized
                                     sizes="(min-width: 48rem) 29vw, 50vw"
                                     className="object-cover filter-none! grayscale"
                                 />
@@ -116,6 +118,7 @@ export function CreatorGallery() {
                                 src={image.src}
                                 alt={image.alt}
                                 fill
+                                unoptimized
                                 sizes="(min-width: 48rem) 20vw, 50vw"
                                 className="object-cover filter-none! grayscale"
                             />

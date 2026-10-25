@@ -38,11 +38,12 @@ export function ServicesOverview() {
                             data-preview
                         >
                             <Image
-                                className="grayscale"
                                 src={item.image}
                                 alt=""
                                 fill
+                                unoptimized
                                 sizes="280px"
+                                className="object-cover object-center"
                             />
                         </div>
                     </article>

@@ -24,7 +24,7 @@ export function ServicesClosing() {
             >
                 <Image
                     className="grayscale"
-                    src="/images/services/setup.webp"
+                    src="/images/home/hero-stage.jpg"
                     alt="또바기 회사소개서에 담긴 방송 환경"
                     fill
                     sizes="100vw"

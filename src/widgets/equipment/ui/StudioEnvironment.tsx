@@ -21,7 +21,7 @@ export function StudioEnvironment() {
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
                 <h2
                     id="studio-environment-title"
-                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
+                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
                     data-reveal
                 >
                     콘텐츠가 시작되는 공간.
@@ -31,11 +31,12 @@ export function StudioEnvironment() {
                     data-image
                 >
                     <Image
-                        className="grayscale"
-                        src="/images/equipment/studio.webp"
-                        alt="회사소개서에 소개된 또바기 대형 방송 스튜디오"
+                        src="/images/equipment/studio-space.jpg"
+                        alt="분홍 조명과 거울, LED 바닥이 있는 또바기 방송 스튜디오"
                         fill
+                        unoptimized
                         sizes="90vw"
+                        className="object-cover object-center"
                     />
                 </div>
                 <div className="intro-bottom flex items-start tablet:items-end justify-between gap-[3.2rem] tablet:gap-[4rem] mt-[3.2rem] tablet:mt-[5.2rem] flex-col tablet:flex-row mb-0">

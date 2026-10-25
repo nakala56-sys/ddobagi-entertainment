@@ -7,8 +7,8 @@ import Animation from "@/shared/utils/animation";
 const REEL_IMAGES = [
     { src: "/images/landing/studio3.jpg", alt: "또바기 방송 스튜디오" },
     { src: "/images/landing/bj.jpg", alt: "방송 중인 크리에이터" },
-    { src: "/images/equipment/camera.webp", alt: "방송 촬영 장비" },
-    { src: "/images/services/directing.webp", alt: "디렉팅 현장" },
+    { src: "/images/equipment/setup-mic.jpg", alt: "방송 촬영 장비" },
+    { src: "/images/services/collaboration.jpg", alt: "디렉팅 현장" },
     { src: "/images/landing/room.jpg", alt: "콘텐츠 제작 공간" },
     { src: "/images/home/creator-stories.webp", alt: "크리에이터의 방송 활동" },
     { src: "/images/equipment/lighting.webp", alt: "스튜디오 조명" },

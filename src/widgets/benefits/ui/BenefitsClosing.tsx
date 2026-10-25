@@ -24,7 +24,7 @@ export function BenefitsClosing() {
             >
                 <Image
                     className="grayscale"
-                    src="/images/home/studio.webp"
+                    src="/images/equipment/studio-space.jpg"
                     alt="또바기 회사소개서에 담긴 방송 환경"
                     fill
                     sizes="100vw"

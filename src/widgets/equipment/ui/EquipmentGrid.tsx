@@ -21,7 +21,7 @@ export function EquipmentGrid() {
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
                 <h2
                     id="equipment-grid-title"
-                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
+                    className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
                     data-reveal
                 >
                     방송에 필요한 장비와
@@ -43,11 +43,12 @@ export function EquipmentGrid() {
                         >
                             <div className="equipment-image relative h-[30rem] tablet:h-[28rem] overflow-clip">
                                 <Image
-                                    className="grayscale"
                                     src={item.image}
                                     alt={`${item.title} 관련 방송 환경`}
                                     fill
+                                    unoptimized
                                     sizes="(min-width: 90rem) 30vw, (min-width: 48rem) 45vw, 90vw"
+                                    className="object-cover object-center"
                                 />
                             </div>
                             <div className="equipment-card-copy pt-[2.4rem]">

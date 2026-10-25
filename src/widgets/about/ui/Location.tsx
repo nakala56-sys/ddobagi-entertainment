@@ -31,7 +31,7 @@ export function Location() {
                 <div className="section-heading flex items-start tablet:items-end justify-between gap-[3.2rem] tablet:gap-[4rem] mb-[4rem] tablet:mb-[6rem] flex-col tablet:flex-row">
                     <h2
                         id="location-title"
-                        className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[8rem] font-[580]"
+                        className="display-title text-[3.6rem] tablet:text-[4.8rem] pc:text-[5.8rem] font-[580]"
                         data-reveal
                     >
                         오시는 길.
@@ -72,11 +72,12 @@ export function Location() {
                     data-reveal
                 >
                     <Image
-                        className="grayscale"
-                        src="/images/about/location.svg"
+                        src="/images/about/location-map.jpg"
                         alt="서울 강남구 학동로4길에 위치한 또바기 주소 안내"
                         fill
+                        unoptimized
                         sizes="90vw"
+                        className="object-cover object-center"
                     />
                     <span className="map-label absolute top-[2rem] tablet:top-[2.4rem] left-[2rem] tablet:left-[3.2rem] flex gap-[2rem] text-[1.2rem]">
                         SEOUL · GANGNAM <span aria-hidden="true">↗</span>

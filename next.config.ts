@@ -33,7 +33,7 @@ const nextConfig: NextConfig = {
             },
             {
                 source: "/images/landing/meeting.png",
-                destination: "/images/landing/optimized/meeting.50114570.avif",
+                destination: "/images/home/moment-script.jpg",
                 permanent: true,
             },
             {
