@@ -431,21 +431,6 @@ function creatorSolutions(root: HTMLElement): Cleanup {
                 scrollTimeline(card, { end: "clamp(top 55%)" }).fromTo(card.querySelector("[data-solution-content]"), { y: 40, autoAlpha: 0.35 }, { y: 0, autoAlpha: 1, ease: "none" });
             });
         }
-
-        cards.forEach((card) => {
-            const meters = card.querySelectorAll("[data-solution-meter]");
-            const passes = card.querySelectorAll("[data-solution-pass]");
-            const rows = card.querySelectorAll("[data-solution-row]");
-            const checks = card.querySelectorAll("[data-solution-check]");
-            const timeline = scrollTimeline(card, { start: "clamp(top 85%)", end: "clamp(top 15%)" });
-            if (meters.length) timeline.fromTo(meters, { scaleX: 0.18 }, { scaleX: 1, stagger: 0.12, ease: "none" });
-            if (passes.length) timeline.fromTo(passes, { y: 48, rotation: -10, scale: 0.9 }, { y: 0, rotation: (index) => (index === 0 ? 3 : -3), scale: 1, stagger: 0.15, ease: "none" });
-            if (rows.length) {
-                timeline
-                    .fromTo(rows, { y: 16, autoAlpha: 0.2 }, { y: 0, autoAlpha: 1, stagger: 0.12, ease: "none" })
-                    .fromTo(checks, { scale: 0 }, { scale: 1, transformOrigin: "center", stagger: 0.12, ease: "none" }, 0.25);
-            }
-        });
     });
 }
 
@@ -963,7 +948,7 @@ class Animation {
     static about = { section: { hero: intro, brandPhilosophy: entrance, location: entrance } };
     static services = { section: { hero: intro, overview: serviceOverview } };
     static equipment = { section: { hero: intro, grid: entrance, studioEnvironment } };
-    static benefits = { section: { hero: intro, overview: entrance, closing: entrance } };
+    static benefits = { section: { hero: intro, overview: entrance } };
 }
 
 export default Animation;
