@@ -32,7 +32,8 @@ export function SiteHeader() {
             ref={headerRef}
             data-report-id="site-header"
             data-report-type="group"
-            className={`site-header [--header-ink:var(--color-text)] fixed top-0 left-0 w-full z-[20] flex items-start justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:p-[3.2rem] pc:px-[4rem]`}
+            className={`site-header fixed top-0 left-0 w-full z-[20] flex items-start justify-between gap-[1.6rem] py-0 px-[2rem] tablet:p-[3.2rem] pc:px-[4rem]`}
+            // className={`site-header [--header-ink:var(--color-text)] fixed top-0 left-0 w-full z-[20] flex items-start justify-between gap-[1.6rem] py-0 text-[var(--header-ink)] px-[2rem] tablet:p-[3.2rem] pc:px-[4rem]`}
         >
             <section className="mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-[1.2rem] tablet:gap-[4rem] pc:gap-[12.1rem]">
                 <Link
@@ -46,7 +47,7 @@ export function SiteHeader() {
                     <MetallicPaint
                         imageSrc="/images/common/ttobagi-logo.webp"
                         // color="#ffffff"
-                        color="#ffa16a"
+                        color="#ffbc20"
                         width={52}
                         height={52}
                         edgeBend={0.8}

@@ -2,6 +2,7 @@ export { HeroIntro } from "./HeroIntro";
 export { CreatorGallery } from "./CreatorGallery";
 export { CreatorSolutions } from "./CreatorSolutions";
 export { BeliefMoments } from "./BeliefMoments";
+export { SettlementTrust } from "./SettlementTrust";
 export { SupportOverview } from "./SupportOverview";
 export { CreatorJourney } from "./CreatorJourney";
 export { CreatorFaq } from "./CreatorFaq";

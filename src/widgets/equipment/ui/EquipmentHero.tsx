@@ -43,9 +43,6 @@ export function EquipmentHero() {
                 >
                     <h2 className="text-[2.0rem] font-[500]">방송 장비부터 스튜디오까지.</h2>
                     <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">작은 디테일부터 공간까지, 방송을 위한 준비를 함께합니다.</p>
-                    <span className="scroll-hint inline-flex items-center gap-[2.4rem] mt-[4.8rem] tablet:mt-[6.4rem] text-[1.2rem] leading-[1.0]">
-                        SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
-                    </span>
                 </div>
             </GradientWaveSettle>
         </section>

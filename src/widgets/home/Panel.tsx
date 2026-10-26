@@ -17,11 +17,12 @@ export default function Panel() {
         >
             <Layer.HeroIntro />
             <Layer.BeliefMoments />
+            <Layer.SettlementTrust />
             <Layer.SupportOverview />
             <Layer.CreatorSolutions />
-            <Layer.CreatorFaq />
             <Layer.CreatorJourney />
             <Layer.CreatorGallery />
+            <Layer.CreatorFaq />
             <Layer.FinalCta />
             <Layer.SectionNavigation />
         </div>
