@@ -46,9 +46,6 @@ export function AboutHero() {
                         <br />그 가능성을 함께 키워갑니다.
                     </h2>
                     <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">각자의 개성이 오래 빛날 수 있도록 함께합니다.</p>
-                    <span className="scroll-hint inline-flex items-center gap-[2.4rem] mt-[4.8rem] tablet:mt-[6.4rem] text-[1.2rem] leading-[1.0]">
-                        SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
-                    </span>
                 </div>
             </GradientWaveSettle>
         </section>

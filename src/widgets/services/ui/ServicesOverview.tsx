@@ -27,15 +27,15 @@ export function ServicesOverview() {
                         id={`service-${item.id}`}
                         data-report-id={`service-${item.id}`}
                         data-report-type="item"
-                        className="service-row relative grid [grid-template-columns:3.2rem_1fr] tablet:[grid-template-columns:5.2rem_1fr] items-start gap-[1.2rem] tablet:gap-[2rem] py-[2.4rem] tablet:py-[3.6rem] border-b-[0.1rem] border-solid border-b-[var(--color-line)]"
+                        className="service-row relative grid [grid-template-columns:3.2rem_1fr] tablet:[grid-template-columns:5.2rem_1fr] items-start gap-[1.2rem] tablet:gap-[2rem] py-[2.4rem] tablet:py-[3.6rem] border-b-[0.1rem] border-solid border-b-[var(--color-line)] last:border-none"
                         data-service-row
                         data-reveal
                     >
                         <span className="card-number text-[1.8rem] text-[var(--accent,#000000)]">{String(index + 1).padStart(2, "0")}</span>
                         <div>
                             <p className="eyebrow text-[1.8rem] text-[#737373] uppercase">{item.englishTitle}</p>
-                            <h3 className="mt-[1.2rem] text-[2.4rem] tablet:text-[3rem] pc:text-[4.2rem] font-[500] break-keep">{item.title}</h3>
-                            <p className="mt-[1.6rem] max-w-[88rem] text-[1.6rem] leading-[1.5] text-[#737373] break-keep">{item.description}</p>
+                            <h3 className="text-[1.4rem] tablet:text-[2.4rem] pc:text-[3.2rem] font-[500] break-keep">{item.title}</h3>
+                            <p className="mt-[1rem] max-w-[88rem] text-[1.6rem] leading-[1.5] text-[#737373] break-keep">{item.description}</p>
                         </div>
                         <div
                             className="service-preview invisible absolute -top-[3.2rem] left-[68%] w-[28rem] h-[22rem] pointer-events-none z-[2] overflow-clip hidden tablet:block"

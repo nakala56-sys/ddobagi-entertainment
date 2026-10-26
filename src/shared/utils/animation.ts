@@ -3,6 +3,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CustomEase } from "gsap/CustomEase";
 import Lenis from "lenis";
 import { getBreakpointQuery } from "@/shared/lib/breakpoints";
+import { draggableLoop } from "./draggableLoop";
 
 const MOTION_EASE = "site-motion";
 const SHIMMER_EASE = "site-shimmer";
@@ -315,6 +316,16 @@ function entrance(root: HTMLElement): Cleanup {
     });
 }
 
+function studioEnvironment(root: HTMLElement): Cleanup {
+    const cleanupReveal = entrance(root);
+    const gallery = root.querySelector<HTMLElement>("[data-studio-gallery]");
+    const cleanupGallery = gallery ? draggableLoop(gallery) : undefined;
+    return () => {
+        cleanupGallery?.();
+        cleanupReveal();
+    };
+}
+
 function creatorFaq(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
@@ -468,6 +479,59 @@ function beliefMoments(root: HTMLElement): Cleanup {
     });
 }
 
+function settlementTrust(root: HTMLElement): Cleanup {
+    return section(root, (_, { desktop }) => {
+        reveal(root);
+        const stage = root.querySelector<HTMLElement>("[data-settlement-stage]");
+        const gauge = root.querySelector<HTMLElement>("[data-settlement-gauge]");
+        const hundreds = root.querySelector<HTMLElement>("[data-settlement-track='hundreds']");
+        const tens = root.querySelector<HTMLElement>("[data-settlement-track='tens']");
+        const ones = root.querySelector<HTMLElement>("[data-settlement-track='ones']");
+        const hundredsColumn = root.querySelector<HTMLElement>("[data-settlement-column='hundreds']");
+        const tensColumn = root.querySelector<HTMLElement>("[data-settlement-column='tens']");
+        if (!stage || !gauge || !hundreds || !tens || !ones || !hundredsColumn || !tensColumn) return;
+
+        const digit = ones.children[0];
+        const unit = () => {
+            const box = digit?.getBoundingClientRect();
+            return { height: box?.height || 0, width: box?.width || 0 };
+        };
+        let step = unit();
+        const state = { value: 0 };
+        [hundreds, tens, ones].forEach((track) => {
+            track.style.transform = "none";
+        });
+        const render = () => {
+            const value = state.value;
+            const decade = Math.floor(value / 10);
+            const onesPart = value - decade * 10;
+            const tensIndex = Math.min(10, decade + (onesPart > 9 ? onesPart - 9 : 0));
+            const tensIn = gsap.utils.clamp(0, 1, (value - 9.2) / 0.8);
+            const hundredsIn = gsap.utils.clamp(0, 1, (value - 99.2) / 0.8);
+            gsap.set(ones, { y: -step.height * value });
+            gsap.set(tens, { y: -step.height * tensIndex });
+            gsap.set(hundreds, { y: -step.height });
+            gsap.set(tensColumn, { width: step.width * tensIn });
+            gsap.set(hundredsColumn, { width: step.width * hundredsIn });
+        };
+        const measure = () => {
+            step = unit();
+            render();
+        };
+        gsap.set(gauge, { scaleX: 0, transformOrigin: "left center" });
+        measure();
+        scrollTimeline(root, {
+            start: "top top",
+            end: "+=100%",
+            pin: stage,
+            anticipatePin: desktop ? 1 : 0,
+            onRefreshInit: measure,
+        })
+            .to(state, { value: 100, ease: "none", duration: 1, onUpdate: render }, 0)
+            .fromTo(gauge, { scaleX: 0 }, { scaleX: 1, ease: "none", duration: 1 }, 0);
+    });
+}
+
 function imageReveal(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
@@ -481,59 +545,90 @@ function imageReveal(root: HTMLElement): Cleanup {
     });
 }
 
-/** The slow ink and the normally scrolling CTA have independent playheads. */
+/** Opaque stop of the wave gradient. The faded rim sits outside this radius. */
+const CTA_WAVE_SOLID = 0.86;
+
+/** The resting arc waits in the park. It locks to the screen and spreads once that arc arrives. */
 function finalCta(root: HTMLElement): Cleanup {
     return section(root, () => {
+        const park = root.querySelector<HTMLElement>("[data-cta-park]");
         const ink = root.querySelector<HTMLElement>("[data-cta-ink]");
-        const svg = root.querySelector<SVGSVGElement>("[data-cta-svg]");
-        const circle = root.querySelector<SVGCircleElement>("[data-cta-circle]");
-        const filter = root.querySelector<SVGFilterElement>("[data-cta-filter]");
-        const noise = root.querySelector<SVGFETurbulenceElement>("[data-cta-noise]");
-        const displacement = root.querySelector<SVGFEDisplacementMapElement>("[data-cta-displacement]");
-        const blur = root.querySelector<SVGFEGaussianBlurElement>("[data-cta-blur]");
-        const content = root.querySelector<HTMLElement>("[data-cta-content]");
-        if (!ink || !svg || !circle || !filter || !noise || !displacement || !blur || !content) return;
+        const circle = root.querySelector<HTMLElement>("[data-cta-circle]");
+        const header = document.querySelector<HTMLElement>(".site-header");
+        if (!park || !ink || !circle) return;
 
-        let startRadius = 0;
-        let endRadius = 0;
+        const wave = { centerY: 0, lift: 0, startRadius: 0, endRadius: 1 };
+        const clearHeader = () => header?.style.removeProperty("--header-ink");
         const measure = () => {
             const width = window.innerWidth;
             const height = window.innerHeight;
-            const size = Math.min(width, height);
-            const grid = (value: number) => Math.max(4, Math.round(value / 4) * 4);
-            // Keep the soft rim without scaling blur cost indefinitely on large screens.
-            const drift = grid(size * 0.22);
-            const softness = grid(Math.min(height * 0.08, 80));
-            // Displacement reaches half its scale; three blur deviations pad the visible rim.
-            const margin = grid(drift * 0.5 + softness * 3);
             const centerY = height + width * 0.6;
-            startRadius = Math.max(0, centerY - height - margin);
-            endRadius = Math.hypot(width / 2, centerY) + margin;
-            svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-            circle.setAttribute("cx", String(width / 2));
-            circle.setAttribute("cy", String(centerY));
-            // Bound filter buffers to the viewport instead of the growing circle's huge box.
-            filter.setAttribute("x", String(-margin));
-            filter.setAttribute("y", String(-margin));
-            filter.setAttribute("width", String(width + margin * 2));
-            filter.setAttribute("height", String(height + margin * 2));
-            // Keep noise frequency fixed while the circle expands.
-            noise.setAttribute("baseFrequency", String(0.9 / size));
-            displacement.setAttribute("scale", String(drift));
-            blur.setAttribute("stdDeviation", String(softness));
+            const lift = height * 0.16;
+            const startRadius = Math.max(0, centerY - height);
+            const endRadius = Math.hypot(width / 2, centerY);
+            wave.centerY = centerY;
+            wave.lift = lift;
+            wave.startRadius = startRadius;
+            wave.endRadius = endRadius;
+            gsap.set(circle, {
+                width: (endRadius / CTA_WAVE_SOLID) * 2,
+                height: (endRadius / CTA_WAVE_SOLID) * 2,
+                left: width / 2,
+                top: centerY - lift,
+                xPercent: -50,
+                yPercent: -50,
+                transformOrigin: "50% 50%",
+                force3D: true,
+                background: `radial-gradient(circle, #ff4321 0%, #ff4321 ${CTA_WAVE_SOLID * 100}%, transparent 100%)`,
+            });
+        };
+        const placeInk = (fixed: boolean) => {
+            if (fixed) {
+                if (ink.parentElement !== root) root.appendChild(ink);
+                ink.style.position = "fixed";
+                ink.style.inset = "0";
+                ink.style.zIndex = "0";
+                ink.style.height = "100%";
+                ink.style.width = "100%";
+                return;
+            }
+            if (ink.parentElement !== park) park.appendChild(ink);
+            ink.style.position = "";
+            ink.style.inset = "";
+            ink.style.zIndex = "";
+            ink.style.height = "";
+            ink.style.width = "";
+        };
+        // Cream header type disappears once the white fill reaches the wordmark.
+        const syncHeader = () => {
+            if (!header) return;
+            const scale = Number(gsap.getProperty(circle, "scale")) || 0;
+            const visibleTop = wave.centerY - wave.lift - (wave.endRadius / CTA_WAVE_SOLID) * scale;
+            if (visibleTop <= header.getBoundingClientRect().bottom) header.style.setProperty("--header-ink", "#0a0a0a");
+            else clearHeader();
+        };
+        const syncPlacement = (self: ScrollTrigger) => {
+            const seated = self.isActive || self.progress > 0;
+            placeInk(seated);
+            if (!seated) clearHeader();
         };
         measure();
+        gsap.set(circle, { scale: wave.startRadius / wave.endRadius });
 
-        gsap.set(ink, { autoAlpha: 1 });
-
-        scrollTimeline(root, {
-            start: "top bottom",
-            end: "top top",
+        scrollTimeline(park, {
+            start: "bottom bottom",
+            end: () => `+=${window.innerHeight}`,
             scrub: 1.6,
             onRefreshInit: measure,
-        }).fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0);
+            onToggle: syncPlacement,
+            onRefresh: syncPlacement,
+        }).fromTo(circle, { scale: () => wave.startRadius / wave.endRadius }, { scale: 1, duration: 1, ease: SHIMMER_EASE, onUpdate: syncHeader }, 0);
 
         reveal(root);
+        return () => {
+            clearHeader();
+            placeInk(false);
+        };
     });
 }
 
@@ -577,6 +672,8 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     const content = root.querySelector<HTMLElement>("[data-page-content]")!;
     const overlay = root.querySelector<HTMLElement>("[data-page-loader]")!;
     const text = root.querySelector<HTMLElement>("[data-loading-text]")!;
+    const originalText = text.innerHTML;
+    const chars = titlePieces(text).flatMap((piece) => (piece.kind === "char" ? [piece.element] : []));
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
@@ -612,13 +709,18 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     };
     const observer = new MutationObserver(revealPage);
     const context = gsap.context(() => {
-        const fadeAt = 0.15;
+        const charDuration = 0.45;
+        const charStagger = 0.025;
+        const textExitEnd = chars.length ? charDuration + (chars.length - 1) * charStagger : 0;
+        const fadeAt = textExitEnd + (waveIntro ? 0.15 : 0);
         const fadeDuration = 0.9;
         const finishReveal = () => {
             restoreScroll();
             ScrollTrigger.refresh();
         };
         transition = gsap.timeline({ paused: true, onComplete });
+        transition.set(text, { backgroundImage: "none", color: "var(--color-text)", webkitTextFillColor: "currentColor" }, 0);
+        if (chars.length) transition.to(chars, { yPercent: -100, autoAlpha: 0, duration: charDuration, stagger: charStagger, ease: MOTION_EASE }, 0);
         if (waveIntro) {
             transition
                 .call(
@@ -636,12 +738,16 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
                 .call(finishReveal, [], fadeAt + fadeDuration);
         } else {
             transition
-                .call(() => {
-                    root.dispatchEvent(new Event("page:reveal"));
-                })
-                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, 0)
-                .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, 0)
-                .call(finishReveal);
+                .call(
+                    () => {
+                        root.dispatchEvent(new Event("page:reveal"));
+                    },
+                    [],
+                    fadeAt,
+                )
+                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, fadeAt)
+                .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, fadeAt)
+                .call(finishReveal, [], fadeAt + fadeDuration);
         }
         if (reduced) gsap.set(text, { backgroundPosition: "0% 0%" });
         else
@@ -678,6 +784,7 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
         document.fonts.removeEventListener("loadingerror", revealPage);
         restoreScroll();
         context.revert();
+        text.innerHTML = originalText;
     };
 }
 
@@ -846,6 +953,7 @@ class Animation {
             creatorGallery,
             creatorSolutions,
             beliefMoments,
+            settlementTrust,
             supportOverview: entrance,
             creatorJourney: entrance,
             creatorFaq,
@@ -854,7 +962,7 @@ class Animation {
     };
     static about = { section: { hero: intro, brandPhilosophy: entrance, location: entrance } };
     static services = { section: { hero: intro, overview: serviceOverview } };
-    static equipment = { section: { hero: intro, grid: entrance, studioEnvironment: entrance } };
+    static equipment = { section: { hero: intro, grid: entrance, studioEnvironment } };
     static benefits = { section: { hero: intro, overview: entrance, closing: entrance } };
 }
 

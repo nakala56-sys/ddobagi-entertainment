@@ -40,6 +40,7 @@ export function HeroIntro() {
                     alt=""
                     width={1915}
                     height={821}
+                    unoptimized
                     priority
                     sizes="100vw"
                     data-image

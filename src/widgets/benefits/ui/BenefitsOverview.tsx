@@ -40,11 +40,15 @@ export function BenefitsOverview() {
                     >
                         <div className="benefit-image relative h-[30rem] tablet:h-[32rem] overflow-clip">
                             <Image
-                                className="grayscale"
+                                className="object-cover object-center grayscale"
                                 src={item.image}
                                 alt={`${item.title} 소개 이미지`}
                                 fill
-                                sizes="(min-width: 48rem) 50vw, 90vw"
+                                sizes={
+                                    index % 6 === 0 || index % 6 === 3
+                                        ? "(min-width: 90rem) 880px, (min-width: 48rem) max(580px, 66vw), max(540px, 100vw)"
+                                        : "(min-width: 48rem) 580px, max(540px, 100vw)"
+                                }
                             />
                         </div>
                         <div className="benefit-copy py-[2.4rem]">

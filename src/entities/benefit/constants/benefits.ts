@@ -42,24 +42,24 @@ export const benefitDetails: Benefit[] = [
         id: "technical",
         title: "방송 세팅 및 기술 지원",
         description: "전문 장비 설치와 OBS 송출 세팅부터 방송 중 발생하는 기술적인 문제의 원격 대응까지 지원합니다.",
-        image: "/images/equipment/setup-desk.jpg",
+        image: "/images/benefits/technical-support.webp",
     },
     {
         id: "branding",
         title: "개인 브랜딩 지원",
         description: "크리에이터의 개성과 방송 스타일에 맞춰 프로필과 채널 이미지를 정리하고, 자신만의 브랜드를 만드는 방향을 함께 고민합니다.",
-        image: "/images/about/brand-set.jpg",
+        image: "/images/benefits/personal-branding.webp",
     },
     {
         id: "production",
         title: "영상·이미지 콘텐츠 제작 지원",
         description: "썸네일, 방송 화면, 프로필 이미지와 영상 편집 등 방송 콘셉트에 맞는 콘텐츠 제작을 지원합니다.",
-        image: "/images/services/production.jpg",
+        image: "/images/benefits/content-production.webp",
     },
     {
         id: "beauty",
         title: "성형시술 지원",
         description: "제휴를 통한 성형·뷰티 시술 지원을 안내합니다. 적용 가능한 항목과 지원 조건은 상담을 통해 확인하실 수 있습니다.",
-        image: "/images/home/gallery-stage.jpg",
+        image: "/images/benefits/beauty-support.webp",
     },
 ];

@@ -6,6 +6,7 @@ import Animation from "@/shared/utils/animation";
 const SECTIONS = [
     { id: "home-hero-title", label: "또바기" },
     { id: "home-belief-moments-title", label: "크리에이터" },
+    { id: "home-settlement-title", label: "정산" },
     { id: "home-support-title", label: "지원" },
     { id: "home-solutions-title", label: "맞춤 지원" },
     { id: "home-faq-title", label: "궁금한 점" },
