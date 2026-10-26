@@ -7,6 +7,7 @@ export const company: CompanyProfile = {
     phone: "02-6949-0286",
     contactUrl: "https://open.kakao.com/o/s0UmPOAc",
     mapUrl: "https://map.naver.com/p/search/서울특별시%20강남구%20학동로4길%2050",
+    mapEmbedUrl: "https://maps.google.com/maps?q=서울특별시%20강남구%20논현동%20163-18&z=17&hl=ko&output=embed",
 };
 
 export const studioImages = [

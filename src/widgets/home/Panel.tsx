@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Animation from "@/shared/utils/animation";
-import { HomePageProvider } from "./model/HomeContext";
 import * as Layer from "@/widgets/home/ui";
 
 export default function Panel() {
@@ -12,27 +11,20 @@ export default function Panel() {
         return Animation.layout.main(panelRef.current);
     }, []);
     return (
-        <HomePageProvider>
-            <div
-                ref={panelRef}
-                className="route-panel overflow-visible"
-            >
-                <Layer.HeroIntro />
-                {/* <Layer.BrandIntro /> */}
-                <Layer.BeliefMoments />
-                {/* <Layer.CreatorReel /> */}
-                <Layer.SupportOverview />
-                {/* <Layer.CreatorEveryday /> */}
-                <Layer.CreatorSolutions />
-                {/* <Layer.StudioPreview /> */}
-                {/* <Layer.CreatorStories /> */}
-                <Layer.CreatorFaq />
-                <Layer.CreatorJourney />
-                <Layer.CreatorGallery />
-                <Layer.FinalCta />
-                <Layer.SectionNavigation />
-            </div>
-            <Layer.Modal />
-        </HomePageProvider>
+        <div
+            ref={panelRef}
+            className="route-panel overflow-visible"
+        >
+            <Layer.HeroIntro />
+            <Layer.BeliefMoments />
+            <Layer.SettlementTrust />
+            <Layer.SupportOverview />
+            <Layer.CreatorSolutions />
+            <Layer.CreatorJourney />
+            <Layer.CreatorGallery />
+            <Layer.CreatorFaq />
+            <Layer.FinalCta />
+            <Layer.SectionNavigation />
+        </div>
     );
 }

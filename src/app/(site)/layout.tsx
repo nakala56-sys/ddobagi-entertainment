@@ -11,7 +11,6 @@ import { QueryProvider } from "@/app/providers/QueryProvider";
 
 const Header = dynamic(() => import("@/widgets/layout/Header").then((module) => module.Header));
 const Footer = dynamic(() => import("@/widgets/layout/Footer").then((module) => module.Footer));
-const QuickMenu = dynamic(() => import("@/widgets/layout/QuickMenu").then((module) => module.QuickMenu), { ssr: false });
 const Toast = dynamic(() => import("@/widgets/layout/Toast").then((module) => module.Toast), { ssr: false });
 const Progress = dynamic(() => import("@/widgets/layout/Progress").then((module) => module.Progress), { ssr: false });
 
@@ -30,7 +29,6 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
                 <Header />
                 <div id="main-content">{children}</div>
                 <Footer />
-                {/* <QuickMenu /> */}
                 <Toast />
                 <Report />
                 <Progress />

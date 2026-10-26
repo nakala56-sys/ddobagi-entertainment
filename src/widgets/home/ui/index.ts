@@ -1,15 +1,10 @@
 export { HeroIntro } from "./HeroIntro";
 export { CreatorGallery } from "./CreatorGallery";
-export { CreatorEveryday } from "./CreatorEveryday";
 export { CreatorSolutions } from "./CreatorSolutions";
-export { BrandIntro } from "./BrandIntro";
 export { BeliefMoments } from "./BeliefMoments";
-export { CreatorReel } from "./CreatorReel";
+export { SettlementTrust } from "./SettlementTrust";
 export { SupportOverview } from "./SupportOverview";
-export { StudioPreview } from "./StudioPreview";
-export { CreatorStories } from "./CreatorStories";
 export { CreatorJourney } from "./CreatorJourney";
 export { CreatorFaq } from "./CreatorFaq";
 export { FinalCta } from "./FinalCta";
 export { SectionNavigation } from "./SectionNavigation";
-export { Modal } from "./Modal";

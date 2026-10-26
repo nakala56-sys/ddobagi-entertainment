@@ -44,6 +44,12 @@ export function BrandPhilosophy() {
                         안녕하세요
                     </h2>
                     <p
+                        className="body-copy font-semibold text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
+                        data-reveal
+                    >
+                        사람의 매력을 발견하고, 그 가능성을 함께 키워갑니다.
+                    </p>
+                    <p
                         className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
@@ -59,7 +65,9 @@ export function BrandPhilosophy() {
                         className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
-                        콘텐츠 기획부터 방송, 매니지먼트까지 각자의 장점이 가장 자연스럽게 빛날 수 있는 방향을 찾고, 오래 함께할 수 있는 환경을 만드는 것이 또바기 엔터테인먼트가 하는 일입니다.
+                        콘텐츠 기획부터 방송, 매니지먼트까지
+                        <br />
+                        각자의 장점이 가장 자연스럽게 빛날 수 있는 방향을 찾고, 오래 함께할 수 있는 환경을 만드는 것이 또바기 엔터테인먼트가 하는 일입니다.
                     </p>
                     <p
                         className="body-copy font-semibold text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#ff4321]"
@@ -71,7 +79,9 @@ export function BrandPhilosophy() {
                         className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
                         data-reveal
                     >
-                        ‘또바기’라는 이름처럼 변함없는 마음으로 새로운 가능성을 만들어가겠습니다.
+                        ‘또바기’라는 이름처럼 변함없는 마음으로
+                        <br />
+                        새로운 가능성을 만들어가겠습니다.
                     </p>
                 </div>
             </div>

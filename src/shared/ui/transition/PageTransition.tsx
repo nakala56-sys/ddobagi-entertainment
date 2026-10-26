@@ -31,10 +31,12 @@ export function PageTransition({ children, waveIntro = true }: { children: React
                     data-page-loader
                     data-lenis-prevent
                     role="status"
+                    aria-label="CONNECTING TO DDOBAGI"
                 >
                     <span
-                        className="page-loading-text inline-block text-[transparent] bg-[linear-gradient(90deg,var(--color-text)_0%,var(--color-text)_33.333%,var(--color-point)_48%,var(--color-text)_66.667%,var(--color-text)_100%)] bg-size-[300%_100%] bg-position-[100%_0%] bg-no-repeat bg-clip-text [-webkit-text-fill-color:transparent]"
+                        className="page-loading-text inline-block h-[1em] overflow-hidden whitespace-nowrap text-[2.0rem] leading-none text-[transparent] bg-[linear-gradient(90deg,var(--color-text)_0%,var(--color-text)_33.333%,var(--color-point)_48%,var(--color-text)_66.667%,var(--color-text)_100%)] bg-size-[300%_100%] bg-position-[100%_0%] bg-no-repeat bg-clip-text [-webkit-text-fill-color:transparent]"
                         data-loading-text
+                        aria-hidden="true"
                     >
                         CONNECTING TO DDOBAGI <span aria-hidden="true"> · · ·</span>
                     </span>

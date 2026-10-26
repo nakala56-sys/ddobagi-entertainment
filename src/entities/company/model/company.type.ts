@@ -5,4 +5,5 @@ export type CompanyProfile = {
     phone: string;
     contactUrl: string;
     mapUrl: string;
+    mapEmbedUrl: string;
 };

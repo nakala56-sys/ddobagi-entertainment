@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from "react";
 import Animation from "@/shared/utils/animation";
-import { BenefitsPageProvider } from "./model/BenefitsContext";
 import * as Layer from "@/widgets/benefits/ui";
 
 export default function Panel() {
@@ -12,16 +11,13 @@ export default function Panel() {
         return Animation.layout.main(panelRef.current);
     }, []);
     return (
-        <BenefitsPageProvider>
-            <div
-                ref={panelRef}
-                className="route-panel"
-            >
-                <Layer.BenefitsHero />
-                <Layer.BenefitsOverview />
-                <Layer.BenefitsClosing />
-            </div>
-            <Layer.Modal />
-        </BenefitsPageProvider>
+        <div
+            ref={panelRef}
+            className="route-panel"
+        >
+            <Layer.BenefitsHero />
+            <Layer.BenefitsOverview />
+            <Layer.BenefitsClosing />
+        </div>
     );
 }

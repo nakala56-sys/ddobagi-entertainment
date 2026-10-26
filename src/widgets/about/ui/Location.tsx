@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { company } from "@/entities/company/constants/company";
 import { copyToClipboard } from "@/shared/lib/clipboard";
 import Animation from "@/shared/utils/animation";
@@ -65,26 +64,19 @@ export function Location() {
                         </p>
                     </div>
                 </div>
-                <a
-                    href={company.mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="location-map block relative h-[32rem] tablet:h-[45.2rem] border-[0.4rem] border-solid border-[var(--color-line)] overflow-clip leading-[1.0]"
-                    aria-label="네이버 지도에서 또바기 위치 보기 (새 창)"
-                    data-reveal
-                >
-                    <Image
-                        src="/images/about/location-map.jpg"
-                        alt="서울 강남구 학동로4길에 위치한 또바기 주소 안내"
-                        fill
-                        unoptimized
-                        sizes="90vw"
-                        className="object-cover object-center"
-                    />
-                    <span className="map-label absolute top-[2rem] tablet:top-[2.4rem] left-[2rem] tablet:left-[3.2rem] flex gap-[2rem] text-[1.2rem]">
-                        SEOUL · GANGNAM <span aria-hidden="true">↗</span>
-                    </span>
-                </a>
+            </div>
+            <div
+                className="location-map w-full h-[32rem] tablet:h-[45.2rem] overflow-clip leading-[1.0]"
+                data-reveal
+            >
+                <iframe
+                    title={`${company.name} 위치 안내 지도`}
+                    src={company.mapEmbedUrl}
+                    className="block w-full h-full border-0"
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                />
             </div>
         </section>
     );

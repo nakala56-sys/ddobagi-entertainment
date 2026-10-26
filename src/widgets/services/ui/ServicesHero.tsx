@@ -43,9 +43,6 @@ export function ServicesHero() {
                 >
                     <h2 className="text-[2.0rem] font-[500]">크리에이터 매니지먼트부터 브랜드 협업까지.</h2>
                     <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성을 함께합니다.</p>
-                    <span className="scroll-hint inline-flex items-center gap-[2.4rem] mt-[4.8rem] tablet:mt-[6.4rem] text-[1.2rem] leading-[1.0]">
-                        SCROLL TO DISCOVER <span aria-hidden="true">↓</span>
-                    </span>
                 </div>
             </GradientWaveSettle>
         </section>

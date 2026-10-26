@@ -3,6 +3,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { CustomEase } from "gsap/CustomEase";
 import Lenis from "lenis";
 import { getBreakpointQuery } from "@/shared/lib/breakpoints";
+import { draggableLoop } from "./draggableLoop";
 
 const MOTION_EASE = "site-motion";
 const SHIMMER_EASE = "site-shimmer";
@@ -315,6 +316,16 @@ function entrance(root: HTMLElement): Cleanup {
     });
 }
 
+function studioEnvironment(root: HTMLElement): Cleanup {
+    const cleanupReveal = entrance(root);
+    const gallery = root.querySelector<HTMLElement>("[data-studio-gallery]");
+    const cleanupGallery = gallery ? draggableLoop(gallery) : undefined;
+    return () => {
+        cleanupGallery?.();
+        cleanupReveal();
+    };
+}
+
 function creatorFaq(root: HTMLElement): Cleanup {
     return section(root, () => {
         reveal(root);
@@ -401,84 +412,6 @@ function creatorGallery(root: HTMLElement): Cleanup {
     });
 }
 
-function creatorEveryday(root: HTMLElement): Cleanup {
-    return section(root, (_, { desktop }) => {
-        if (!desktop) {
-            reveal(root);
-            return;
-        }
-        const stage = root.querySelector<HTMLElement>("[data-everyday-stage]");
-        const intro = root.querySelector<HTMLElement>("[data-everyday-intro]");
-        const outro = root.querySelector<HTMLElement>("[data-everyday-outro]");
-        const fade = root.querySelector<HTMLElement>("[data-everyday-fade]");
-        const photos = root.querySelectorAll<HTMLElement>("[data-everyday-photo]");
-        const tiles = root.querySelectorAll<HTMLElement>("[data-everyday-tile]");
-        const ghosts = root.querySelectorAll<HTMLElement>("[data-everyday-ghost]");
-        const extras = root.querySelectorAll<HTMLElement>("[data-everyday-extra]");
-        if (!stage || !intro || !outro || !fade || !photos.length) return;
-
-        setSectionState(root, "everyday", true);
-        // A pinned stage still has its previous width during refreshInit.
-        const width = () => document.documentElement.clientWidth;
-        const height = () => stage.clientHeight;
-        const gap = () => Math.max(12, Math.min(24, width() * 0.01));
-        const cardWidth = () => Math.min(324, (width() * 0.68 - gap() * 3) / 4, height() * 0.3);
-        const boardWidth = () => cardWidth() * 4 + gap() * 3;
-        const left = () => (width() - boardWidth()) / 2;
-        const columnX = (index: number) => left() + index * (cardWidth() + gap());
-        const photoY = (index: number) => height() * (0.24 + index * 0.053);
-        const startY = (index: number) => Math.max(height() * 0.43, height() * 0.19 + intro.offsetHeight + height() * 0.066 + 24) - index * height() * 0.033;
-        const measure = () => {
-            gsap.set([intro, outro], { width: Math.min(800, cardWidth() * 3 + gap() * 2) });
-            gsap.set(intro, { left: left() + width() * 0.035, top: height() * 0.19 });
-            gsap.set(outro, { left: left(), top: Math.min(height() * 0.74, height() - outro.offsetHeight - 32) });
-            tiles.forEach((tile) => {
-                const column = Number(tile.dataset.column);
-                const above = tile.dataset.side === "top";
-                gsap.set(tile, {
-                    left: columnX(column),
-                    top: photoY(column) + (above ? -cardWidth() - gap() : cardWidth() + gap()),
-                    width: cardWidth(),
-                    height: cardWidth(),
-                });
-            });
-            ghosts.forEach((ghost) => {
-                gsap.set(ghost, {
-                    left: columnX(Number(ghost.dataset.column)),
-                    top: height() * 0.18 + Number(ghost.dataset.row) * (cardWidth() + gap()),
-                    width: cardWidth(),
-                    height: cardWidth(),
-                });
-            });
-        };
-        measure();
-        gsap.set(extras, { autoAlpha: 0, y: 56, scale: 0.96 });
-        gsap.set(outro, { autoAlpha: 0, y: 36 });
-        gsap.set(fade, { autoAlpha: 0 });
-
-        scrollTimeline(root, {
-            start: "top top",
-            end: () => `+=${height() * 2.8}`,
-            pin: true,
-            scrub: 1.25,
-            onRefreshInit: measure,
-        })
-            .fromTo(
-                photos,
-                { left: (index) => columnX(index) + width() * 0.035, top: startY, width: cardWidth, height: () => cardWidth() * 1.36 },
-                { left: columnX, top: photoY, width: cardWidth, height: cardWidth, duration: 1.8, ease: "none" },
-                0.3,
-            )
-            .to(intro, { autoAlpha: 0, y: -40, duration: 0.5, ease: "none" }, 0.3)
-            .to(extras, { autoAlpha: 1, y: 0, scale: 1, duration: 1.2, stagger: 0.045, ease: "none" }, 0.65)
-            .to(fade, { autoAlpha: 1, duration: 1, ease: "none" }, 0.8)
-            .to(outro, { autoAlpha: 1, y: 0, duration: 0.6, ease: "none" }, 1.7)
-            .to({}, { duration: 0.4 });
-
-        return () => setSectionState(root, "everyday", false);
-    });
-}
-
 function creatorSolutions(root: HTMLElement): Cleanup {
     return section(root, (_, { desktop }) => {
         reveal(root);
@@ -517,8 +450,85 @@ function creatorSolutions(root: HTMLElement): Cleanup {
 }
 
 function beliefMoments(root: HTMLElement): Cleanup {
-    return section(root, () => {
+    return section(root, (_, { desktop }) => {
         reveal(root);
+        const copy = root.querySelector<HTMLElement>("[data-belief-copy]");
+        const frames = root.querySelectorAll<HTMLElement>("[data-float-image]");
+        if (!copy || !frames.length) return;
+
+        // position:sticky cannot stick while html/body use overflow-x:hidden.
+        ScrollTrigger.create({
+            trigger: root,
+            start: "top top",
+            end: "bottom bottom",
+            pin: copy,
+            pinSpacing: false,
+            anticipatePin: desktop ? 1 : 0,
+            invalidateOnRefresh: true,
+        });
+
+        // Scaling filtered photos on every scroll tick is what stutters phones.
+        if (!desktop) return;
+
+        gsap.set(frames, { willChange: "transform", force3D: true });
+        frames.forEach((frame) => {
+            scrollTimeline(frame, { start: "top bottom", end: "bottom top" })
+                .fromTo(frame, { scale: 0.94 }, { scale: 1, ease: "none", duration: 0.5 })
+                .to(frame, { scale: 0.94, ease: "none", duration: 0.5 });
+        });
+    });
+}
+
+function settlementTrust(root: HTMLElement): Cleanup {
+    return section(root, (_, { desktop }) => {
+        reveal(root);
+        const stage = root.querySelector<HTMLElement>("[data-settlement-stage]");
+        const gauge = root.querySelector<HTMLElement>("[data-settlement-gauge]");
+        const hundreds = root.querySelector<HTMLElement>("[data-settlement-track='hundreds']");
+        const tens = root.querySelector<HTMLElement>("[data-settlement-track='tens']");
+        const ones = root.querySelector<HTMLElement>("[data-settlement-track='ones']");
+        const hundredsColumn = root.querySelector<HTMLElement>("[data-settlement-column='hundreds']");
+        const tensColumn = root.querySelector<HTMLElement>("[data-settlement-column='tens']");
+        if (!stage || !gauge || !hundreds || !tens || !ones || !hundredsColumn || !tensColumn) return;
+
+        const digit = ones.children[0];
+        const unit = () => {
+            const box = digit?.getBoundingClientRect();
+            return { height: box?.height || 0, width: box?.width || 0 };
+        };
+        let step = unit();
+        const state = { value: 0 };
+        [hundreds, tens, ones].forEach((track) => {
+            track.style.transform = "none";
+        });
+        const render = () => {
+            const value = state.value;
+            const decade = Math.floor(value / 10);
+            const onesPart = value - decade * 10;
+            const tensIndex = Math.min(10, decade + (onesPart > 9 ? onesPart - 9 : 0));
+            const tensIn = gsap.utils.clamp(0, 1, (value - 9.2) / 0.8);
+            const hundredsIn = gsap.utils.clamp(0, 1, (value - 99.2) / 0.8);
+            gsap.set(ones, { y: -step.height * value });
+            gsap.set(tens, { y: -step.height * tensIndex });
+            gsap.set(hundreds, { y: -step.height });
+            gsap.set(tensColumn, { width: step.width * tensIn });
+            gsap.set(hundredsColumn, { width: step.width * hundredsIn });
+        };
+        const measure = () => {
+            step = unit();
+            render();
+        };
+        gsap.set(gauge, { scaleX: 0, transformOrigin: "left center" });
+        measure();
+        scrollTimeline(root, {
+            start: "top top",
+            end: "+=100%",
+            pin: stage,
+            anticipatePin: desktop ? 1 : 0,
+            onRefreshInit: measure,
+        })
+            .to(state, { value: 100, ease: "none", duration: 1, onUpdate: render }, 0)
+            .fromTo(gauge, { scaleX: 0 }, { scaleX: 1, ease: "none", duration: 1 }, 0);
     });
 }
 
@@ -535,59 +545,90 @@ function imageReveal(root: HTMLElement): Cleanup {
     });
 }
 
-/** The slow ink and the normally scrolling CTA have independent playheads. */
+/** Opaque stop of the wave gradient. The faded rim sits outside this radius. */
+const CTA_WAVE_SOLID = 0.86;
+
+/** The resting arc waits in the park. It locks to the screen and spreads once that arc arrives. */
 function finalCta(root: HTMLElement): Cleanup {
     return section(root, () => {
+        const park = root.querySelector<HTMLElement>("[data-cta-park]");
         const ink = root.querySelector<HTMLElement>("[data-cta-ink]");
-        const svg = root.querySelector<SVGSVGElement>("[data-cta-svg]");
-        const circle = root.querySelector<SVGCircleElement>("[data-cta-circle]");
-        const filter = root.querySelector<SVGFilterElement>("[data-cta-filter]");
-        const noise = root.querySelector<SVGFETurbulenceElement>("[data-cta-noise]");
-        const displacement = root.querySelector<SVGFEDisplacementMapElement>("[data-cta-displacement]");
-        const blur = root.querySelector<SVGFEGaussianBlurElement>("[data-cta-blur]");
-        const content = root.querySelector<HTMLElement>("[data-cta-content]");
-        if (!ink || !svg || !circle || !filter || !noise || !displacement || !blur || !content) return;
+        const circle = root.querySelector<HTMLElement>("[data-cta-circle]");
+        const header = document.querySelector<HTMLElement>(".site-header");
+        if (!park || !ink || !circle) return;
 
-        let startRadius = 0;
-        let endRadius = 0;
+        const wave = { centerY: 0, lift: 0, startRadius: 0, endRadius: 1 };
+        const clearHeader = () => header?.style.removeProperty("--header-ink");
         const measure = () => {
             const width = window.innerWidth;
             const height = window.innerHeight;
-            const size = Math.min(width, height);
-            const grid = (value: number) => Math.max(4, Math.round(value / 4) * 4);
-            // Keep the soft rim without scaling blur cost indefinitely on large screens.
-            const drift = grid(size * 0.22);
-            const softness = grid(Math.min(height * 0.08, 80));
-            // Displacement reaches half its scale; three blur deviations pad the visible rim.
-            const margin = grid(drift * 0.5 + softness * 3);
             const centerY = height + width * 0.6;
-            startRadius = Math.max(0, centerY - height - margin);
-            endRadius = Math.hypot(width / 2, centerY) + margin;
-            svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
-            circle.setAttribute("cx", String(width / 2));
-            circle.setAttribute("cy", String(centerY));
-            // Bound filter buffers to the viewport instead of the growing circle's huge box.
-            filter.setAttribute("x", String(-margin));
-            filter.setAttribute("y", String(-margin));
-            filter.setAttribute("width", String(width + margin * 2));
-            filter.setAttribute("height", String(height + margin * 2));
-            // Keep noise frequency fixed while the circle expands.
-            noise.setAttribute("baseFrequency", String(0.9 / size));
-            displacement.setAttribute("scale", String(drift));
-            blur.setAttribute("stdDeviation", String(softness));
+            const lift = height * 0.16;
+            const startRadius = Math.max(0, centerY - height);
+            const endRadius = Math.hypot(width / 2, centerY);
+            wave.centerY = centerY;
+            wave.lift = lift;
+            wave.startRadius = startRadius;
+            wave.endRadius = endRadius;
+            gsap.set(circle, {
+                width: (endRadius / CTA_WAVE_SOLID) * 2,
+                height: (endRadius / CTA_WAVE_SOLID) * 2,
+                left: width / 2,
+                top: centerY - lift,
+                xPercent: -50,
+                yPercent: -50,
+                transformOrigin: "50% 50%",
+                force3D: true,
+                background: `radial-gradient(circle, #ff4321 0%, #ff4321 ${CTA_WAVE_SOLID * 100}%, transparent 100%)`,
+            });
+        };
+        const placeInk = (fixed: boolean) => {
+            if (fixed) {
+                if (ink.parentElement !== root) root.appendChild(ink);
+                ink.style.position = "fixed";
+                ink.style.inset = "0";
+                ink.style.zIndex = "0";
+                ink.style.height = "100%";
+                ink.style.width = "100%";
+                return;
+            }
+            if (ink.parentElement !== park) park.appendChild(ink);
+            ink.style.position = "";
+            ink.style.inset = "";
+            ink.style.zIndex = "";
+            ink.style.height = "";
+            ink.style.width = "";
+        };
+        // Cream header type disappears once the white fill reaches the wordmark.
+        const syncHeader = () => {
+            if (!header) return;
+            const scale = Number(gsap.getProperty(circle, "scale")) || 0;
+            const visibleTop = wave.centerY - wave.lift - (wave.endRadius / CTA_WAVE_SOLID) * scale;
+            if (visibleTop <= header.getBoundingClientRect().bottom) header.style.setProperty("--header-ink", "#0a0a0a");
+            else clearHeader();
+        };
+        const syncPlacement = (self: ScrollTrigger) => {
+            const seated = self.isActive || self.progress > 0;
+            placeInk(seated);
+            if (!seated) clearHeader();
         };
         measure();
+        gsap.set(circle, { scale: wave.startRadius / wave.endRadius });
 
-        gsap.set(ink, { autoAlpha: 1 });
-
-        scrollTimeline(root, {
-            start: "top bottom",
-            end: "top top",
+        scrollTimeline(park, {
+            start: "bottom bottom",
+            end: () => `+=${window.innerHeight}`,
             scrub: 1.6,
             onRefreshInit: measure,
-        }).fromTo(circle, { attr: { r: () => startRadius } }, { attr: { r: () => endRadius }, duration: 1, ease: SHIMMER_EASE }, 0);
+            onToggle: syncPlacement,
+            onRefresh: syncPlacement,
+        }).fromTo(circle, { scale: () => wave.startRadius / wave.endRadius }, { scale: 1, duration: 1, ease: SHIMMER_EASE, onUpdate: syncHeader }, 0);
 
         reveal(root);
+        return () => {
+            clearHeader();
+            placeInk(false);
+        };
     });
 }
 
@@ -631,6 +672,8 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     const content = root.querySelector<HTMLElement>("[data-page-content]")!;
     const overlay = root.querySelector<HTMLElement>("[data-page-loader]")!;
     const text = root.querySelector<HTMLElement>("[data-loading-text]")!;
+    const originalText = text.innerHTML;
+    const chars = titlePieces(text).flatMap((piece) => (piece.kind === "char" ? [piece.element] : []));
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
@@ -666,13 +709,18 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     };
     const observer = new MutationObserver(revealPage);
     const context = gsap.context(() => {
-        const fadeAt = 0.15;
+        const charDuration = 0.45;
+        const charStagger = 0.025;
+        const textExitEnd = chars.length ? charDuration + (chars.length - 1) * charStagger : 0;
+        const fadeAt = textExitEnd + (waveIntro ? 0.15 : 0);
         const fadeDuration = 0.9;
         const finishReveal = () => {
             restoreScroll();
             ScrollTrigger.refresh();
         };
         transition = gsap.timeline({ paused: true, onComplete });
+        transition.set(text, { backgroundImage: "none", color: "var(--color-text)", webkitTextFillColor: "currentColor" }, 0);
+        if (chars.length) transition.to(chars, { yPercent: -100, autoAlpha: 0, duration: charDuration, stagger: charStagger, ease: MOTION_EASE }, 0);
         if (waveIntro) {
             transition
                 .call(
@@ -690,12 +738,16 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
                 .call(finishReveal, [], fadeAt + fadeDuration);
         } else {
             transition
-                .call(() => {
-                    root.dispatchEvent(new Event("page:reveal"));
-                })
-                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, 0)
-                .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, 0)
-                .call(finishReveal);
+                .call(
+                    () => {
+                        root.dispatchEvent(new Event("page:reveal"));
+                    },
+                    [],
+                    fadeAt,
+                )
+                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, fadeAt)
+                .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, fadeAt)
+                .call(finishReveal, [], fadeAt + fadeDuration);
         }
         if (reduced) gsap.set(text, { backgroundPosition: "0% 0%" });
         else
@@ -732,6 +784,7 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
         document.fonts.removeEventListener("loadingerror", revealPage);
         restoreScroll();
         context.revert();
+        text.innerHTML = originalText;
     };
 }
 
@@ -837,125 +890,6 @@ function sectionNavigation(root: HTMLElement): Cleanup {
     return () => media.revert();
 }
 
-// Cards sit on a vertical cylinder. Distance from the viewport center is the arc length.
-function creatorReel(root: HTMLElement): Cleanup {
-    return section(root, () => {
-        const viewport = root.querySelector<HTMLElement>("[data-reel-viewport]");
-        const track = root.querySelector<HTMLElement>("[data-reel-track]");
-        const loopSet = root.querySelector<HTMLElement>("[data-reel-set]");
-        const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-reel-card]"));
-        if (!viewport || !track || !loopSet || !cards.length) return;
-
-        const BASE_SPEED = 36;
-        const trackX = gsap.quickSetter(track, "x", "px");
-        const placeCard = cards.map((card) => ({
-            x: gsap.quickSetter(card, "x", "px"),
-            z: gsap.quickSetter(card, "z", "px"),
-            rotationY: gsap.quickSetter(card, "rotationY", "deg"),
-            opacity: gsap.quickSetter(card, "opacity"),
-        }));
-        let offset = 0;
-        let direction = -1;
-        let velocity = -BASE_SPEED;
-        let boost = 0;
-        let lastScroll = window.scrollY;
-        let dragging = false;
-        let dragOffset = 0;
-        let dragX = 0;
-        let lastPointerX = 0;
-        let lastPointerTime = 0;
-
-        const render = () => {
-            const loop = loopSet.offsetWidth;
-            if (loop <= 0) return;
-            const shown = gsap.utils.wrap(-loop, 0, offset);
-            if (!dragging) offset = shown;
-            trackX(shown);
-            const radius = Math.max(viewport.clientWidth * 0.7, 680);
-            const center = viewport.clientWidth / 2;
-            cards.forEach((card, index) => {
-                const arc = shown + card.offsetLeft + card.offsetWidth / 2 - center;
-                const angle = arc / radius;
-                const onCurve = Math.abs(angle) <= 0.82;
-                placeCard[index].opacity(onCurve ? 1 : 0);
-                placeCard[index].x(Math.sin(angle) * radius - arc);
-                placeCard[index].z((Math.cos(angle) - 1) * radius);
-                placeCard[index].rotationY((angle * 180) / Math.PI);
-            });
-        };
-
-        const tick = (_time: number, deltaMs: number) => {
-            const dt = Math.min(Math.max(deltaMs, 0) / 1000, 0.05);
-            const rect = root.getBoundingClientRect();
-            const visible = rect.bottom > 0 && rect.top < window.innerHeight;
-            if (!dragging) {
-                const dy = window.scrollY - lastScroll;
-                const targetBoost = visible ? Math.min(Math.max(dy, 0) * 8, 320) : 0;
-                boost += (targetBoost - boost) * Math.min(1, dt * 4);
-                const target = direction * (BASE_SPEED + boost);
-                velocity += (target - velocity) * Math.min(1, dt * 8);
-                offset += velocity * dt;
-            }
-            lastScroll = window.scrollY;
-            if (visible || dragging) render();
-        };
-
-        const onDown = (event: PointerEvent) => {
-            if (event.button !== 0) return;
-            dragging = true;
-            dragX = event.clientX;
-            dragOffset = offset;
-            lastPointerX = event.clientX;
-            lastPointerTime = performance.now();
-            velocity = 0;
-            viewport.dataset.dragging = "true";
-            try {
-                viewport.setPointerCapture(event.pointerId);
-            } catch {
-                // Synthetic pointers have no capture target. The drag still tracks pointermove.
-            }
-        };
-        const onMove = (event: PointerEvent) => {
-            if (!dragging) return;
-            const now = performance.now();
-            const dt = Math.max((now - lastPointerTime) / 1000, 0.001);
-            velocity = gsap.utils.clamp(-720, 720, (event.clientX - lastPointerX) / dt);
-            lastPointerX = event.clientX;
-            lastPointerTime = now;
-            offset = dragOffset + (event.clientX - dragX);
-            render();
-        };
-        const onUp = (event: PointerEvent) => {
-            if (!dragging) return;
-            dragging = false;
-            delete viewport.dataset.dragging;
-            const dragged = event.clientX - dragX;
-            if (Math.abs(dragged) > 6) direction = Math.sign(dragged);
-            else if (Math.abs(velocity) > 24) direction = Math.sign(velocity) || direction;
-            if (Math.sign(velocity) !== direction) velocity = direction * BASE_SPEED;
-            velocity = gsap.utils.clamp(-720, 720, velocity);
-            if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
-        };
-
-        gsap.set(cards, { transformOrigin: "50% 50%", force3D: true });
-        gsap.ticker.add(tick);
-        viewport.addEventListener("pointerdown", onDown);
-        viewport.addEventListener("pointermove", onMove);
-        viewport.addEventListener("pointerup", onUp);
-        viewport.addEventListener("pointercancel", onUp);
-        render();
-
-        return () => {
-            gsap.ticker.remove(tick);
-            viewport.removeEventListener("pointerdown", onDown);
-            viewport.removeEventListener("pointermove", onMove);
-            viewport.removeEventListener("pointerup", onUp);
-            viewport.removeEventListener("pointercancel", onUp);
-            delete viewport.dataset.dragging;
-        };
-    });
-}
-
 class Animation {
     static layout = {
         loading: pageLoading,
@@ -966,19 +900,26 @@ class Animation {
         },
         common: (): Cleanup => {
             const media = gsap.matchMedia();
-            media.add(`${getBreakpointQuery("tablet")} and (prefers-reduced-motion: no-preference)`, () => {
-                const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
-                smoothScroller = lenis;
-                const update = () => ScrollTrigger.update();
-                lenis.on("scroll", update);
-                const tick = (time: number) => lenis.raf(time * 1000);
-                gsap.ticker.add(tick);
-                return () => {
-                    gsap.ticker.remove(tick);
-                    lenis.off("scroll", update);
-                    if (smoothScroller === lenis) smoothScroller = undefined;
-                    lenis.destroy();
-                };
+            media.add({ smooth: "(prefers-reduced-motion: no-preference)", desktop: getBreakpointQuery("tablet") }, (context) => {
+                const { smooth, desktop } = context.conditions as { smooth: boolean; desktop: boolean };
+                if (!smooth) return;
+                if (desktop) {
+                    const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
+                    smoothScroller = lenis;
+                    const update = () => ScrollTrigger.update();
+                    lenis.on("scroll", update);
+                    const tick = (time: number) => lenis.raf(time * 1000);
+                    gsap.ticker.add(tick);
+                    return () => {
+                        gsap.ticker.remove(tick);
+                        lenis.off("scroll", update);
+                        if (smoothScroller === lenis) smoothScroller = undefined;
+                        lenis.destroy();
+                    };
+                }
+                // Mobile browsers scroll off the main thread, so a pinned layer otherwise lags a frame behind.
+                ScrollTrigger.normalizeScroll({ allowNestedScroll: true, lockAxis: true });
+                return () => ScrollTrigger.normalizeScroll(false);
             });
             return () => media.revert();
         },
@@ -1010,22 +951,18 @@ class Animation {
         section: {
             heroIntro: intro,
             creatorGallery,
-            creatorEveryday,
             creatorSolutions,
-            brandIntro: entrance,
             beliefMoments,
-            creatorReel,
+            settlementTrust,
             supportOverview: entrance,
-            studioPreview: imageReveal,
-            creatorStories: entrance,
             creatorJourney: entrance,
             creatorFaq,
             finalCta,
         },
     };
     static about = { section: { hero: intro, brandPhilosophy: entrance, location: entrance } };
-    static services = { section: { hero: intro, overview: serviceOverview, closing: entrance } };
-    static equipment = { section: { hero: intro, grid: entrance, studioEnvironment: entrance } };
+    static services = { section: { hero: intro, overview: serviceOverview } };
+    static equipment = { section: { hero: intro, grid: entrance, studioEnvironment } };
     static benefits = { section: { hero: intro, overview: entrance, closing: entrance } };
 }
 

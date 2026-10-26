@@ -44,11 +44,11 @@ export function CreatorJourney() {
                     <br />
                     필요한 지원과 활동 방향을 함께 이야기합니다.
                 </p>
-                <ol className="mt-[4.8rem] tablet:mt-[7.2rem] grid grid-cols-1 tablet:grid-cols-2 pc:grid-cols-4 gap-[3.2rem] tablet:gap-[4rem]">
+                <ol className="mt-[4.8rem] tablet:mt-[7.2rem] grid grid-cols-1 tablet:grid-cols-2 pc:grid-cols-4 gap-[1.6rem] tablet:gap-[1.2rem]">
                     {STEPS.map((step, index) => (
                         <li
                             key={step.title}
-                            className="border-t border-solid border-[var(--color-line)] pt-[2.8rem]"
+                            className="bg-[#ffffff10] p-[2.4rem] rounded-[2.4rem]"
                             data-reveal
                         >
                             <span
