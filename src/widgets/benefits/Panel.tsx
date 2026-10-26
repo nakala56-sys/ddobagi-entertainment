@@ -17,7 +17,6 @@ export default function Panel() {
         >
             <Layer.BenefitsHero />
             <Layer.BenefitsOverview />
-            <Layer.BenefitsClosing />
         </div>
     );
 }
