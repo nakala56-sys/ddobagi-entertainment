@@ -985,23 +985,20 @@ class Animation {
             media.add({ smooth: "(prefers-reduced-motion: no-preference)", desktop: getBreakpointQuery("tablet") }, (context) => {
                 const { smooth, desktop } = context.conditions as { smooth: boolean; desktop: boolean };
                 if (!smooth) return;
-                if (desktop) {
-                    const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
-                    smoothScroller = lenis;
-                    const update = () => ScrollTrigger.update();
-                    lenis.on("scroll", update);
-                    const tick = (time: number) => lenis.raf(time * 1000);
-                    gsap.ticker.add(tick);
-                    return () => {
-                        gsap.ticker.remove(tick);
-                        lenis.off("scroll", update);
-                        if (smoothScroller === lenis) smoothScroller = undefined;
-                        lenis.destroy();
-                    };
-                }
-                // Chrome lives outside the faded content wrapper, so normalizeScroll can sync pins without shifting the header.
-                ScrollTrigger.normalizeScroll({ allowNestedScroll: true, lockAxis: true });
-                return () => ScrollTrigger.normalizeScroll(false);
+                if (!desktop) return;
+                // Avoid normalizeScroll on mobile — it can insert document-top slack until a later pin refresh clears it.
+                const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
+                smoothScroller = lenis;
+                const update = () => ScrollTrigger.update();
+                lenis.on("scroll", update);
+                const tick = (time: number) => lenis.raf(time * 1000);
+                gsap.ticker.add(tick);
+                return () => {
+                    gsap.ticker.remove(tick);
+                    lenis.off("scroll", update);
+                    if (smoothScroller === lenis) smoothScroller = undefined;
+                    lenis.destroy();
+                };
             });
             return () => media.revert();
         },
