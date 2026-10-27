@@ -45,6 +45,9 @@ vi.mock("@/shared/lib/breakpoints", () => ({ getBreakpointQuery: () => "(min-wid
 let frames: Map<number, FrameRequestCallback>;
 let frameId: number;
 let cleanups: (() => void)[];
+let timeouts: Map<number, { callback: () => void; at: number }>;
+let timeoutId: number;
+let clock: number;
 
 beforeEach(() => {
     vi.clearAllMocks();
@@ -52,9 +55,25 @@ beforeEach(() => {
     mocks.ticks.clear();
     frames = new Map();
     frameId = 0;
+    timeouts = new Map();
+    timeoutId = 0;
+    clock = 0;
     cleanups = [];
     vi.stubGlobal("document", { fonts: { ready: Promise.resolve() }, getElementById: vi.fn() });
-    vi.stubGlobal("window", { scrollY: 0, innerHeight: 800, matchMedia: vi.fn(() => ({ matches: true })) });
+    vi.stubGlobal("window", {
+        scrollY: 0,
+        innerHeight: 800,
+        matchMedia: vi.fn(() => ({ matches: true })),
+        addEventListener: vi.fn(),
+        setTimeout: (callback: () => void, ms = 0) => {
+            const id = ++timeoutId;
+            timeouts.set(id, { callback, at: clock + Number(ms) });
+            return id;
+        },
+        clearTimeout: (id?: number) => {
+            if (id !== undefined) timeouts.delete(id);
+        },
+    });
     vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
         const id = frameId++;
         frames.set(id, callback);
@@ -74,6 +93,16 @@ async function flushFrame() {
     const pending = [...frames.values()];
     frames.clear();
     pending.forEach((callback) => callback(16));
+}
+
+async function flushIdle(ms = 160) {
+    clock += ms;
+    const due = [...timeouts.entries()].filter(([, item]) => item.at <= clock);
+    due.forEach(([id, item]) => {
+        timeouts.delete(id);
+        item.callback();
+    });
+    await flushFrame();
 }
 
 function mountSection() {
@@ -115,7 +144,8 @@ describe("section refresh scheduling", () => {
         const { image } = mountSection();
         await flushFrame();
         image.dispatchEvent(new Event("load"));
-        await flushFrame();
+        // Lazy image loads wait for scroll idle before refreshing.
+        await flushIdle();
         expect(mocks.refresh).toHaveBeenCalledTimes(2);
     });
 

@@ -24,8 +24,55 @@ type Cleanup = () => void;
 type Conditions = { desktop: boolean; reduced: boolean };
 type SectionAnimation = (root: HTMLElement, conditions: Conditions) => void | Cleanup;
 
-const pendingRefreshes = new Set<Cleanup>();
+const pendingRefreshes = new Set<() => void>();
 let refreshFrame: number | undefined;
+let refreshIdleTimer: number | undefined;
+let scrollIdleBound = false;
+const REFRESH_IDLE_MS = 160;
+
+function flushScheduledRefresh() {
+    refreshFrame = undefined;
+    refreshIdleTimer = undefined;
+    pendingRefreshes.clear();
+    ScrollTrigger.refresh();
+}
+
+/** immediate: mount/fonts. idle: lazy image loads — wait until scrolling settles to avoid first-play jitter. */
+function scheduleRefresh(owner: () => void, mode: "immediate" | "idle" = "idle") {
+    pendingRefreshes.add(owner);
+    if (mode === "immediate") {
+        if (refreshIdleTimer !== undefined) {
+            window.clearTimeout(refreshIdleTimer);
+            refreshIdleTimer = undefined;
+        }
+        if (refreshFrame !== undefined) return;
+        refreshFrame = requestAnimationFrame(flushScheduledRefresh);
+        return;
+    }
+    if (refreshFrame !== undefined) return;
+    if (refreshIdleTimer !== undefined) window.clearTimeout(refreshIdleTimer);
+    refreshIdleTimer = window.setTimeout(() => {
+        refreshIdleTimer = undefined;
+        if (refreshFrame !== undefined) return;
+        refreshFrame = requestAnimationFrame(flushScheduledRefresh);
+    }, REFRESH_IDLE_MS);
+    if (!scrollIdleBound) {
+        scrollIdleBound = true;
+        window.addEventListener(
+            "scroll",
+            () => {
+                if (refreshIdleTimer === undefined) return;
+                window.clearTimeout(refreshIdleTimer);
+                refreshIdleTimer = window.setTimeout(() => {
+                    refreshIdleTimer = undefined;
+                    if (refreshFrame !== undefined) return;
+                    refreshFrame = requestAnimationFrame(flushScheduledRefresh);
+                }, REFRESH_IDLE_MS);
+            },
+            { passive: true },
+        );
+    }
+}
 
 function setSectionState(root: Element, state: string, enabled: boolean) {
     const targets = [root, ...root.querySelectorAll(`[data-${state}-target]`)];
@@ -39,15 +86,8 @@ function setSectionState(root: Element, state: string, enabled: boolean) {
 function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
     const media = gsap.matchMedia(root);
     let active = true;
-    const refresh = () => {
-        pendingRefreshes.add(refresh);
-        if (refreshFrame !== undefined) return;
-        refreshFrame = requestAnimationFrame(() => {
-            refreshFrame = undefined;
-            pendingRefreshes.clear();
-            ScrollTrigger.refresh();
-        });
-    };
+    const refreshNow = () => scheduleRefresh(refreshNow, "immediate");
+    const refreshIdle = () => scheduleRefresh(refreshIdle, "idle");
     media.add({ all: "all", desktop: getBreakpointQuery("tablet"), reduced: "(prefers-reduced-motion: reduce)" }, (context) => {
         const conditions = context.conditions as Conditions;
         // Static markup remains readable when animation is disabled.
@@ -55,19 +95,26 @@ function section(root: HTMLElement, animate: SectionAnimation): Cleanup {
         return animate(root, conditions);
     });
     const images = Array.from(root.querySelectorAll("img"));
-    images.forEach((image) => image.addEventListener("load", refresh));
+    images.forEach((image) => image.addEventListener("load", refreshIdle));
     document.fonts.ready.then(() => {
-        if (active) refresh();
+        if (active) refreshNow();
     });
-    refresh();
+    refreshNow();
     return () => {
         active = false;
-        pendingRefreshes.delete(refresh);
-        if (!pendingRefreshes.size && refreshFrame !== undefined) {
-            cancelAnimationFrame(refreshFrame);
-            refreshFrame = undefined;
+        pendingRefreshes.delete(refreshNow);
+        pendingRefreshes.delete(refreshIdle);
+        if (!pendingRefreshes.size) {
+            if (refreshFrame !== undefined) {
+                cancelAnimationFrame(refreshFrame);
+                refreshFrame = undefined;
+            }
+            if (refreshIdleTimer !== undefined) {
+                window.clearTimeout(refreshIdleTimer);
+                refreshIdleTimer = undefined;
+            }
         }
-        images.forEach((image) => image.removeEventListener("load", refresh));
+        images.forEach((image) => image.removeEventListener("load", refreshIdle));
         media.revert();
     };
 }
@@ -167,7 +214,7 @@ function titleRise(root: HTMLElement) {
         const timeline = scrollTimeline(title, home ? { end: "clamp(top 12%)", scrub: 1.4 } : {});
         if (!pieces.some((piece) => piece.kind === "chip")) {
             // Later staggers stay unrendered until their start, so park every glyph below the mask first.
-            gsap.set(chars, { yPercent: 100 });
+            gsap.set(chars, { yPercent: 100, willChange: "transform", force3D: true });
             timeline.to(chars, { yPercent: 0, duration: 0.7, stagger: 0.1, ease: MOTION_EASE });
             return;
         }
@@ -211,6 +258,8 @@ function titleRise(root: HTMLElement) {
 }
 
 function revealElement(element: HTMLElement) {
+    // Promote a compositor layer before the first scrub catch-up on phones.
+    gsap.set(element, { willChange: "transform, opacity", force3D: true });
     if (element.closest("main:not(#home)")) {
         gsap.fromTo(element, textFrom, {
             ...textTo,
@@ -440,12 +489,14 @@ function beliefMoments(root: HTMLElement): Cleanup {
         if (!copy || !frames.length) return;
 
         // position:sticky cannot stick while html/body use overflow-x:hidden.
+        // Transform pins avoid competing with the fixed header + backdrop-filter layer on iOS.
         ScrollTrigger.create({
             trigger: root,
             start: "top top",
             end: "bottom bottom",
             pin: copy,
             pinSpacing: false,
+            pinType: desktop ? "fixed" : "transform",
             anticipatePin: desktop ? 1 : 0,
             invalidateOnRefresh: true,
         });
@@ -507,7 +558,8 @@ function settlementTrust(root: HTMLElement): Cleanup {
             start: "top top",
             end: "+=100%",
             pin: stage,
-            anticipatePin: desktop ? 1 : 0,
+            pinType: desktop ? "fixed" : "transform",
+            anticipatePin: 1,
             onRefreshInit: measure,
         })
             .to(state, { value: 100, ease: "none", duration: 1, onUpdate: render }, 0)
@@ -675,7 +727,7 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
             gsap.set(content, { autoAlpha: 1, clearProps: "transform" });
             gsap.set(overlay, { autoAlpha: 0 });
             onComplete();
-            ScrollTrigger.refresh();
+            requestAnimationFrame(() => requestAnimationFrame(() => ScrollTrigger.refresh()));
         } else transition.play();
     };
     const observer = new MutationObserver(revealPage);
@@ -689,7 +741,8 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
             // Drop any leftover transform so nested fixed chrome is not offset on iOS.
             gsap.set(content, { clearProps: "transform" });
             restoreScroll();
-            ScrollTrigger.refresh();
+            // Two frames after overflow unlock so pin/start measurements match the settled viewport.
+            requestAnimationFrame(() => requestAnimationFrame(() => ScrollTrigger.refresh()));
         };
         const fadeContent = { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false, force3D: false };
         transition = gsap.timeline({ paused: true, onComplete });
@@ -932,20 +985,23 @@ class Animation {
             media.add({ smooth: "(prefers-reduced-motion: no-preference)", desktop: getBreakpointQuery("tablet") }, (context) => {
                 const { smooth, desktop } = context.conditions as { smooth: boolean; desktop: boolean };
                 if (!smooth) return;
-                if (!desktop) return;
-                // Keep native mobile scrolling. normalizeScroll offsets fixed chrome (header) on iOS until a later pin refresh.
-                const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
-                smoothScroller = lenis;
-                const update = () => ScrollTrigger.update();
-                lenis.on("scroll", update);
-                const tick = (time: number) => lenis.raf(time * 1000);
-                gsap.ticker.add(tick);
-                return () => {
-                    gsap.ticker.remove(tick);
-                    lenis.off("scroll", update);
-                    if (smoothScroller === lenis) smoothScroller = undefined;
-                    lenis.destroy();
-                };
+                if (desktop) {
+                    const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
+                    smoothScroller = lenis;
+                    const update = () => ScrollTrigger.update();
+                    lenis.on("scroll", update);
+                    const tick = (time: number) => lenis.raf(time * 1000);
+                    gsap.ticker.add(tick);
+                    return () => {
+                        gsap.ticker.remove(tick);
+                        lenis.off("scroll", update);
+                        if (smoothScroller === lenis) smoothScroller = undefined;
+                        lenis.destroy();
+                    };
+                }
+                // Chrome lives outside the faded content wrapper, so normalizeScroll can sync pins without shifting the header.
+                ScrollTrigger.normalizeScroll({ allowNestedScroll: true, lockAxis: true });
+                return () => ScrollTrigger.normalizeScroll(false);
             });
             return () => media.revert();
         },
