@@ -35,8 +35,7 @@ export function BeliefMoments() {
     // Extra room after the last image so it can fully exit above the viewport
     // before the pinned copy releases and the next section scrolls in.
     const exitPad = 180;
-    // Use svh to match h-svh / -mt-[100svh]; mixing vh on iOS leaves a top document gap while the address bar moves.
-    const trackHeight = `${firstTop + (MOMENT_IMAGES.length - 1) * imageGap + exitPad}svh`;
+    const trackHeight = `${firstTop + (MOMENT_IMAGES.length - 1) * imageGap + exitPad}vh`;
 
     return (
         <section
@@ -89,7 +88,7 @@ export function BeliefMoments() {
                     <div
                         key={image.src}
                         className="absolute -translate-x-1/2"
-                        style={{ top: `${firstTop + index * imageGap}svh`, left: `${image.x}%` }}
+                        style={{ top: `${firstTop + index * imageGap}vh`, left: `${image.x}%` }}
                     >
                         <div
                             data-float-image
