@@ -672,7 +672,7 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
         observer.disconnect();
         if (reduced) {
             restoreScroll();
-            gsap.set(content, { autoAlpha: 1 });
+            gsap.set(content, { autoAlpha: 1, clearProps: "transform" });
             gsap.set(overlay, { autoAlpha: 0 });
             onComplete();
             ScrollTrigger.refresh();
@@ -686,9 +686,12 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
         const fadeAt = textExitEnd + (waveIntro ? 0.15 : 0);
         const fadeDuration = 0.9;
         const finishReveal = () => {
+            // Drop any leftover transform so nested fixed chrome is not offset on iOS.
+            gsap.set(content, { clearProps: "transform" });
             restoreScroll();
             ScrollTrigger.refresh();
         };
+        const fadeContent = { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false, force3D: false };
         transition = gsap.timeline({ paused: true, onComplete });
         transition.set(text, { backgroundImage: "none", color: "var(--color-text)", webkitTextFillColor: "currentColor" }, 0);
         if (chars.length) transition.to(chars, { yPercent: -100, autoAlpha: 0, duration: charDuration, stagger: charStagger, ease: MOTION_EASE }, 0);
@@ -704,7 +707,7 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
                     [],
                     fadeAt,
                 )
-                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, fadeAt)
+                .fromTo(content, { autoAlpha: 0 }, fadeContent, fadeAt)
                 .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, fadeAt)
                 .call(finishReveal, [], fadeAt + fadeDuration);
         } else {
@@ -716,7 +719,7 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
                     [],
                     fadeAt,
                 )
-                .fromTo(content, { autoAlpha: 0 }, { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false }, fadeAt)
+                .fromTo(content, { autoAlpha: 0 }, fadeContent, fadeAt)
                 .to(overlay, { autoAlpha: 0, duration: fadeDuration, ease: MOTION_EASE }, fadeAt)
                 .call(finishReveal, [], fadeAt + fadeDuration);
         }
@@ -929,23 +932,20 @@ class Animation {
             media.add({ smooth: "(prefers-reduced-motion: no-preference)", desktop: getBreakpointQuery("tablet") }, (context) => {
                 const { smooth, desktop } = context.conditions as { smooth: boolean; desktop: boolean };
                 if (!smooth) return;
-                if (desktop) {
-                    const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
-                    smoothScroller = lenis;
-                    const update = () => ScrollTrigger.update();
-                    lenis.on("scroll", update);
-                    const tick = (time: number) => lenis.raf(time * 1000);
-                    gsap.ticker.add(tick);
-                    return () => {
-                        gsap.ticker.remove(tick);
-                        lenis.off("scroll", update);
-                        if (smoothScroller === lenis) smoothScroller = undefined;
-                        lenis.destroy();
-                    };
-                }
-                // Mobile browsers scroll off the main thread, so a pinned layer otherwise lags a frame behind.
-                ScrollTrigger.normalizeScroll({ allowNestedScroll: true, lockAxis: true });
-                return () => ScrollTrigger.normalizeScroll(false);
+                if (!desktop) return;
+                // Keep native mobile scrolling. normalizeScroll offsets fixed chrome (header) on iOS until a later pin refresh.
+                const lenis = new Lenis({ lerp: 0, duration: 1.1, easing: gsap.parseEase(MOTION_EASE), allowNestedScroll: true });
+                smoothScroller = lenis;
+                const update = () => ScrollTrigger.update();
+                lenis.on("scroll", update);
+                const tick = (time: number) => lenis.raf(time * 1000);
+                gsap.ticker.add(tick);
+                return () => {
+                    gsap.ticker.remove(tick);
+                    lenis.off("scroll", update);
+                    if (smoothScroller === lenis) smoothScroller = undefined;
+                    lenis.destroy();
+                };
             });
             return () => media.revert();
         },

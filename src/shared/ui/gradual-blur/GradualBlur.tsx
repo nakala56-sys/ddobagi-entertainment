@@ -41,10 +41,12 @@ export function GradualBlur({ position = "top", height = "100%", strength = 2, l
         return { blurLayers, tintMask: `linear-gradient(${direction}, ${stops})` };
     }, [position, strength, layers]);
 
+    const rootClassName = ["pointer-events-none absolute inset-x-0 z-0", position === "top" ? "top-0" : "bottom-0", className].filter(Boolean).join(" ");
+
     return (
         <div
             aria-hidden="true"
-            className={`pointer-events-none absolute inset-x-0 z-0 ${position === "top" ? "top-0" : "bottom-0"} ${className}`}
+            className={rootClassName}
             style={{ height, ...style }}
         >
             {blurLayers.map((layer, index) => (

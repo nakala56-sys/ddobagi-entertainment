@@ -23,22 +23,28 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
     useEffect(() => Animation.layout.common(), []);
     return (
         <QueryProvider>
-            <PageTransition onReady={handleReady}>
+            <PageTransition
+                onReady={handleReady}
+                chrome={
+                    <>
+                        <a
+                            className="skip-link fixed left-[2rem] -top-[8rem] z-[200] bg-[var(--color-point)] text-[var(--color-text)] p-[1.6rem_2rem] focus:top-[1.2rem] leading-[1.0]"
+                            href="#main-content"
+                        >
+                            본문 바로가기
+                        </a>
+                        <Header />
+                        <QuickActions />
+                        <Toast />
+                        <Report />
+                        <Progress />
+                        <ApiLoading />
+                    </>
+                }
+            >
                 <ViewTransitionNavigation />
-                <a
-                    className="skip-link fixed left-[2rem] -top-[8rem] z-[200] bg-[var(--color-point)] text-[var(--color-text)] p-[1.6rem_2rem] focus:top-[1.2rem] leading-[1.0]"
-                    href="#main-content"
-                >
-                    본문 바로가기
-                </a>
-                <Header />
                 <div id="main-content">{children}</div>
                 <Footer />
-                <QuickActions />
-                <Toast />
-                <Report />
-                <Progress />
-                <ApiLoading />
             </PageTransition>
             {introReady ? <WelcomeModal /> : null}
         </QueryProvider>

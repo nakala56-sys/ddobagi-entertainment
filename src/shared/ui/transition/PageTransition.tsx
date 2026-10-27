@@ -3,7 +3,18 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Animation from "@/shared/utils/animation";
 
-export function PageTransition({ children, waveIntro = true, onReady }: { children: ReactNode; waveIntro?: boolean; onReady?: () => void }) {
+export function PageTransition({
+    children,
+    chrome,
+    waveIntro = true,
+    onReady,
+}: {
+    children: ReactNode;
+    /** Fixed chrome must stay outside the faded content wrapper or iOS offsets position:fixed. */
+    chrome?: ReactNode;
+    waveIntro?: boolean;
+    onReady?: () => void;
+}) {
     const rootRef = useRef<HTMLDivElement>(null);
     const [ready, setReady] = useState(false);
 
@@ -24,6 +35,16 @@ export function PageTransition({ children, waveIntro = true, onReady }: { childr
             ref={rootRef}
             data-page-pending={!ready}
         >
+            {chrome ? (
+                <div
+                    data-page-chrome
+                    className={ready ? undefined : "invisible"}
+                    // Keep boolean attrs stable for the first client paint (ready starts false on server too).
+                    aria-hidden={ready ? undefined : true}
+                >
+                    {chrome}
+                </div>
+            ) : null}
             <div
                 data-page-content
                 className="aria-busy:invisible"
