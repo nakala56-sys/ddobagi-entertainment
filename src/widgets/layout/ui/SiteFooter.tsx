@@ -7,10 +7,30 @@ import { MetallicPaint } from "@/shared/ui/metallic-paint/MetallicPaint";
 
 export function SiteFooter() {
     const footerRef = useRef<HTMLElement>(null);
+
     useEffect(() => {
         if (!footerRef.current) return;
         return Animation.layout.footer(footerRef.current);
     }, []);
+
+    useEffect(() => {
+        const footer = footerRef.current;
+        if (!footer) return;
+
+        const syncFooterHeight = () => {
+            document.documentElement.style.setProperty("--footer-height", `${footer.offsetHeight}px`);
+        };
+
+        syncFooterHeight();
+        const resizeObserver = new ResizeObserver(syncFooterHeight);
+        resizeObserver.observe(footer);
+
+        return () => {
+            resizeObserver.disconnect();
+            document.documentElement.style.removeProperty("--footer-height");
+        };
+    }, []);
+
     return (
         <footer
             ref={footerRef}

@@ -30,4 +30,7 @@
     /* 입력 폼 */
     --input-height: 4.4rem;
     --input-padding: 0.4rem 0;
+
+    /* 레이아웃 — SiteFooter에서 ResizeObserver로 실측 갱신 */
+    --footer-height: 0px;
 }

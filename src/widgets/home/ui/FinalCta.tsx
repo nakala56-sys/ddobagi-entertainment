@@ -37,7 +37,7 @@ export function FinalCta() {
                 </div>
             </div>
 
-            <div className="relative z-10 flex min-h-[100svh] items-center py-[8rem] tablet:py-[12rem] motion-reduce:min-h-[85svh]">
+            <div className="relative z-10 flex min-h-[calc(100svh_-_var(--footer-height))] items-center py-[8rem] tablet:py-[12rem] motion-reduce:min-h-[calc(85svh_-_var(--footer-height))]">
                 <div
                     data-cta-content
                     className="closing-content text-[var(--color-text)] relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center gap-[3.2rem] tablet:gap-[3.6rem] text-center content-width"
