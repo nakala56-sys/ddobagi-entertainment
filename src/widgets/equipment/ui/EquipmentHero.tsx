@@ -25,12 +25,12 @@ export function EquipmentHero() {
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
-                colors={["#137456", "#136874", "#137456", "#136874"]}
+                colors={["#2a3324", "#4a5530", "#2a3324", "#4a5530"]}
                 speed={1}
                 distortion={0.8}
                 before={
                     <p
-                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase"
+                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase text-[var(--color-text)]"
                         data-reveal
                     >
                         BROADCAST ENVIRONMENT
@@ -42,7 +42,7 @@ export function EquipmentHero() {
                     data-reveal
                 >
                     <h2 className="text-[2.0rem] font-[500]">방송 장비부터 스튜디오까지.</h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">작은 디테일부터 공간까지, 방송을 위한 준비를 함께합니다.</p>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">작은 디테일부터 공간까지, 방송을 위한 준비를 함께합니다.</p>
                 </div>
             </GradientWaveSettle>
         </section>

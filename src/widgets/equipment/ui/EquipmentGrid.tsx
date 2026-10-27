@@ -41,7 +41,7 @@ export function EquipmentGrid() {
                             key={item.id}
                             data-report-id={`equipment-${item.id}`}
                             data-report-type="item"
-                            className="equipment-card flex flex-col items-start gap-[1.6rem] rounded-[16px] bg-[#ffffff10] p-[1.6rem]"
+                            className="equipment-card flex flex-col items-start gap-[1.6rem] rounded-[16px] bg-[#ffffff] p-[1.6rem]"
                             data-reveal
                         >
                             <svg

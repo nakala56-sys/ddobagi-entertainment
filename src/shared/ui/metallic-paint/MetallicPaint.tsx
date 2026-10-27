@@ -1,23 +1,36 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
+import { createMetalSurface, createSourceMaterial } from "./surface";
 
 export interface MetallicPaintProps {
+    /** PNG/WebP silhouette with alpha. Opaque pixels become metal. */
     imageSrc?: string;
+    /** Preserve an already-shaded image's original material instead of recoloring its silhouette. */
+    preserveMaterial?: boolean;
     text?: string;
     fontFamily?: string;
     fontWeight?: number | string;
+    /** Base metal tint, e.g. gold `#ff9f0d`. */
     color?: string;
     backgroundColor?: string;
+    /** Animated gloss band density. Higher = tighter stripes. */
     density?: number;
+    /** Softness of the gloss bands. */
     softness?: number;
+    /** Chromatic shift of the gloss. */
     dispersion?: number;
+    /** Edge wobble on the metal bands. */
     distortion?: number;
+    /** Edge bevel strength. Higher = deeper emboss. */
     edgeBend?: number;
+    /** Gloss band angle in degrees. */
     angle?: number;
+    /** Gloss animation speed. */
     speed?: number;
     scale?: number;
     rotation?: number;
+    /** Pointer tilt strength. */
     mouseTilt?: number;
     lightMode?: boolean;
     intro?: boolean;
@@ -34,6 +47,7 @@ export interface MetallicPaintProps {
 type Rgba = number[];
 
 interface Settings {
+    preserveMaterial: boolean;
     tint: Rgba;
     back: Rgba;
     density: number;
@@ -52,14 +66,19 @@ interface Settings {
     dpr?: number;
 }
 
+interface MetalImage {
+    surface: ImageData;
+    material: ImageData;
+}
+
 interface Engine {
     setPending: (value: boolean) => void;
-    setImage: (data: ImageData | null) => void;
+    setImage: (data: MetalImage | null) => void;
     wake: () => void;
     redraw: () => void;
 }
 
-const WORKING_SIZE = 512;
+const WORKING_SIZE = 1024;
 const MAX_SIDE = 2048;
 const MAX_PIXELS = 2560 * 1600 * 2;
 
@@ -91,7 +110,8 @@ const FRAGMENT = `#version 300 es
 precision highp float;
 
 uniform sampler2D u_image;
-uniform vec2 u_resolution;
+uniform sampler2D u_material;
+uniform float u_preserveMaterial;
 uniform float u_time;
 uniform vec4 u_colorBack;
 uniform vec4 u_colorTint;
@@ -102,196 +122,150 @@ uniform float u_shiftBlue;
 uniform float u_distortion;
 uniform float u_contour;
 uniform float u_angle;
+uniform float u_rotation;
 uniform vec2 u_tilt;
 uniform float u_reveal;
 uniform float u_light;
-
+uniform float u_pixelRatio;
 in vec2 v_imageUV;
-
 out vec4 fragColor;
 
 #define PI 3.14159265358979323846
 
-vec2 rotate(vec2 uv, float th) {
-  return mat2(cos(th), sin(th), -sin(th), cos(th)) * uv;
+vec2 turn(vec2 p, float angle) {
+  float c = cos(angle), s = sin(angle);
+  return mat2(c, s, -s, c) * p;
 }
 
-vec3 permute(vec3 x) { return mod(((x * 34.0) + 1.0) * x, 289.0); }
-
-float snoise(vec2 v) {
-  const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-  vec2 i = floor(v + dot(v, C.yy));
-  vec2 x0 = v - i + dot(i, C.xx);
-  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-  vec4 x12 = x0.xyxy + C.xxzz;
-  x12.xy -= i1;
-  i = mod(i, 289.0);
-  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
-  vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);
-  m = m * m;
-  m = m * m;
-  vec3 x = 2.0 * fract(p * C.www) - 1.0;
-  vec3 h = abs(x) - 0.5;
-  vec3 ox = floor(x + 0.5);
-  vec3 a0 = x - ox;
-  m *= 1.79284291400159 - 0.85373472095314 * (a0 * a0 + h * h);
-  vec3 g;
-  g.x = a0.x * x0.x + h.x * x0.y;
-  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-  return 130.0 * dot(m, g);
+float metalHash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
 }
 
-float getColorChanges(float c1, float c2, float stripe, vec3 w, float blur, float bump, float tint) {
-  float ch = mix(c2, c1, smoothstep(0.0, 2.0 * blur, stripe));
-  float border = w[0];
-  ch = mix(ch, c2, smoothstep(border, border + 2.0 * blur, stripe));
-  bump = smoothstep(0.2, 0.8, bump);
-  border = w[0] + 0.4 * (1.0 - bump) * w[1];
-  ch = mix(ch, c1, smoothstep(border, border + 2.0 * blur, stripe));
-  border = w[0] + 0.5 * (1.0 - bump) * w[1];
-  ch = mix(ch, c2, smoothstep(border, border + 2.0 * blur, stripe));
-  border = w[0] + w[1];
-  ch = mix(ch, c1, smoothstep(border, border + 2.0 * blur, stripe));
-  float gradientT = (stripe - w[0] - w[1]) / w[2];
-  float gradient = mix(c1, c2, smoothstep(0.0, 1.0, gradientT));
-  ch = mix(ch, gradient, smoothstep(border, border + 0.5 * blur, stripe));
-  ch = mix(ch, 1.0 - min(1.0, (1.0 - ch) / max(tint, 0.0001)), u_colorTint.a);
-  return ch;
+float metalNoise(vec2 p) {
+  vec2 cell = floor(p);
+  vec2 f = fract(p);
+  vec2 blend = f * f * f * (f * (f * 6.0 - 15.0) + 10.0);
+  return mix(mix(metalHash(cell), metalHash(cell + vec2(1.0, 0.0)), blend.x),
+    mix(metalHash(cell + vec2(0.0, 1.0)), metalHash(cell + 1.0), blend.x), blend.y);
 }
 
-float getImgFrame(vec2 uv, float th) {
-  float frame = 1.0;
-  frame *= smoothstep(0.0, th, uv.y);
-  frame *= 1.0 - smoothstep(1.0 - th, 1.0, uv.y);
-  frame *= smoothstep(0.0, th, uv.x);
-  frame *= 1.0 - smoothstep(1.0 - th, 1.0, uv.x);
-  return frame;
-}
+vec4 shadeMetal(vec2 uv) {
+  if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) return vec4(0.0);
+  vec4 surface = textureLod(u_image, uv, 0.0);
+  float coverage = surface.g;
+  if (coverage < 0.001 && u_preserveMaterial < 0.5) return vec4(0.0);
+  float depth = surface.r;
+  vec2 xy = surface.ba * 2.0 - 1.0;
+  vec3 normal = normalize(vec3(xy, sqrt(max(0.015, 1.0 - dot(xy, xy)))));
+  normal = normalize(vec3(normal.xy * u_contour, normal.z));
+  normal.xy = turn(normal.xy, u_rotation * PI / 180.0);
+  normal = normalize(normal + vec3(u_tilt * vec2(0.16, -0.16), 0.0));
 
-float blurEdge3x3(sampler2D tex, vec2 uv, vec2 dudx, vec2 dudy, float radius, float centerSample) {
-  vec2 texel = 1.0 / vec2(textureSize(tex, 0));
-  vec2 r = radius * texel;
-  float sum = 4.0 * centerSample;
-  sum += 2.0 * textureGrad(tex, uv + vec2(0.0, -r.y), dudx, dudy).r;
-  sum += 2.0 * textureGrad(tex, uv + vec2(0.0, r.y), dudx, dudy).r;
-  sum += 2.0 * textureGrad(tex, uv + vec2(-r.x, 0.0), dudx, dudy).r;
-  sum += 2.0 * textureGrad(tex, uv + vec2(r.x, 0.0), dudx, dudy).r;
-  sum += textureGrad(tex, uv + vec2(-r.x, -r.y), dudx, dudy).r;
-  sum += textureGrad(tex, uv + vec2(r.x, -r.y), dudx, dudy).r;
-  sum += textureGrad(tex, uv + vec2(-r.x, r.y), dudx, dudy).r;
-  sum += textureGrad(tex, uv + vec2(r.x, r.y), dudx, dudy).r;
-  return sum / 16.0;
+  if (u_preserveMaterial > 0.5) {
+    vec4 source = textureLod(u_material, uv, 0.0);
+    vec3 material = source.rgb;
+    float luminance = dot(material, vec3(0.2126, 0.7152, 0.0722)) / max(source.a, 0.001);
+    vec2 direction = turn(normalize(vec2(0.27, 1.0)), (u_angle - 70.0) * PI / 180.0);
+    float path = dot(uv - 0.5, direction) + 0.12 * dot(normal.xy, vec2(0.6, -0.8));
+    float phase = (path * (1.10 + 0.18 * u_repetition) + u_time / 4.0) * 2.0 * PI;
+    float wave = sin(phase + 0.15 * sin(u_time * 0.17 + uv.x * 2.0));
+    float motion = smoothstep(0.0, 0.65, abs(u_time));
+    // A distinct highlight and warm reflection travel over the original gold shading.
+    float sheen = 0.66 * motion * smoothstep(0.12, 0.65, luminance)
+      * pow(max(wave, 0.0), mix(5.0, 2.5, u_softness));
+    material = mix(material, vec3(1.0, 0.96, 0.76) * source.a, sheen);
+    float reflection = motion * pow(max(-wave, 0.0), 1.5) * (1.0 - smoothstep(0.80, 1.0, luminance));
+    material *= 1.0 - vec3(0.40, 0.48, 0.58) * reflection;
+    float reveal = smoothstep(0.0, 0.3, u_reveal);
+    reveal *= smoothstep(1.0 - u_reveal * 1.12, 1.08 - u_reveal * 1.12, 1.0 - depth);
+    coverage = source.a * reveal;
+    return vec4(material * reveal, coverage);
+  }
+
+  vec2 lightPlane = vec2(uv.x - 0.5, 0.5 - uv.y);
+  float upperLeftLight = 1.0 - smoothstep(-0.65, 0.65, dot(uv - 0.5, normalize(vec2(0.78, 1.0))));
+  float upperLight = (1.0 - smoothstep(0.14, 0.82, uv.y + 0.12 * (uv.x - 0.5))) * mix(0.85, 1.0, upperLeftLight);
+  vec3 key = normalize(vec3(-0.80, 0.95, 1.0) - vec3(lightPlane * 0.45, 0.0));
+  float facing = max(dot(normal, key), 0.0);
+  float cavity = smoothstep(0.48, 0.96, depth);
+  float tone = clamp(0.24 + 0.94 * facing - 0.10 * cavity, 0.0, 1.0);
+  vec3 shadow = vec3(0.25, 0.115, 0.026);
+  vec3 bronze = vec3(0.40, 0.18, 0.035);
+  vec3 gold = vec3(1.0, 0.72, 0.18);
+  vec3 pale = vec3(1.0, 0.975, 0.77);
+  vec3 metal = mix(bronze, gold, smoothstep(0.16, 0.76, tone));
+  metal = mix(metal, pale, 0.90 * smoothstep(0.78, 1.0, tone));
+  metal *= 1.0 - 0.08 * cavity;
+
+  // Restore the original rounded lip, recessed walls and edge shading.
+  float lip = exp(-pow((depth - 0.18) / 0.20, 2.0));
+  metal = mix(metal, pale, lip * smoothstep(0.50, 0.95, facing) * 0.70);
+  float outline = 1.0 - smoothstep(0.01, 0.16, depth);
+  metal = mix(metal, shadow, outline * 0.42);
+  vec3 reliefReflection = reflect(vec3(0.0, 0.0, -1.0), normal);
+  float groundReflection = 1.0 - smoothstep(-0.30, 0.10, reliefReflection.y + 0.20 * reliefReflection.x);
+  metal *= 1.0 - 0.30 * groundReflection;
+  metal = pow(clamp(metal, 0.0, 1.0), vec3(0.94));
+  metal *= mix(vec3(0.82, 0.76, 0.66), vec3(1.09, 1.07, 1.02), upperLeftLight);
+  vec3 rimColor = metal;
+
+  // Broad, smoothly warped reflections drift upward-left without repeating a fixed band.
+  vec3 reflectionNormal = normalize(vec3(normal.xy * 0.40, normal.z + 0.90));
+  vec3 reflected = reflect(vec3(0.0, 0.0, -1.0), reflectionNormal);
+  float angle = (u_angle - 70.0) * PI / 180.0;
+  vec2 direction = turn(normalize(vec2(0.27, 1.0)), angle);
+  float density = 3.1 + u_repetition * 0.275;
+  vec2 p = uv * density + direction * u_time * 0.115;
+  p += reflected.xy * 0.20;
+  vec2 warp = vec2(metalNoise(p * 0.63 + vec2(7.3, u_time * 0.018)),
+    metalNoise(p * 0.71 + vec2(-u_time * 0.013, 19.1))) - 0.5;
+  p += warp * (0.75 + 1.5 * u_distortion);
+  float environment = 0.85 * metalNoise(p * 0.72)
+    + 0.15 * metalNoise(turn(p, 0.72) * 1.10 + 4.7);
+  // A dense, warm-black center diffuses through a wide brown halo into gold.
+  float brown = exp(-pow(max(environment - 0.18, 0.0) / 0.42, 2.0));
+  float darkCore = exp(-pow(max(environment - 0.12, 0.0) / 0.075, 2.0));
+  float reflectionStrength = mix(1.0, 0.72, upperLight);
+  metal = mix(metal, vec3(0.57, 0.30, 0.075), 0.34 * brown * reflectionStrength);
+  metal = mix(metal, vec3(0.055, 0.022, 0.008), 0.94 * darkCore * mix(1.0, 0.94, upperLight));
+
+  float reflectedLight = smoothstep(0.43, 0.73, environment);
+  float lightCore = exp(-pow((environment - 0.62) / mix(0.12, 0.20, u_softness), 2.0));
+  float gloss = clamp(0.55 * reflectedLight + 0.35 * lightCore, 0.0, 0.88);
+  vec3 highlight = vec3(1.0, 0.96, 0.76) - vec3(0.0, abs(u_shiftRed) * 0.025, abs(u_shiftBlue) * 0.065);
+  metal = mix(metal, highlight, gloss);
+  metal += vec3(1.0, 0.90, 0.45) * upperLight * 0.08 * (1.0 - 0.35 * darkCore);
+  // Keep the restored rim visible while reflections flow across the inner face.
+  metal = mix(metal, rimColor, max(outline, lip));
+  metal *= mix(vec3(1.0), u_colorTint.rgb, 0.10 * u_colorTint.a);
+  metal *= 1.0 - 0.035 * u_light;
+
+  float reveal = smoothstep(0.0, 0.3, u_reveal);
+  reveal *= smoothstep(1.0 - u_reveal * 1.12, 1.08 - u_reveal * 1.12, 1.0 - depth);
+  coverage *= reveal;
+  return vec4(clamp(metal, 0.0, 1.0) * coverage, coverage);
 }
 
 void main() {
-  const float firstFrameOffset = 2.8;
-  float t = 0.3 * (u_time + firstFrameOffset);
-
-  vec2 uv = v_imageUV;
-  vec2 dudx = dFdx(v_imageUV);
-  vec2 dudy = dFdy(v_imageUV);
-  vec4 img = textureGrad(u_image, uv, dudx, dudy);
-
-  float cycleWidth = u_repetition;
-
-  vec2 rotatedUV = uv - vec2(0.5);
-  float angle = (-u_angle + 70.0) * PI / 180.0;
-  float cosA = cos(angle);
-  float sinA = sin(angle);
-  rotatedUV = vec2(rotatedUV.x * cosA - rotatedUV.y * sinA, rotatedUV.x * sinA + rotatedUV.y * cosA) + vec2(0.5);
-
-  float edge = blurEdge3x3(u_image, uv, dudx, dudy, 6.0, img.r);
-  edge = pow(edge, 1.6);
-  edge *= smoothstep(0.0, 0.4, u_contour);
-
-  float opacity = img.g * getImgFrame(v_imageUV, 0.0);
-  float depth = img.r;
-
-  float diagBLtoTR = rotatedUV.x - rotatedUV.y;
-  float diagTLtoBR = rotatedUV.x + rotatedUV.y;
-
-  vec3 color1 = mix(vec3(0.98, 0.98, 1.0), vec3(0.9, 0.9, 0.93), u_light);
-  vec3 color2 = vec3(0.1, 0.1, 0.1 + 0.1 * smoothstep(0.7, 1.3, diagTLtoBR));
-
-  vec2 gradUV = uv - 0.5 - u_tilt * vec2(0.18, -0.12);
-  float dist = length(gradUV + vec2(0.0, 0.2 * diagBLtoTR));
-  gradUV = rotate(gradUV, (0.25 - 0.2 * diagBLtoTR) * PI);
-  float direction = gradUV.x;
-
-  float bump = pow(1.8 * dist, 1.2);
-  bump = 1.0 - bump;
-  bump *= pow(uv.y, 0.3);
-
-  float thinStrip1 = 0.12 / cycleWidth * (1.0 - 0.4 * bump);
-  float thinStrip2 = 0.07 / cycleWidth * (1.0 + 0.4 * bump);
-  float wideStrip = 1.0 - thinStrip1 - thinStrip2;
-
-  float noise = snoise(uv - t);
-  edge += (1.0 - edge) * u_distortion * noise;
-
-  direction += diagBLtoTR;
-  direction -= 2.0 * noise * diagBLtoTR * (smoothstep(0.0, 1.0, edge) * (1.0 - smoothstep(0.0, 1.0, edge)));
-  direction *= mix(1.0, 1.0 - edge, smoothstep(0.5, 1.0, u_contour));
-  direction -= 1.7 * edge * smoothstep(0.5, 1.0, u_contour);
-  direction += 0.2 * pow(u_contour, 4.0) * (1.0 - smoothstep(0.0, 1.0, edge));
-
-  bump *= clamp(pow(uv.y, 0.1), 0.3, 1.0);
-  direction *= 0.1 + (1.1 - edge) * bump;
-  direction *= 0.4 + 0.6 * (1.0 - smoothstep(0.5, 1.0, edge));
-  direction += 0.18 * (smoothstep(0.1, 0.2, uv.y) * (1.0 - smoothstep(0.2, 0.4, uv.y)));
-  direction += 0.03 * (smoothstep(0.1, 0.2, 1.0 - uv.y) * (1.0 - smoothstep(0.2, 0.4, 1.0 - uv.y)));
-  direction *= 0.5 + 0.5 * pow(uv.y, 2.0);
-  direction *= cycleWidth;
-  direction -= t + dot(u_tilt, vec2(0.35, 0.2));
-
-  float colorDispersion = clamp(1.0 - bump, 0.0, 1.0);
-  float dispersionRed = colorDispersion;
-  dispersionRed += 0.03 * bump * noise;
-  dispersionRed += 5.0 * (smoothstep(-0.1, 0.2, uv.y) * (1.0 - smoothstep(0.1, 0.5, uv.y))) * (smoothstep(0.4, 0.6, bump) * (1.0 - smoothstep(0.4, 1.0, bump)));
-  dispersionRed -= diagBLtoTR;
-
-  float dispersionBlue = colorDispersion * 1.3;
-  dispersionBlue += (smoothstep(0.0, 0.4, uv.y) * (1.0 - smoothstep(0.1, 0.8, uv.y))) * (smoothstep(0.4, 0.6, bump) * (1.0 - smoothstep(0.4, 0.8, bump)));
-  dispersionBlue -= 0.2 * edge;
-
-  dispersionRed *= u_shiftRed / 20.0;
-  dispersionBlue *= u_shiftBlue / 20.0;
-
-  float softness = 0.05 * u_softness;
-  float blur = softness + 0.5 * smoothstep(1.0, 10.0, u_repetition) * smoothstep(0.0, 1.0, edge);
-  float smallCanvas = 1.0 - smoothstep(100.0, 500.0, min(u_resolution.x, u_resolution.y));
-  blur += smallCanvas * smoothstep(0.0, 1.0, edge);
-  float rExtraBlur = softness * (0.05 + 0.1 * (u_shiftRed / 20.0) * bump);
-  float gExtraBlur = softness * 0.05 / max(0.001, abs(1.0 - diagBLtoTR));
-
-  vec3 w = vec3(thinStrip1 * cycleWidth, thinStrip2 * cycleWidth, wideStrip);
-  w[1] -= 0.02 * smoothstep(0.0, 1.0, edge + bump);
-  float stripeR = fract(direction + dispersionRed);
-  float r = getColorChanges(color1.r, color2.r, stripeR, w, blur + fwidth(stripeR) + rExtraBlur, bump, u_colorTint.r);
-  float stripeG = fract(direction);
-  float g = getColorChanges(color1.g, color2.g, stripeG, w, blur + fwidth(stripeG) + gExtraBlur, bump, u_colorTint.g);
-  float stripeB = fract(direction - dispersionBlue);
-  float b = getColorChanges(color1.b, color2.b, stripeB, w, blur + fwidth(stripeB), bump, u_colorTint.b);
-
-  vec3 sheen = mix(vec3(1.0), u_colorTint.rgb, 0.45 * u_colorTint.a);
-  r *= sheen.r;
-  g *= sheen.g;
-  b *= sheen.b;
-
-  float rim = smoothstep(0.78, 1.0, depth) * u_light;
-  r *= 1.0 - rim * 0.62;
-  g *= 1.0 - rim * 0.62;
-  b *= 1.0 - rim * 0.58;
-
-  float pour = u_reveal * 1.25 - 0.1;
-  opacity *= smoothstep(1.0 - pour, 1.15 - pour, depth) * smoothstep(0.0, 0.25, u_reveal);
-
-  vec3 color = vec3(r, g, b) * opacity;
+  // Shade subpixels before averaging, so thin opposing walls do not cancel their normals.
+  vec2 dx = dFdx(v_imageUV) * max(0.5, 0.28 * u_pixelRatio);
+  vec2 dy = dFdy(v_imageUV) * max(0.5, 0.28 * u_pixelRatio);
+  vec4 metal = 0.25 * (shadeMetal(v_imageUV - dx - dy) + shadeMetal(v_imageUV + dx - dy)
+    + shadeMetal(v_imageUV - dx + dy) + shadeMetal(v_imageUV + dx + dy));
+  vec2 pixelX = dFdx(v_imageUV) * u_pixelRatio;
+  vec2 pixelY = dFdy(v_imageUV) * u_pixelRatio;
+  vec2 shadowUV = v_imageUV - pixelX * 0.2 + pixelY * 0.35;
+  vec2 sx = pixelX * 0.45, sy = pixelY * 0.45;
+  float shadow = 0.4 * textureLod(u_image, shadowUV, 0.0).g;
+  shadow += 0.15 * (textureLod(u_image, shadowUV + sx, 0.0).g + textureLod(u_image, shadowUV - sx, 0.0).g
+    + textureLod(u_image, shadowUV + sy, 0.0).g + textureLod(u_image, shadowUV - sy, 0.0).g);
+  shadow *= 0.22 * smoothstep(0.0, 0.8, u_reveal) * (1.0 - metal.a) * (1.0 - u_preserveMaterial);
+  metal.rgb += vec3(0.25, 0.16, 0.06) * shadow;
+  metal.a += shadow;
   vec3 back = u_colorBack.rgb * u_colorBack.a;
-  color += back * (1.0 - opacity);
-  opacity += u_colorBack.a * (1.0 - opacity);
-  color += 1.0 / 256.0 * (fract(sin(dot(0.014 * gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453123) - 0.5);
-  fragColor = vec4(color, opacity);
+  fragColor = vec4(metal.rgb + back * (1.0 - metal.a), metal.a + u_colorBack.a * (1.0 - metal.a));
 }`;
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -391,100 +365,40 @@ const drawTextSource = async (text: string, fontFamily: string, fontWeight: numb
     return canvas;
 };
 
-const solvePoisson = (mask: Uint8Array, width: number, height: number) => {
-    const interior: number[] = [];
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const i = y * width + x;
-            if (!mask[i]) continue;
-            const boundary =
-                x === 0 ||
-                y === 0 ||
-                x === width - 1 ||
-                y === height - 1 ||
-                !mask[i - 1] ||
-                !mask[i + 1] ||
-                !mask[i - width] ||
-                !mask[i + width] ||
-                !mask[i - width - 1] ||
-                !mask[i - width + 1] ||
-                !mask[i + width - 1] ||
-                !mask[i + width + 1];
-            if (!boundary) interior.push(i);
-        }
-    }
-    const field = new Float32Array(width * height);
-    const red: number[] = [];
-    const black: number[] = [];
-    interior.forEach((i) => (((i % width) + Math.floor(i / width)) % 2 === 0 ? red.push(i) : black.push(i)));
-    const relax = (list: number[]) => {
-        for (let k = 0; k < list.length; k++) {
-            const i = list[k];
-            const sum = field[i + 1] + field[i - 1] + field[i - width] + field[i + width];
-            field[i] = 1.9 * ((0.01 + sum) / 4) - 0.9 * field[i];
-        }
-    };
-    for (let iteration = 0; iteration < 40; iteration++) {
-        relax(red);
-        relax(black);
-    }
-    let peak = 0;
-    interior.forEach((i) => {
-        if (field[i] > peak) peak = field[i];
-    });
-    return { field, peak: peak || 1 };
+const processShape = (source: HTMLCanvasElement): MetalImage => {
+    const fit = Math.min(1, WORKING_SIZE / Math.max(source.width, source.height));
+    const width = Math.max(1, Math.round(source.width * fit));
+    const height = Math.max(1, Math.round(source.height * fit));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
+    ctx.drawImage(source, 0, 0, width, height);
+    const pixels = ctx.getImageData(0, 0, width, height).data;
+    const alpha = new Uint8Array(width * height);
+    for (let i = 0; i < alpha.length; i++) alpha[i] = pixels[i * 4 + 3];
+    const result = ctx.createImageData(width, height);
+    result.data.set(createMetalSurface(alpha, width, height));
+    const material = ctx.createImageData(width, height);
+    material.data.set(createSourceMaterial(pixels));
+    return { surface: result, material };
 };
 
-const processShape = (source: HTMLCanvasElement): ImageData => {
-    const width = source.width;
-    const height = source.height;
-    const fit = WORKING_SIZE / Math.min(width, height);
-    const workW = Math.max(2, Math.round(width * fit));
-    const workH = Math.max(2, Math.round(height * fit));
+const imageSurfaces = new Map<string, Promise<MetalImage>>();
 
-    const small = document.createElement("canvas");
-    small.width = workW;
-    small.height = workH;
-    const smallCtx = small.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
-    smallCtx.drawImage(source, 0, 0, workW, workH);
-    const smallData = smallCtx.getImageData(0, 0, workW, workH).data;
-    const mask = new Uint8Array(workW * workH);
-    for (let i = 0; i < mask.length; i++) mask[i] = smallData[i * 4 + 3] > 0 ? 1 : 0;
-
-    const { field, peak } = solvePoisson(mask, workW, workH);
-    const gradient = smallCtx.createImageData(workW, workH);
-    for (let i = 0; i < mask.length; i++) {
-        const p = i * 4;
-        const value = mask[i] ? 255 * (1 - field[i] / peak) : 255;
-        gradient.data[p] = value;
-        gradient.data[p + 1] = value;
-        gradient.data[p + 2] = value;
-        gradient.data[p + 3] = mask[i] ? 255 : 0;
+const loadImageSurface = (src: string): Promise<MetalImage> => {
+    const cached = imageSurfaces.get(src);
+    if (cached) return cached;
+    const pending = drawImageSource(src).then(processShape);
+    imageSurfaces.set(src, pending);
+    if (imageSurfaces.size > 4) {
+        const oldest = imageSurfaces.keys().next().value;
+        if (oldest !== undefined) imageSurfaces.delete(oldest);
     }
-    smallCtx.putImageData(gradient, 0, 0);
-
-    const out = document.createElement("canvas");
-    out.width = width;
-    out.height = height;
-    const outCtx = out.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
-    outCtx.imageSmoothingEnabled = true;
-    outCtx.imageSmoothingQuality = "high";
-    outCtx.drawImage(small, 0, 0, workW, workH, 0, 0, width, height);
-    const result = outCtx.getImageData(0, 0, width, height);
-    const original = (source.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D).getImageData(0, 0, width, height).data;
-    for (let i = 0; i < result.data.length; i += 4) {
-        const alpha = original[i + 3];
-        if (alpha === 0) {
-            result.data[i] = 255;
-            result.data[i + 1] = 0;
-        } else {
-            result.data[i] = result.data[i + 3] === 0 ? 0 : result.data[i];
-            result.data[i + 1] = alpha;
-        }
-        result.data[i + 2] = 255;
-        result.data[i + 3] = 255;
-    }
-    return result;
+    void pending.catch(() => {
+        if (imageSurfaces.get(src) === pending) imageSurfaces.delete(src);
+    });
+    return pending;
 };
 
 const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
@@ -499,16 +413,17 @@ const compile = (gl: WebGL2RenderingContext, type: number, source: string) => {
 
 export function MetallicPaint({
     imageSrc,
+    preserveMaterial = false,
     text,
     fontFamily = "system-ui, sans-serif",
     fontWeight = 800,
     color = "#ffffff",
     backgroundColor = "transparent",
-    density = 2,
-    softness = 0.1,
-    dispersion = 0.3,
+    density = 1.8,
+    softness = 0.05,
+    dispersion = 0.15,
     distortion = 0.07,
-    edgeBend = 0.6,
+    edgeBend = 1,
     angle = 70,
     speed = 1,
     scale: scaleProp,
@@ -532,13 +447,14 @@ export function MetallicPaint({
 
     useEffect(() => {
         settingsRef.current = {
+            preserveMaterial,
             tint: parseColor(color, [1, 1, 1, 1]),
             back: parseColor(backgroundColor, [0, 0, 0, 0]),
             density: clamp(density, 0.5, 12),
             softness: clamp(softness, 0, 1),
             dispersion: clamp(dispersion, -1, 1),
             distortion: clamp(distortion, 0, 1),
-            edgeBend: clamp(edgeBend, 0, 1),
+            edgeBend: clamp(edgeBend, 0, 1.5),
             angle,
             speed,
             scale: Math.max(0.05, scale),
@@ -594,6 +510,17 @@ export function MetallicPaint({
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.uniform1i(uniforms.u_image, 0);
 
+        const materialTexture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, materialTexture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.uniform1i(uniforms.u_material, 1);
+        gl.activeTexture(gl.TEXTURE0);
+
         const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
         const state = {
             raf: 0,
@@ -605,6 +532,7 @@ export function MetallicPaint({
             imageAspect: 1,
             width: 0,
             height: 0,
+            pixelRatio: 1,
             revealStart: -1,
             reveal: settingsRef.current.intro && !reduce ? 0 : 1,
             tiltX: 0,
@@ -620,11 +548,12 @@ export function MetallicPaint({
             const s = settingsRef.current;
             const rect = container.getBoundingClientRect();
             const base = s.dpr ?? Math.min(window.devicePixelRatio || 1, 2);
-            let ratio = Math.max(base, 2);
+            let ratio = s.dpr ?? Math.max(base, Math.min(rect.width, rect.height) < 160 ? 3 : 2);
             const pixels = rect.width * rect.height * ratio * ratio;
             if (pixels > MAX_PIXELS) ratio *= Math.sqrt(MAX_PIXELS / pixels);
             const width = Math.max(1, Math.round(rect.width * ratio));
             const height = Math.max(1, Math.round(rect.height * ratio));
+            state.pixelRatio = width / Math.max(1, rect.width);
             if (width === state.width && height === state.height) return;
             state.width = width;
             state.height = height;
@@ -643,6 +572,7 @@ export function MetallicPaint({
             gl.useProgram(program);
             gl.uniform2f(uniforms.u_resolution, state.width, state.height);
             gl.uniform1f(uniforms.u_time, state.time);
+            gl.uniform1f(uniforms.u_preserveMaterial, s.preserveMaterial ? 1 : 0);
             gl.uniform1f(uniforms.u_imageAspect, state.imageAspect);
             gl.uniform1f(uniforms.u_scale, s.scale);
             gl.uniform1f(uniforms.u_rotation, s.rotation);
@@ -658,6 +588,7 @@ export function MetallicPaint({
             gl.uniform2f(uniforms.u_tilt, state.tiltX, state.tiltY);
             gl.uniform1f(uniforms.u_reveal, state.reveal);
             gl.uniform1f(uniforms.u_light, s.lightMode ? 1 : 0);
+            gl.uniform1f(uniforms.u_pixelRatio, state.pixelRatio);
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.bindVertexArray(vao);
@@ -749,14 +680,14 @@ export function MetallicPaint({
                 state.pending = value;
                 draw();
             },
-            setImage: (data: ImageData | null) => {
+            setImage: (data: MetalImage | null) => {
                 state.pending = false;
+                gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, texture);
                 if (data) {
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data);
-                    gl.generateMipmap(gl.TEXTURE_2D);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-                    state.imageAspect = data.width / data.height;
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data.surface);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    state.imageAspect = data.surface.width / data.surface.height;
                     state.hasImage = true;
                 } else {
                     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 255, 255]));
@@ -764,6 +695,11 @@ export function MetallicPaint({
                     state.imageAspect = 1;
                     state.hasImage = false;
                 }
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, materialTexture);
+                if (data) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data.material);
+                else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+                gl.activeTexture(gl.TEXTURE0);
                 draw();
                 wake();
             },
@@ -789,6 +725,7 @@ export function MetallicPaint({
             container.removeEventListener("pointerleave", onLeave);
             engineRef.current = null;
             gl.deleteTexture(texture);
+            gl.deleteTexture(materialTexture);
             gl.deleteBuffer(buffer);
             gl.deleteVertexArray(vao);
             gl.deleteProgram(program);
@@ -797,16 +734,14 @@ export function MetallicPaint({
 
     useEffect(() => {
         let active = true;
-        const source = text ? drawTextSource(text, fontFamily, fontWeight) : imageSrc ? drawImageSource(imageSrc) : null;
+        const source = text ? drawTextSource(text, fontFamily, fontWeight).then((canvas) => (canvas ? processShape(canvas) : null)) : imageSrc ? loadImageSurface(imageSrc) : null;
         if (!source) {
             engineRef.current?.setImage(null);
             return undefined;
         }
         engineRef.current?.setPending(true);
         source
-            .then((canvas) => {
-                if (!active || !canvas) return;
-                const data = processShape(canvas);
+            .then((data) => {
                 if (active) engineRef.current?.setImage(data);
             })
             .catch(() => {

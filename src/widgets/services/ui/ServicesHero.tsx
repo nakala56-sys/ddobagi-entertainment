@@ -25,12 +25,12 @@ export function ServicesHero() {
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
-                colors={["#135c74", "#134974", "#135c74", "#134974"]}
+                colors={["#243028", "#3d4a32", "#243028", "#3d4a32"]}
                 speed={1}
                 distortion={0.8}
                 before={
                     <p
-                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase"
+                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase text-[var(--color-text)]"
                         data-reveal
                     >
                         OUR SERVICES
@@ -42,7 +42,7 @@ export function ServicesHero() {
                     data-reveal
                 >
                     <h2 className="text-[2.0rem] font-[500]">크리에이터 매니지먼트부터 브랜드 협업까지.</h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성을 함께합니다.</p>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성을 함께합니다.</p>
                 </div>
             </GradientWaveSettle>
         </section>

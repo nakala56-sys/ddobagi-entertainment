@@ -3,14 +3,21 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Animation from "@/shared/utils/animation";
 
-export function PageTransition({ children, waveIntro = true }: { children: ReactNode; waveIntro?: boolean }) {
+export function PageTransition({ children, waveIntro = true, onReady }: { children: ReactNode; waveIntro?: boolean; onReady?: () => void }) {
     const rootRef = useRef<HTMLDivElement>(null);
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
         if (!rootRef.current) return;
-        return Animation.layout.loading(rootRef.current, () => setReady(true), waveIntro);
-    }, [waveIntro]);
+        return Animation.layout.loading(
+            rootRef.current,
+            () => {
+                setReady(true);
+                onReady?.();
+            },
+            waveIntro,
+        );
+    }, [waveIntro, onReady]);
 
     return (
         <div

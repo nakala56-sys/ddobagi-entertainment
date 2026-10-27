@@ -18,7 +18,7 @@ export function FinalCta() {
             data-report-id="home-closing"
             data-report-type="group"
             data-cta-wave
-            className="closing relative z-10 overflow-visible bg-[var(--color-background)] motion-reduce:bg-[var(--color-background)] section-dark text-[#ffffff]"
+            className="closing relative z-10 overflow-visible bg-[var(--color-background)] motion-reduce:bg-[#20261f] section-dark text-[var(--color-text)]"
             aria-labelledby="home-closing-title"
         >
             <div
@@ -40,10 +40,10 @@ export function FinalCta() {
             <div className="relative z-10 flex min-h-[100svh] items-center py-[8rem] tablet:py-[12rem] motion-reduce:min-h-[85svh]">
                 <div
                     data-cta-content
-                    className="closing-content text-[#ede9d7] relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center gap-[3.2rem] tablet:gap-[3.6rem] text-center content-width"
+                    className="closing-content text-[var(--color-text)] relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center gap-[3.2rem] tablet:gap-[3.6rem] text-center content-width"
                 >
                     <h2
-                        className="text-[2.4rem] min-[343px]:text-[7vw] pc:text-[5.8rem] leading-[1.5] font-[550] break-keep"
+                        className="text-[2.4rem] text-[#faf9f5] min-[343px]:text-[7vw] pc:text-[5.8rem] break-keep leading-[1]"
                         id="home-closing-title"
                         data-title-rise
                     >
@@ -52,7 +52,7 @@ export function FinalCta() {
                         또바기와 함께하세요.
                     </h2>
                     <p
-                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] break-keep"
+                        className="body-copy text-[#faf9f5] text-[1.6rem] pc:text-[1.8rem] leading-[1.5] break-keep"
                         data-reveal
                     >
                         방송을 처음 준비하는 분도, 새로운 방향을 고민하는 크리에이터도.

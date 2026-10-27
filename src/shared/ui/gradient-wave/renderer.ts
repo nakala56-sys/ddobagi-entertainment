@@ -1,6 +1,6 @@
 export type WaveColors = readonly [string, string, string, string];
 
-export const DEFAULT_WAVE_COLORS: WaveColors = ["#ff4321", "#ff4321", "#ff4321", "#ff4321"];
+export const DEFAULT_WAVE_COLORS: WaveColors = ["#3a3224", "#5c4a28", "#3a3224", "#5c4a28"];
 // export const DEFAULT_WAVE_COLORS: WaveColors = ["#91dff2", "#c8b9f4", "#eef08b", "#f5b8bd"];
 
 const vertexSource = `
@@ -65,7 +65,8 @@ void main() {
     float period = 2.4;
     float trail = 0.85;
     float expand = 4.2;
-    vec3 background = vec3(0.0);
+    vec3 field = vec3(0.980392, 0.976471, 0.960784);
+    vec3 background = field;
     vec3 inkColor = u_colors[0];
     float fill = 0.0;
     float crest = 0.0;
@@ -99,7 +100,7 @@ void main() {
         float whiteProgress = smoothstep(0.0, expand, localT - trail);
         float whiteRadius = mix(startRadius, endRadius, whiteProgress);
         float whiteMask = 1.0 - smoothstep(whiteRadius - feather, whiteRadius + feather, distance);
-        background = mix(background, vec3(0.0), whiteMask);
+        background = mix(background, field, whiteMask);
         fill *= 1.0 - whiteMask;
 
         float whiteEdge = 1.0 - smoothstep(0.0, edgeWidth, abs(distance - whiteRadius));
@@ -127,9 +128,11 @@ void main() {
     float alpha = max(red, max(green, blue));
     float lowest = min(inkColor.r, min(inkColor.g, inkColor.b));
     float chroma = max(inkColor.r, max(inkColor.g, inkColor.b)) - lowest;
-    vec3 baseInk = vec3(1.0);
-    vec3 coloredInk = mix(baseInk, inkColor, smoothstep(0.02, 0.18, chroma));
-    vec3 ink = mix(baseInk, coloredInk, fill);
+    vec3 restInk = vec3(0.137255, 0.141176, 0.117647);
+    vec3 lightInk = vec3(1.0);
+    vec3 baseInk = mix(restInk, lightInk, fill);
+    vec3 coloredInk = mix(lightInk, inkColor, smoothstep(0.02, 0.18, chroma));
+    vec3 ink = mix(baseInk, coloredInk, crest);
     float ribbon = sin(edgeDistance * 120.0) * 0.5 + 0.5;
     ink = mix(ink, mix(coloredInk, inkColor, ribbon), crest * 0.82);
     vec3 channels = vec3(red, green, blue) / max(alpha, 0.001);

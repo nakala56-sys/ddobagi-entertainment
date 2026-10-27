@@ -4,22 +4,24 @@
     --root-font-size: 62.5%;
 
     /* 배경, 글자, 포인트. 포인트 색은 이 값만 바꾸면 사이트 전체에 반영된다. */
-    --color-background: #0a0a0a;
-    --color-text: #ede9d7;
-    --color-point: #ff4321;
-    --color-line: #333333;
-    --color-background-light: var(--color-background);
+    --color-background: #faf9f5;
+    --color-text: #23241e;
+    --color-point: #92702b;
+    --color-line: #dde1d9;
+    --color-background-light: #efeee5;
+    --color-gold: #d4b66a;
+    --color-ink: #20261f;
     --accent: var(--color-point);
 
     /* 브랜드 색상 */
-    --color-brand-700: #2982d1;
+    --color-brand-700: #74602a;
     --color-brand-500: var(--color-point);
-    --color-brand-100: #2a120e;
+    --color-brand-100: #f3ead2;
 
     /* 그레이 색상 */
-    --color-gray-200: #e5e8eb;
-    --color-gray-700: #4e5968;
-    --color-gray-800: #333d4b;
+    --color-gray-200: #e7e4da;
+    --color-gray-700: #5e655c;
+    --color-gray-800: #3d433c;
     --color-gray-1000: var(--color-text);
 
     /* 부정 색상 */

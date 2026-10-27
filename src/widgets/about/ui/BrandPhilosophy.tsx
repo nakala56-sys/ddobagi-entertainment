@@ -24,14 +24,14 @@ export function BrandPhilosophy() {
                     className="philosophy-image relative"
                     data-reveal
                 >
-                    <div className="portrait-image relative h-[44rem] tablet:h-[68rem] overflow-clip">
+                    <div className="portrait-image relative aspect-[1672/941] w-full overflow-clip">
                         <Image
-                            src="/images/about/brand-set.jpg"
-                            alt="촬영 현장에서 대본을 두고 이야기하는 장면"
+                            src="/images/about/brand-partnership.png"
+                            alt="상담 테이블에서 악수하는 두 사람"
                             fill
                             unoptimized
                             sizes="(min-width: 48rem) 45vw, 90vw"
-                            className="object-cover object-[-110px]"
+                            className="object-cover object-center"
                         />
                     </div>
                 </div>
@@ -41,13 +41,13 @@ export function BrandPhilosophy() {
                         className="display-title text-[3.6rem] tablet:text-[4rem] pc:text-[3.2rem] leading-[1.5] font-[580] m-0 break-keep"
                         data-reveal
                     >
-                        안녕하세요
+                        또바기 엔터테인먼트
                     </h2>
                     <p
-                        className="body-copy font-semibold text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
+                        className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[var(--color-text)]"
                         data-reveal
                     >
-                        사람의 매력을 발견하고, 그 가능성을 함께 키워갑니다.
+                        <strong className="font-bold">사람의 매력을 발견하고, 그 가능성을 함께 키워갑니다.</strong>
                     </p>
                     <p
                         className="body-copy text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#737373]"
@@ -70,7 +70,7 @@ export function BrandPhilosophy() {
                         각자의 장점이 가장 자연스럽게 빛날 수 있는 방향을 찾고, 오래 함께할 수 있는 환경을 만드는 것이 또바기 엔터테인먼트가 하는 일입니다.
                     </p>
                     <p
-                        className="body-copy font-semibold text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#ff4321]"
+                        className="body-copy font-semibold text-[1.6rem] pc:text-[1.8rem] leading-[1.5] text-[#92702b]"
                         data-reveal
                     >
                         꾸준히, 한결같이, 함께.

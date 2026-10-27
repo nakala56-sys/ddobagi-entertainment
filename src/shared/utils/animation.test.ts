@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     writes: [] as string[],
+    ticks: new Set<() => void>(),
 }));
 
 vi.mock("gsap", () => ({
@@ -22,6 +23,10 @@ vi.mock("gsap", () => ({
         },
         set: vi.fn(),
         quickSetter: () => () => mocks.writes.push("write"),
+        ticker: {
+            add: (callback: () => void) => mocks.ticks.add(callback),
+            remove: (callback: () => void) => mocks.ticks.delete(callback),
+        },
     },
 }));
 vi.mock("gsap/ScrollTrigger", () => ({
@@ -44,11 +49,12 @@ let cleanups: (() => void)[];
 beforeEach(() => {
     vi.clearAllMocks();
     mocks.writes.length = 0;
+    mocks.ticks.clear();
     frames = new Map();
     frameId = 0;
     cleanups = [];
     vi.stubGlobal("document", { fonts: { ready: Promise.resolve() }, getElementById: vi.fn() });
-    vi.stubGlobal("window", { scrollY: 0, innerHeight: 800 });
+    vi.stubGlobal("window", { scrollY: 0, innerHeight: 800, matchMedia: vi.fn(() => ({ matches: true })) });
     vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => {
         const id = frameId++;
         frames.set(id, callback);
@@ -189,5 +195,119 @@ describe("section navigation updates", () => {
         root.dispatchEvent(Object.assign(new Event("pointermove"), { clientY: 60 }));
         expect(mocks.writes).toEqual([]);
         expect(mocks.removeEventListener).toHaveBeenCalledWith("refresh", mocks.addEventListener.mock.lastCall![1]);
+    });
+});
+
+function mountHeader(home = true) {
+    const bounds = { top: 0, bottom: 100, height: 100 };
+    const heroBounds = { top: 0, bottom: 800 };
+    const ctaBounds = { top: 5000, bottom: 7000 };
+    const circleBounds = { top: 100, height: 200 };
+    const ink = { style: { position: "" } };
+    const styles = new Map<string, string>();
+    const root = {
+        getBoundingClientRect: () => bounds,
+        querySelectorAll: () => [],
+        style: {
+            setProperty: (name: string, value: string) => styles.set(name, value),
+            removeProperty: (name: string) => styles.delete(name),
+        },
+    } as unknown as HTMLElement;
+    const targets = new Map<string, unknown>([
+        ['[data-report-id="home-hero"]', { getBoundingClientRect: () => heroBounds }],
+        ["[data-cta-wave]", { getBoundingClientRect: () => ctaBounds }],
+        ["[data-cta-ink]", ink],
+        ["[data-cta-circle]", { getBoundingClientRect: () => circleBounds }],
+    ]);
+    vi.mocked(document.getElementById).mockReturnValue(home ? ({ querySelector: (selector: string) => targets.get(selector) } as unknown as HTMLElement) : null);
+    const cleanup = Animation.layout.header(root);
+    cleanups.push(cleanup);
+    return { bounds, heroBounds, ctaBounds, circleBounds, ink, styles, cleanup, tick: () => mocks.ticks.forEach((callback) => callback()) };
+}
+
+describe("header contrast", () => {
+    it("uses white text on the home hero even with reduced motion", () => {
+        const { styles } = mountHeader();
+        expect(styles.get("--header-ink")).toBe("#ffffff");
+    });
+
+    it("restores the original color at five percent overlap and reverses when scrolling back", () => {
+        const { heroBounds, styles, tick } = mountHeader();
+        heroBounds.bottom = 6;
+        tick();
+        expect(styles.get("--header-ink")).toBe("#ffffff");
+        heroBounds.bottom = 5;
+        tick();
+        expect(styles.has("--header-ink")).toBe(false);
+        heroBounds.bottom = -1;
+        tick();
+        expect(styles.has("--header-ink")).toBe(false);
+        heroBounds.bottom = 6;
+        tick();
+        expect(styles.get("--header-ink")).toBe("#ffffff");
+    });
+
+    it("recalculates the overlap threshold when the header resizes", () => {
+        const { bounds, heroBounds, styles, tick } = mountHeader();
+        heroBounds.bottom = 6;
+        bounds.bottom = bounds.height = 200;
+        tick();
+        expect(styles.has("--header-ink")).toBe(false);
+        bounds.bottom = bounds.height = 100;
+        tick();
+        expect(styles.get("--header-ink")).toBe("#ffffff");
+    });
+
+    it("uses the full header height when the header moves partly above the viewport", () => {
+        const { bounds, heroBounds, styles, tick } = mountHeader();
+        bounds.top = -20;
+        bounds.bottom = 80;
+        heroBounds.bottom = 5;
+        tick();
+        expect(styles.has("--header-ink")).toBe(false);
+        heroBounds.bottom = 6;
+        tick();
+        expect(styles.get("--header-ink")).toBe("#ffffff");
+    });
+
+    it("waits for the opaque CTA wave to overlap the header and reverses with the wave", () => {
+        vi.mocked(window.matchMedia).mockReturnValue({ matches: false } as MediaQueryList);
+        const header = mountHeader();
+        header.heroBounds.bottom = -1;
+        header.ctaBounds.top = -200;
+        header.ink.style.position = "fixed";
+        header.tick();
+        expect(header.styles.has("--header-ink")).toBe(false);
+        header.circleBounds.top = 70;
+        header.tick();
+        expect(header.styles.get("--header-ink")).toBe("#ffffff");
+        header.circleBounds.top = 82;
+        header.tick();
+        expect(header.styles.has("--header-ink")).toBe(false);
+    });
+
+    it("uses the static CTA bounds with reduced motion", () => {
+        const { heroBounds, ctaBounds, styles, tick } = mountHeader();
+        heroBounds.bottom = -1;
+        ctaBounds.top = 94;
+        tick();
+        expect(styles.get("--header-ink")).toBe("#ffffff");
+        ctaBounds.top = 95;
+        tick();
+        expect(styles.has("--header-ink")).toBe(false);
+    });
+
+    it("keeps the original color outside the home page", () => {
+        const { styles, tick } = mountHeader(false);
+        tick();
+        expect(styles.has("--header-ink")).toBe(false);
+    });
+
+    it("clears the color and stops tracking on route cleanup", () => {
+        const { styles, cleanup } = mountHeader();
+        expect(styles.get("--header-ink")).toBe("#ffffff");
+        cleanup();
+        expect(styles.has("--header-ink")).toBe(false);
+        expect(mocks.ticks.size).toBe(0);
     });
 });

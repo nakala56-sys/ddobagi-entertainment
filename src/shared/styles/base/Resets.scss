@@ -20,7 +20,7 @@
 
         background: var(--color-background);
         color: var(--color-text);
-        color-scheme: dark;
+        color-scheme: light;
     }
 
     html {
@@ -35,8 +35,8 @@
     }
 
     ::selection {
-        background: var(--color-point);
-        color: var(--color-text);
+        background: var(--color-gold);
+        color: var(--color-ink);
     }
 
     * {

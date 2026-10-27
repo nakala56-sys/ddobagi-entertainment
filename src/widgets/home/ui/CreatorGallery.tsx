@@ -15,7 +15,7 @@ const TOP_IMAGES = [
 const BOTTOM_IMAGES = [
     { src: "/images/equipment/setup-mic.jpg", alt: "마이크와 조명이 놓인 방송 데스크" },
     { src: "/images/home/moment-desk.jpg", alt: "마이크 앞에서 방송하는 크리에이터" },
-    { src: "/images/about/brand-set.jpg", alt: "촬영 현장에서 대본을 두고 이야기하는 장면" },
+    { src: "/images/about/brand-partnership.png", alt: "상담 테이블에서 악수하는 두 사람" },
     { src: "/images/home/moment-script.jpg", alt: "대본을 두고 이야기하는 장면" },
     { src: "/images/equipment/setup-desk.jpg", alt: "블라인드와 분홍 책상이 있는 방송 공간" },
     { src: "/images/equipment/studio-space.jpg", alt: "분홍 조명과 거울, LED 바닥이 있는 또바기 방송 스튜디오" },
@@ -55,7 +55,7 @@ export function CreatorGallery() {
                 >
                     <Image
                         src="/images/home/gallery-stage.jpg"
-                        alt="분홍 Butterfly 무대와 카메라가 준비된 방송 현장"
+                        alt="분홍 Butterfly LED 화면과 거울, 조명이 설치된 방송 스튜디오"
                         fill
                         unoptimized
                         sizes="100vw"

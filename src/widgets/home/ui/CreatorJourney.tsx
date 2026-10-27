@@ -48,7 +48,7 @@ export function CreatorJourney() {
                     {STEPS.map((step, index) => (
                         <li
                             key={step.title}
-                            className="bg-[#ffffff10] p-[2.4rem] rounded-[2.4rem]"
+                            className="bg-[#ffffff] p-[2.4rem] rounded-[2.4rem]"
                             data-reveal
                         >
                             <span

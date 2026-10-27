@@ -25,12 +25,12 @@ export function AboutHero() {
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
-                colors={["#745213", "#743413", "#745213", "#743413"]}
+                colors={["#3d3420", "#6b5424", "#3d3420", "#6b5424"]}
                 speed={1}
                 distortion={0.8}
                 before={
                     <p
-                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase"
+                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase text-[var(--color-text)]"
                         data-reveal
                     >
                         ABOUT US
@@ -41,11 +41,11 @@ export function AboutHero() {
                     className="hero-bottom mx-auto w-full max-w-[132rem] mt-[4.8rem] tablet:mt-[6.4rem] text-left break-keep"
                     data-reveal
                 >
-                    <h2 className="text-[2.0rem] font-[500]">
+                    <h2 className="text-[2.0rem] font-bold">
                         사람의 매력을 발견하고,
                         <br />그 가능성을 함께 키워갑니다.
                     </h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">각자의 개성이 오래 빛날 수 있도록 함께합니다.</p>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">각자의 개성이 오래 빛날 수 있도록 함께합니다.</p>
                 </div>
             </GradientWaveSettle>
         </section>

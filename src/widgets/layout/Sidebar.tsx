@@ -32,7 +32,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             }}
         >
             <div className="mobile-menu-top flex items-center justify-between mb-[5.2rem]">
-                <span className="eyebrow text-[1.2rem] font-[650] leading-[1.0] uppercase">TTOBAGI ENTERTAINMENT</span>
+                <span className="eyebrow text-[1.2rem] font-[650] leading-[1.0] uppercase">DDOBAGI ENTERTAINMENT</span>
                 <button
                     type="button"
                     className="menu-close text-[4rem] leading-[1.0] bg-transparent border-0"
@@ -48,7 +48,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
             >
                 {navigation.map((item, index) => (
                     <Link
-                        className="flex items-center gap-[1.6rem] py-[1.6rem] border-b-[0.4rem] border-solid border-b-[var(--color-line)] text-[3rem] tablet:text-[4.8rem] aria-[current=page]:text-[var(--accent,#000000)] aria-[current=page]:underline aria-[current=page]:underline-offset-[0.8rem] leading-[1.0]"
+                        className="flex items-center gap-[1.6rem] py-[1.6rem] text-[3rem] tablet:text-[4.8rem] aria-[current=page]:text-[var(--accent,#000000)] aria-[current=page]:underline aria-[current=page]:underline-offset-[0.8rem] leading-[1.0]"
                         key={item.href}
                         href={item.href}
                         aria-current={pathname === item.href ? "page" : undefined}

@@ -233,47 +233,41 @@ function heroTitleRoll(root: HTMLElement) {
     const title = root.querySelector<HTMLElement>("[data-hero-roll]");
     const copy = root.querySelector<HTMLElement>("[data-hero-copy]");
     const slides = title ? [...title.querySelectorAll<HTMLElement>("[data-hero-slide]")] : [];
+    const copies = copy ? [...copy.querySelectorAll<HTMLElement>("[data-hero-copy-slide]")] : [];
     let index = 0;
     let timer: gsap.core.Tween | undefined;
     let timeline: gsap.core.Timeline | undefined;
     let started = false;
-    const writeCopy = (slide: HTMLElement) => {
-        if (!copy) return;
-        const lines = (slide.dataset.heroBody ?? "").split("\n");
-        copy.replaceChildren(
-            ...lines.flatMap((line, lineIndex) => {
-                const nodes: Node[] = [];
-                if (lineIndex) nodes.push(document.createElement("br"));
-                nodes.push(document.createTextNode(line));
-                return nodes;
-            }),
-        );
-    };
     const roll = () => {
         const current = slides[index];
         const next = slides[(index + 1) % slides.length];
-        if (!current || !next || !copy) return;
-        gsap.set(next, { y: 0, yPercent: 100 });
+        const currentCopy = copies[index];
+        const nextCopy = copies[(index + 1) % copies.length];
+        if (!current || !next || !currentCopy || !nextCopy) return;
+        gsap.set(next, { autoAlpha: 1, y: 0, yPercent: 100 });
         timeline = gsap.timeline({
             onComplete: () => {
                 index = (index + 1) % slides.length;
                 current.setAttribute("aria-hidden", "true");
                 next.removeAttribute("aria-hidden");
+                currentCopy.setAttribute("aria-hidden", "true");
+                nextCopy.removeAttribute("aria-hidden");
                 timer = gsap.delayedCall(3.4, roll);
             },
         });
-        timeline.to(copy, { autoAlpha: 0, duration: 0.28, ease: MOTION_EASE }, 0);
+        timeline.to(currentCopy, { autoAlpha: 0, y: -8, duration: 0.28, ease: MOTION_EASE }, 0);
         timeline.to(current, { y: 0, yPercent: -100, duration: 0.7, ease: MOTION_EASE }, 0);
         timeline.to(next, { y: 0, yPercent: 0, duration: 0.7, ease: MOTION_EASE }, 0);
-        timeline.call(() => writeCopy(next));
-        timeline.to(copy, { autoAlpha: 1, duration: 0.4, ease: MOTION_EASE });
+        timeline.fromTo(nextCopy, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.42, ease: MOTION_EASE }, 0.24);
     };
     return {
         start() {
-            if (started || slides.length < 2 || !copy) return;
+            if (started || slides.length < 2 || copies.length !== slides.length) return;
             started = true;
             gsap.set(slides[0], { y: 0, yPercent: 0 });
             gsap.set(slides.slice(1), { y: 0, yPercent: 100 });
+            gsap.set(copies[0], { autoAlpha: 1, y: 0 });
+            gsap.set(copies.slice(1), { autoAlpha: 0, y: 8 });
             timer = gsap.delayedCall(3.4, roll);
         },
         stop() {
@@ -303,6 +297,10 @@ function intro(root: HTMLElement): Cleanup {
         else play();
         const image = root.querySelector<HTMLElement>("[data-image]");
         if (image) scrollTimeline(root, { start: "top top", end: "bottom top" }).to(image, { scale: 1.12 });
+        const guide = root.querySelector<HTMLElement>("[data-hero-scroll]");
+        const guideLine = root.querySelector<HTMLElement>("[data-hero-scroll-line]");
+        if (guide) scrollTimeline(root, { start: 0, end: () => `+=${Math.max(80, window.innerHeight * 0.15)}`, scrub: true }).to(guide, { autoAlpha: 0, ease: "none" });
+        if (guideLine) gsap.fromTo(guideLine, { yPercent: 100 }, { yPercent: -100, duration: 1.2, repeat: -1, ease: "power1.inOut" });
         return () => {
             roll.stop();
             transition?.removeEventListener("page:reveal", play);
@@ -539,11 +537,9 @@ function finalCta(root: HTMLElement): Cleanup {
         const park = root.querySelector<HTMLElement>("[data-cta-park]");
         const ink = root.querySelector<HTMLElement>("[data-cta-ink]");
         const circle = root.querySelector<HTMLElement>("[data-cta-circle]");
-        const header = document.querySelector<HTMLElement>(".site-header");
         if (!park || !ink || !circle) return;
 
         const wave = { centerY: 0, lift: 0, startRadius: 0, endRadius: 1 };
-        const clearHeader = () => header?.style.removeProperty("--header-ink");
         const measure = () => {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -564,7 +560,7 @@ function finalCta(root: HTMLElement): Cleanup {
                 yPercent: -50,
                 transformOrigin: "50% 50%",
                 force3D: true,
-                background: `radial-gradient(circle, #ff4321 0%, #ff4321 ${CTA_WAVE_SOLID * 100}%, transparent 100%)`,
+                background: `radial-gradient(circle, #20261f 0%, #20261f ${CTA_WAVE_SOLID * 100}%, transparent 100%)`,
             });
         };
         const placeInk = (fixed: boolean) => {
@@ -584,18 +580,9 @@ function finalCta(root: HTMLElement): Cleanup {
             ink.style.height = "";
             ink.style.width = "";
         };
-        // Cream header type disappears once the white fill reaches the wordmark.
-        const syncHeader = () => {
-            if (!header) return;
-            const scale = Number(gsap.getProperty(circle, "scale")) || 0;
-            const visibleTop = wave.centerY - wave.lift - (wave.endRadius / CTA_WAVE_SOLID) * scale;
-            if (visibleTop <= header.getBoundingClientRect().bottom) header.style.setProperty("--header-ink", "#0a0a0a");
-            else clearHeader();
-        };
         const syncPlacement = (self: ScrollTrigger) => {
             const seated = self.isActive || self.progress > 0;
             placeInk(seated);
-            if (!seated) clearHeader();
         };
         measure();
         gsap.set(circle, { scale: wave.startRadius / wave.endRadius });
@@ -607,11 +594,10 @@ function finalCta(root: HTMLElement): Cleanup {
             onRefreshInit: measure,
             onToggle: syncPlacement,
             onRefresh: syncPlacement,
-        }).fromTo(circle, { scale: () => wave.startRadius / wave.endRadius }, { scale: 1, duration: 1, ease: SHIMMER_EASE, onUpdate: syncHeader }, 0);
+        }).fromTo(circle, { scale: () => wave.startRadius / wave.endRadius }, { scale: 1, duration: 1, ease: SHIMMER_EASE }, 0);
 
         reveal(root);
         return () => {
-            clearHeader();
             placeInk(false);
         };
     });
@@ -875,6 +861,53 @@ function sectionNavigation(root: HTMLElement): Cleanup {
     return () => media.revert();
 }
 
+function siteHeader(root: HTMLElement): Cleanup {
+    const cleanupMotion = section(root, (_root, conditions) => {
+        // Mobile keeps a fixed-height header; a vertical shift would clip the logo.
+        if (!conditions.desktop) return;
+        // Keep navigation and the logo usable at scroll progress zero.
+        scrollTimeline(root, { start: 0, end: () => `+=${root.offsetHeight}`, scrub: 0.45 }).to(root, { y: -20 });
+    });
+    const home = document.getElementById("home");
+    const hero = home?.querySelector<HTMLElement>('[data-report-id="home-hero"]');
+    const cta = home?.querySelector<HTMLElement>("[data-cta-wave]");
+    const ink = home?.querySelector<HTMLElement>("[data-cta-ink]");
+    const circle = home?.querySelector<HTMLElement>("[data-cta-circle]");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let previousLight: boolean | undefined;
+
+    const syncColor = () => {
+        const bounds = root.getBoundingClientRect();
+        const top = Math.max(0, bounds.top);
+        const threshold = bounds.height * 0.05;
+        const overlaps = (area: { top: number; bottom: number }) => Math.min(bounds.bottom, area.bottom) - Math.max(top, area.top) > threshold;
+        let light = Boolean(hero && overlaps(hero.getBoundingClientRect()));
+
+        if (!light && cta) {
+            const area = cta.getBoundingClientRect();
+            if (reduced.matches) light = overlaps(area);
+            else if (ink?.style.position === "fixed" && circle) {
+                const wave = circle.getBoundingClientRect();
+                // Ignore the transparent rim when measuring the dark CTA background.
+                light = overlaps({ top: Math.max(area.top, wave.top + (wave.height * (1 - CTA_WAVE_SOLID)) / 2), bottom: area.bottom });
+            }
+        }
+
+        if (light === previousLight) return;
+        previousLight = light;
+        if (light) root.style.setProperty("--header-ink", "#ffffff");
+        else root.style.removeProperty("--header-ink");
+    };
+
+    syncColor();
+    if (home) gsap.ticker.add(syncColor);
+    return () => {
+        gsap.ticker.remove(syncColor);
+        cleanupMotion();
+        root.style.removeProperty("--header-ink");
+    };
+}
+
 class Animation {
     static layout = {
         loading: pageLoading,
@@ -882,6 +915,14 @@ class Animation {
             if (smoothScroller) smoothScroller.scrollTo(0, { immediate: true, force: true });
             window.scrollTo({ top: 0, left: 0, behavior: "instant" });
             ScrollTrigger.update();
+        },
+        scrollToTopSmooth: () => {
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                Animation.layout.scrollToTop();
+                return;
+            }
+            if (smoothScroller) smoothScroller.scrollTo(0);
+            else window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
         },
         common: (): Cleanup => {
             const media = gsap.matchMedia();
@@ -908,11 +949,7 @@ class Animation {
             });
             return () => media.revert();
         },
-        header: (root: HTMLElement): Cleanup =>
-            section(root, () => {
-                // Keep navigation and the logo usable at scroll progress zero.
-                scrollTimeline(root, { start: 0, end: () => `+=${root.offsetHeight}`, scrub: 0.45 }).to(root, { y: -20 });
-            }),
+        header: siteHeader,
         main: (root: HTMLElement): Cleanup => {
             // Refresh route measurements without overriding Next.js back/forward restoration.
             const frame = requestAnimationFrame(() => ScrollTrigger.refresh());

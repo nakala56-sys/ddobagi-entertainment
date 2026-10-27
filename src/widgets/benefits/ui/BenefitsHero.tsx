@@ -25,12 +25,12 @@ export function BenefitsHero() {
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
                 textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
-                colors={["#4a1374", "#74135c", "#4a1374", "#74135c"]}
+                colors={["#3a3224", "#5c4a28", "#3a3224", "#5c4a28"]}
                 speed={1}
                 distortion={0.8}
                 before={
                     <p
-                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase"
+                        className="eyebrow mx-auto mb-[3.2rem] tablet:mb-[4rem] w-full max-w-[132rem] text-left text-[1.2rem] font-[650] leading-[1.0] uppercase text-[var(--color-text)]"
                         data-reveal
                     >
                         CREATOR BENEFITS
@@ -42,7 +42,7 @@ export function BenefitsHero() {
                     data-reveal
                 >
                     <h2 className="text-[2.0rem] font-[500]">방송에 집중할 수 있도록 지원합니다.</h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#b5b5b5] leading-[1.5]">스튜디오와 장비부터 콘텐츠 기획, 개인 브랜딩과 제휴 시술까지.</p>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">스튜디오와 장비부터 콘텐츠 기획, 개인 브랜딩과 제휴 시술까지.</p>
                 </div>
             </GradientWaveSettle>
         </section>

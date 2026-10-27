@@ -34,7 +34,7 @@ export function HeroIntro() {
             className="hero relative min-h-[100svh] overflow-hidden"
             aria-labelledby="home-hero-title"
         >
-            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 h-full mix-blend-exclusion">
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 h-full">
                 <Image
                     src="/images/home/hero-wide.png"
                     alt=""
@@ -48,14 +48,12 @@ export function HeroIntro() {
                 />
             </div>
             <section className="relative z-10 flex min-h-[100svh] flex-col items-end justify-center px-[2rem] pt-[15.2rem] pb-[4rem] tablet:px-[6rem] tablet:pt-[16rem] tablet:pb-[5.6rem]">
-                <div
-                    className="absolute top-1/2 right-[2rem] flex w-[calc(100%-4rem)] -translate-y-1/2 flex-col items-start justify-start text-left tablet:right-0 tablet:w-1/2 tablet:text-center"
-                    data-reveal
-                >
+                <div className="absolute top-1/2 right-[2rem] flex w-[calc(100%-4rem)] -translate-y-1/2 flex-col items-start justify-start text-left text-[#faf9f5] tablet:right-0 tablet:w-1/2 tablet:text-center">
                     <h2
                         id="home-hero-title"
-                        className="w-full text-left text-[clamp(1.7rem,4.8vw,2.8rem)] font-semibold leading-[1.4] [text-shadow:0_0_1rem_#000]"
+                        className="w-full text-left text-[clamp(2.2rem,6vw,3rem)] font-semibold leading-[1.4] [text-shadow:0_0_1rem_#000] tablet:text-[clamp(3rem,3.2vw,4.2rem)]"
                         data-hero-roll
+                        data-reveal
                     >
                         <span
                             data-hero-mask
@@ -66,9 +64,8 @@ export function HeroIntro() {
                                 <span
                                     key={roll.lines[0]}
                                     data-hero-slide
-                                    data-hero-body={roll.body.join("\n")}
                                     aria-hidden={index === 0 ? undefined : true}
-                                    className="absolute inset-x-0 top-0 block"
+                                    className={`absolute inset-x-0 top-0 block ${index === 0 ? "" : "invisible"}`}
                                 >
                                     {roll.lines.map((line) => (
                                         <span
@@ -82,35 +79,49 @@ export function HeroIntro() {
                             ))}
                         </span>
                     </h2>
-                    <p
-                        className="mt-[1.6rem] text-left text-[1.5rem] leading-[1.5] break-keep tablet:text-[2rem]"
+                    <div
+                        className="mt-[2rem] grid w-full items-start pr-[6.4rem] text-left text-[1.8rem] leading-[1.5] break-keep tablet:pr-[8rem] tablet:text-[2.2rem] pc:text-[2.4rem]"
                         data-hero-copy
+                        data-reveal
                     >
-                        {HERO_ROLLS[0].body.map((line, index) => (
-                            <span key={line}>
-                                {index > 0 ? <br /> : null}
-                                {line}
-                            </span>
+                        {HERO_ROLLS.map((roll, index) => (
+                            <p
+                                key={roll.lines[0]}
+                                data-hero-copy-slide
+                                aria-hidden={index === 0 ? undefined : true}
+                                className={`col-start-1 row-start-1 min-w-0 ${index === 0 ? "" : "invisible"}`}
+                            >
+                                {roll.body.map((line, lineIndex) => (
+                                    <span key={line}>
+                                        {lineIndex > 0 ? <br /> : null}
+                                        {line}
+                                    </span>
+                                ))}
+                            </p>
                         ))}
-                    </p>
-
-                    <div className="flex flex-col items-center mt-[4.8rem]">
-                        {/* 꼬리가 긴 선 */}
-                        <div className="w-[0.2rem] h-[5.2rem] bg-[#ede9d7] rounded-full" />
-                        {/* 화살촉 (두 개의 막대를 45도와 -45도로 기울임) */}
-                        <div
-                            className="relative h-[1.3rem] flex items-center justify-center"
-                            style={{ marginTop: "-0.1rem" }}
-                            aria-hidden="true"
-                        >
-                            <div
-                                className="absolute bottom-[1.4rem] left-[-1.2rem] w-[1.4rem] h-[0.18rem] bg-[#ede9d7] rounded-full"
-                                style={{ transform: "rotate(45deg)" }}
-                            ></div>
-                        </div>
                     </div>
                 </div>
             </section>
+            <div
+                data-hero-scroll
+                className="pointer-events-none absolute bottom-[3.2rem] left-1/2 z-10 -translate-x-1/2 text-[#faf9f5] tablet:bottom-[4rem]"
+            >
+                <div
+                    className="flex flex-col items-center gap-[1.2rem]"
+                    data-reveal
+                >
+                    <div
+                        className="relative h-[7.2rem] w-[0.2rem] overflow-hidden"
+                        aria-hidden="true"
+                    >
+                        <div
+                            data-hero-scroll-line
+                            className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,#ffffff_40%,#ffffff_70%,transparent_100%)]"
+                        />
+                    </div>
+                    <p className="text-[1.4rem] font-medium tracking-[0.08em] [text-shadow:0_0_2rem_#000]">스크롤을 내려 둘러보세요</p>
+                </div>
+            </div>
         </section>
     );
 }
