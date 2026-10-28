@@ -333,9 +333,9 @@ function intro(root: HTMLElement): Cleanup {
         const heroTo = { ...textTo, filter: "blur(0px)" };
         const lines = root.querySelectorAll<HTMLElement>("[data-line]");
         const reveals = root.querySelectorAll<HTMLElement>("[data-reveal]");
-        const timeline = gsap.timeline({ paused: true, defaults: { ease: root.closest("main#home") ? "none" : MOTION_EASE, duration: 1.1 } });
-        if (lines.length) timeline.fromTo(lines, heroFrom, { ...heroTo, stagger: 0.12 }, 0);
-        if (reveals.length) timeline.fromTo(reveals, heroFrom, heroTo, 0.12);
+        const timeline = gsap.timeline({ paused: true, defaults: { ease: MOTION_EASE, duration: 1.1 } });
+        if (lines.length) timeline.fromTo(lines, heroFrom, { ...heroTo, stagger: 0.1 }, 0);
+        if (reveals.length) timeline.fromTo(reveals, heroFrom, { ...heroTo, stagger: 0.1 }, 0);
         const transition = root.closest<HTMLElement>("[data-page-pending]");
         const roll = heroTitleRoll(root);
         const play = () => {
@@ -914,12 +914,7 @@ function sectionNavigation(root: HTMLElement): Cleanup {
 }
 
 function siteHeader(root: HTMLElement): Cleanup {
-    const cleanupMotion = section(root, (_root, conditions) => {
-        // Mobile keeps a fixed-height header; a vertical shift would clip the logo.
-        if (!conditions.desktop) return;
-        // Keep navigation and the logo usable at scroll progress zero.
-        scrollTimeline(root, { start: 0, end: () => `+=${root.offsetHeight}`, scrub: 0.45 }).to(root, { y: -20 });
-    });
+    // No scroll-linked translate: moving the fixed header up exposes a gap at the viewport top.
     const home = document.getElementById("home");
     const hero = home?.querySelector<HTMLElement>('[data-report-id="home-hero"]');
     const cta = home?.querySelector<HTMLElement>("[data-cta-wave]");
@@ -966,7 +961,6 @@ function siteHeader(root: HTMLElement): Cleanup {
     if (home) gsap.ticker.add(syncColor);
     return () => {
         gsap.ticker.remove(syncColor);
-        cleanupMotion();
         root.style.removeProperty("--header-ink");
         root.style.removeProperty("--header-ink-inverse");
         document.documentElement.style.removeProperty("--header-ink");
