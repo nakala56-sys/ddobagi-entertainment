@@ -695,8 +695,6 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     const content = root.querySelector<HTMLElement>("[data-page-content]")!;
     const overlay = root.querySelector<HTMLElement>("[data-page-loader]")!;
     const text = root.querySelector<HTMLElement>("[data-loading-text]")!;
-    const originalText = text.innerHTML;
-    const chars = titlePieces(text).flatMap((piece) => (piece.kind === "char" ? [piece.element] : []));
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const previousOverflow = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
@@ -732,10 +730,8 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
     };
     const observer = new MutationObserver(revealPage);
     const context = gsap.context(() => {
-        const charDuration = 0.45;
-        const charStagger = 0.025;
-        const textExitEnd = chars.length ? charDuration + (chars.length - 1) * charStagger : 0;
-        const fadeAt = textExitEnd + (waveIntro ? 0.15 : 0);
+        const textExitDuration = 0.5;
+        const fadeAt = textExitDuration + (waveIntro ? 0.15 : 0);
         const fadeDuration = 0.9;
         const finishReveal = () => {
             // Drop any leftover transform so nested fixed chrome is not offset on iOS.
@@ -746,8 +742,9 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
         };
         const fadeContent = { autoAlpha: 1, duration: fadeDuration, ease: MOTION_EASE, immediateRender: false, force3D: false };
         transition = gsap.timeline({ paused: true, onComplete });
-        transition.set(text, { backgroundImage: "none", color: "var(--color-text)", webkitTextFillColor: "currentColor" }, 0);
-        if (chars.length) transition.to(chars, { yPercent: -100, autoAlpha: 0, duration: charDuration, stagger: charStagger, ease: MOTION_EASE }, 0);
+        transition.set(text, { backgroundImage: "none", color: "var(--color-text)", webkitTextFillColor: "currentColor", transformOrigin: "50% 50%" }, 0);
+        // Whole line scales down and fades — cubic-bezier via site MOTION_EASE (0.22, 1, 0.36, 1).
+        transition.to(text, { scale: 0.97, autoAlpha: 0, duration: textExitDuration, ease: MOTION_EASE }, 0);
         if (waveIntro) {
             transition
                 .call(
@@ -811,7 +808,6 @@ function pageLoading(root: HTMLElement, onComplete: () => void, waveIntro = fals
         document.fonts.removeEventListener("loadingerror", revealPage);
         restoreScroll();
         context.revert();
-        text.innerHTML = originalText;
     };
 }
 
@@ -951,8 +947,19 @@ function siteHeader(root: HTMLElement): Cleanup {
 
         if (light === previousLight) return;
         previousLight = light;
-        if (light) root.style.setProperty("--header-ink", "#ffffff");
-        else root.style.removeProperty("--header-ink");
+        // Share with section nav / quick-top via the document root.
+        // Inverse is always set (never cleared) so quick-top never falls back to white-on-white.
+        if (light) {
+            root.style.setProperty("--header-ink", "#ffffff");
+            root.style.setProperty("--header-ink-inverse", "#23241e");
+            document.documentElement.style.setProperty("--header-ink", "#ffffff");
+            document.documentElement.style.setProperty("--header-ink-inverse", "#23241e");
+        } else {
+            root.style.removeProperty("--header-ink");
+            root.style.setProperty("--header-ink-inverse", "#ffffff");
+            document.documentElement.style.removeProperty("--header-ink");
+            document.documentElement.style.setProperty("--header-ink-inverse", "#ffffff");
+        }
     };
 
     syncColor();
@@ -961,6 +968,9 @@ function siteHeader(root: HTMLElement): Cleanup {
         gsap.ticker.remove(syncColor);
         cleanupMotion();
         root.style.removeProperty("--header-ink");
+        root.style.removeProperty("--header-ink-inverse");
+        document.documentElement.style.removeProperty("--header-ink");
+        document.documentElement.style.removeProperty("--header-ink-inverse");
     };
 }
 

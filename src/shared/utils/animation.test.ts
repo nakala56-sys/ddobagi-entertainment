@@ -59,7 +59,16 @@ beforeEach(() => {
     timeoutId = 0;
     clock = 0;
     cleanups = [];
-    vi.stubGlobal("document", { fonts: { ready: Promise.resolve() }, getElementById: vi.fn() });
+    vi.stubGlobal("document", {
+        fonts: { ready: Promise.resolve() },
+        getElementById: vi.fn(),
+        documentElement: {
+            style: {
+                setProperty: vi.fn(),
+                removeProperty: vi.fn(),
+            },
+        },
+    });
     vi.stubGlobal("window", {
         scrollY: 0,
         innerHeight: 800,

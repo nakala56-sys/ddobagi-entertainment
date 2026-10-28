@@ -84,7 +84,8 @@ export function QuickActions() {
                 type="button"
                 data-report-id="quick-top"
                 data-report-type="item"
-                className={`absolute top-[calc(100%+1.2rem)] left-0 grid size-[5.2rem] place-items-center rounded-full bg-[#20261f] text-[#faf9f5] shadow-[0_0.8rem_2.4rem_rgba(35,36,30,0.18)] transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-offset-[0.4rem] focus-visible:outline-[var(--color-point)] motion-reduce:transition-none ${raised ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[1.2rem] opacity-0"}`}
+                className={`absolute top-[calc(100%+1.2rem)] left-0 grid size-[5.2rem] place-items-center rounded-full shadow-[0_0.8rem_2.4rem_rgba(35,36,30,0.18)] transition-[opacity,transform,background-color,color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-offset-[0.4rem] focus-visible:outline-[var(--color-point)] motion-reduce:transition-none ${raised ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[1.2rem] opacity-0"}`}
+                style={{ backgroundColor: "var(--header-ink, var(--color-text))", color: "var(--header-ink-inverse, #ffffff)" }}
                 aria-label="맨 위로 이동"
                 aria-hidden={raised ? undefined : true}
                 tabIndex={raised ? 0 : -1}

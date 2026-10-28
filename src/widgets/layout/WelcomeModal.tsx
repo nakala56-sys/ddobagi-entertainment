@@ -131,10 +131,10 @@ export function WelcomeModal() {
                     </button>
                 </section>
 
-                <section className="flex flex-col px-[2.4rem]">
+                <section className="flex flex-col gap-[0.8rem] px-[2.4rem]">
                     <h2
                         id={titleId}
-                        className="text-[3rem] mb-[1.4rem] leading-[1.3] font-[800] tracking-[-0.06em] break-keep tablet:text-[3.8rem]"
+                        className="text-[3rem] leading-[1.3] font-[800] tracking-[-0.06em] break-keep tablet:text-[3.8rem]"
                     >
                         당신의 방송,
                         <br />
@@ -153,11 +153,11 @@ export function WelcomeModal() {
                 {/* <div className="w-full flex-1 h-[0.1rem] bg-[#00000020]" /> */}
 
                 <section>
-                    <ul className="px-[2.4rem] flex flex-col gap-[1.6rem] text-[1.5rem] leading-[1.6] text-[var(--color-gray-800)] tablet:text-[1.6rem]">
+                    <ul className="px-[2.4rem] flex flex-col gap-[0.4rem] text-[1.5rem] leading-[1.6] text-[var(--color-gray-800)] tablet:text-[1.6rem]">
                         {SUPPORT_ITEMS.map((item) => (
                             <li
                                 key={item}
-                                className="flex items-start gap-[1.2rem] break-keep"
+                                className="flex items-start gap-[0.8rem] break-keep"
                             >
                                 <span
                                     className="shrink-0 text-[var(--color-point)]"
@@ -169,7 +169,7 @@ export function WelcomeModal() {
                             </li>
                         ))}
                     </ul>
-                    <p className="mt-[2.8rem] text-[1.4rem] leading-[1] break-keep text-[var(--color-gray-500)] text-center">* 지원 범위와 공간 이용 조건은 상담을 통해 안내합니다.</p>
+                    <p className="px-[2.4rem] mt-[2.0rem] text-[1.4rem] leading-[1] break-keep text-[var(--color-gray-500)] text-left">* 지원 범위와 공간 이용 조건은 상담을 통해 안내합니다.</p>
                 </section>
 
                 <Link
@@ -181,20 +181,13 @@ export function WelcomeModal() {
                     <span aria-hidden="true">↗</span>
                 </Link>
             </div>
-            <div className="flex items-center justify-between gap-[1.6rem] bg-[var(--color-background-light)] px-[2.4rem] py-[0.8rem] text-[1.4rem] text-[var(--color-gray-700)] tablet:px-[3.6rem]">
+            <div className="flex items-center justify-center gap-[1.6rem] px-[2.4rem] py-[0.4rem] text-[1.4rem] text-[var(--color-gray-500)] tablet:px-[3.6rem]">
                 <button
                     type="button"
-                    className="min-h-[4.4rem] text-left hover:text-[var(--color-point)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-point)]"
+                    className="min-h-[1.4rem] text-center hover:text-[var(--color-point)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-point)]"
                     onClick={hideToday}
                 >
                     오늘 하루 보지 않기
-                </button>
-                <button
-                    type="button"
-                    className="min-h-[4.4rem] min-w-[4.4rem] text-right hover:text-[var(--color-point)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-point)]"
-                    onClick={close}
-                >
-                    닫기
                 </button>
             </div>
         </dialog>
