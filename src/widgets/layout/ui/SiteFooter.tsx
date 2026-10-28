@@ -39,7 +39,7 @@ export function SiteFooter() {
             className="site-footer relative z-10 py-[3.2rem] section-dark text-[#f3f7ee] bg-[#20261f] border-t border-t-[#ffffff10]"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">
-                <div className="footer-bottom flex justify-between items-start tablet:items-end gap-[3.2rem] text-[1.2rem] text-[#c9cfc4] flex-col tablet:flex-row">
+                <div className="footer-bottom flex justify-between items-start tablet:items-end gap-[3.2rem] text-[1.4rem] text-[#c9cfc4] flex-col tablet:flex-row">
                     <section className="flex flex-col">
                         <section className="flex flex-col gap-[0.4rem]">
                             <MetallicPaint

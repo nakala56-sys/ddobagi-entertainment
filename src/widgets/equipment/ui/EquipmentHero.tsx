@@ -24,7 +24,7 @@ export function EquipmentHero() {
                 id="equipment-hero-title"
                 as="h1"
                 className="px-[2rem] tablet:px-[6rem] pt-[15.2rem] tablet:pt-[16rem] pb-[4rem] tablet:pb-[5.6rem] flex flex-col"
-                textClassName="mx-auto w-full max-w-[132rem] text-left text-[5.2rem] leading-[1.5] font-[580]"
+                textClassName="mx-auto w-full max-w-[132rem] text-left text-[3.2rem] tablet:text-[4.8rem] pc:text-[5.2rem] leading-[1.5] font-[580]"
                 colors={["#2a3324", "#4a5530", "#2a3324", "#4a5530"]}
                 speed={1}
                 distortion={0.8}

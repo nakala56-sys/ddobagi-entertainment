@@ -43,7 +43,7 @@ export function FinalCta() {
                     className="closing-content text-[var(--color-text)] relative z-10 mx-auto flex w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] flex-col items-center gap-[3.2rem] tablet:gap-[3.6rem] text-center content-width"
                 >
                     <h2
-                        className="text-[2.4rem] text-[#faf9f5] min-[343px]:text-[7vw] pc:text-[5.8rem] break-keep leading-[1]"
+                        className="text-[2.4rem] text-[#faf9f5] tablet:text-[4rem] pc:text-[5.8rem] break-keep leading-[1]"
                         id="home-closing-title"
                         data-title-rise
                     >

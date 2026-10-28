@@ -55,7 +55,7 @@ export function SupportOverview() {
                         >
                             <span className="card-number text-[1.2rem] text-[var(--accent,#000000)] leading-[1.0]">{String(index + 1).padStart(2, "0")}</span>
                             <h3 className="mt-[2rem] tablet:mt-[3.2rem] text-[1.8rem] tablet:text-[2.4rem] font-[600] leading-[1.0] tablet:leading-[1.5] pc:leading-[1.0]">{item.title}</h3>
-                            <p className="text-[1.2rem] tablet:text-[1.6rem] text-[#737373] mt-[1.6rem] leading-[1.5] pr-[1.6rem] p-0">{item.description}</p>
+                            <p className="text-[1.4rem] tablet:text-[1.6rem] text-[#737373] mt-[1.6rem] leading-[1.5] pr-[1.6rem] p-0">{item.description}</p>
                             <span
                                 className="card-mark absolute right-[2rem] tablet:right-[3.2rem] top-[1.6rem] tablet:top-[3.2rem] text-[var(--accent,#000000)] text-[1.8rem] leading-[1.0]"
                                 aria-hidden="true"

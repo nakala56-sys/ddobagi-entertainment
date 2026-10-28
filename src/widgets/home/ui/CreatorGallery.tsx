@@ -71,7 +71,7 @@ export function CreatorGallery() {
                         data-gallery-copy
                         data-reveal
                         aria-hidden="true"
-                        className="absolute inset-0 flex flex-col items-center justify-center px-[2.4rem] text-center text-white break-keep text-[2.4rem] tablet:text-[6rem] pc:text-[7.2rem] font-[580] leading-[1.5]"
+                        className="absolute inset-0 flex flex-col items-center justify-center px-[2.4rem] text-center text-white break-keep text-[2.4rem] tablet:text-[4.8rem] pc:text-[7.2rem] font-[580] leading-[1.5]"
                     >
                         <span>방송이 시작되고,</span>
                         <span>콘텐츠가 만들어지는 곳.</span>

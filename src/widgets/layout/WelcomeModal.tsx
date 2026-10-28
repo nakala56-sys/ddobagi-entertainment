@@ -153,7 +153,7 @@ export function WelcomeModal() {
                 {/* <div className="w-full flex-1 h-[0.1rem] bg-[#00000020]" /> */}
 
                 <section>
-                    <ul className="px-[2.4rem] flex flex-col gap-[0.4rem] text-[1.5rem] leading-[1.6] text-[var(--color-gray-800)] tablet:text-[1.6rem]">
+                    <ul className="px-[2.4rem] flex flex-col gap-[0.4rem] text-[1.4rem] leading-[1.6] text-[var(--color-gray-800)] tablet:text-[1.6rem]">
                         {SUPPORT_ITEMS.map((item) => (
                             <li
                                 key={item}

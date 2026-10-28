@@ -34,7 +34,7 @@ export function ServicesOverview() {
                         <span className="card-number text-[1.8rem] text-[var(--accent,#000000)]">{String(index + 1).padStart(2, "0")}</span>
                         <div>
                             <p className="eyebrow text-[1.8rem] text-[#737373] uppercase">{item.englishTitle}</p>
-                            <h3 className="text-[1.4rem] tablet:text-[2.4rem] pc:text-[3.2rem] font-[500] break-keep">{item.title}</h3>
+                            <h3 className="text-[1.8rem] tablet:text-[2.4rem] pc:text-[3.2rem] font-[500] break-keep">{item.title}</h3>
                             <p className="mt-[1rem] max-w-[88rem] text-[1.6rem] leading-[1.5] text-[#737373] break-keep">{item.description}</p>
                         </div>
                         <div

@@ -118,13 +118,13 @@ export function CreatorSolutions() {
                                 <div className="px-[0.8rem] pt-[2.4rem] tablet:px-[1.2rem] tablet:pt-[2.8rem] pc:pt-[3.2rem]">
                                     <h3
                                         id={`home-solution-${card.id}-title`}
-                                        className="text-[2rem] tablet:text-[1.6rem] min-[64rem]:text-[2rem] pc:text-[2.2rem] font-[600] leading-[1.6] break-keep"
+                                        className="text-[2rem] pc:text-[2.2rem] font-[600] leading-[1.6] break-keep"
                                     >
                                         {card.title[0]}
                                         <br />
                                         {card.title[1]}
                                     </h3>
-                                    <p className="mt-[1.2rem] text-[1.4rem] tablet:text-[1.2rem] pc:text-[1.6rem] font-[450] leading-[1.6] text-[#8b95a1]">{card.link}</p>
+                                    <p className="mt-[1.2rem] text-[1.4rem] pc:text-[1.6rem] font-[450] leading-[1.6] text-[#8b95a1]">{card.link}</p>
                                 </div>
                             </Link>
                         </article>

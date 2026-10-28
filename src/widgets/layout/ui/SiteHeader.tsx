@@ -40,7 +40,7 @@ export function SiteHeader() {
                 strength={5}
                 // tint="color-mix(in srgb, var(--color-background) 80%, transparent)"
             />
-            <section className="relative z-10 mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-[1.2rem] tablet:gap-[4rem] pc:gap-[12.1rem]">
+            <section className="relative z-10 mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-[1.2rem] tablet:gap-[4rem] pc:gap-[12.2rem]">
                 <Link
                     data-report-id="nav-home"
                     data-report-type="item"
@@ -76,7 +76,7 @@ export function SiteHeader() {
                     onClick={() => setMenuOpen(true)}
                 >
                     <span
-                        className="flex w-[2rem] flex-col gap-[0.5rem]"
+                        className="flex w-[2rem] flex-col gap-[0.4rem]"
                         aria-hidden="true"
                     >
                         <span className="block h-[0.2rem] w-full bg-current" />

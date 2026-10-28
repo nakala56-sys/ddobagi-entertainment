@@ -51,7 +51,7 @@ export function SettlementTrust() {
                     </h2>
                     <p className="sr-only">100%</p>
                     <p
-                        className="mt-[2.4rem] tablet:mt-[4rem] flex items-end justify-center font-[580] leading-none text-[var(--accent)] tabular-nums text-[clamp(8.8rem,24vw,20rem)]"
+                        className="mt-[2.4rem] tablet:mt-[4rem] flex items-end justify-center font-[580] leading-none text-[var(--accent)] tabular-nums text-[clamp(4.8rem,24vw,20rem)]"
                         data-settlement-figure
                         aria-hidden="true"
                     >
