@@ -309,7 +309,7 @@ export function Report() {
             return isFetching ? "리포트 불러오는 중" : `${reports.length}개의 리포트`;
         }
 
-        return "리포트 하기를 눌러 피드백을 남겨주세요";
+        return "안정적인 개발을 위해 피드백을 남겨주세요";
     }, [isFetching, mode, reports.length, selectedTarget]);
 
     const handleOverlayMove = (event: MouseEvent<HTMLDivElement>) => {
@@ -471,7 +471,7 @@ export function Report() {
                     <div className={`flex items-center justify-between gap-[1.2rem] p-[0.8rem] cursor-grab`}>
                         {/* <div className={`flex items-center justify-between gap-[1.2rem] ${isDockCollapsed ? "px-[1.4rem] py-[1.2rem]" : "px-[1.6rem] pb-[1rem] pt-[0.9rem]"}`}> */}
                         <div className="flex flex-col gap-[0.4rem] px-[1.6rem]">
-                            <p className="text-[1.4rem] font-bold text-white/92">리포트 도구</p>
+                            <p className="text-[1.4rem] font-bold text-white/92">개발환경 피드백 도구</p>
                             {!isDockCollapsed ? <p className="truncate text-[1.2rem] text-white/60">{helperText}</p> : null}
                         </div>
                         <button
