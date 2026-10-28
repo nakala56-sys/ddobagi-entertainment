@@ -42,7 +42,7 @@ export function BenefitsHero() {
                     data-reveal
                 >
                     <h2 className="text-[2.0rem] font-[500]">방송에 집중할 수 있도록 지원합니다.</h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">스튜디오와 장비부터 콘텐츠 기획, 개인 브랜딩과 제휴 시술까지.</p>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">최대 10:0 계약부터 스튜디오·장비, 콘텐츠 기획, 개인 브랜딩과 제휴 시술까지.</p>
                 </div>
             </GradientWaveSettle>
         </section>

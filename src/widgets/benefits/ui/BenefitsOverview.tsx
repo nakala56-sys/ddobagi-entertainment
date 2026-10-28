@@ -27,7 +27,7 @@ export function BenefitsOverview() {
             >
                 크리에이터를 위한
                 <br />
-                <span className="accent text-[var(--accent,#000000)]">일곱 가지 지원.</span>
+                <span className="accent text-[var(--accent,#000000)]">여덟 가지 지원.</span>
             </h2>
             <div className="mt-[4.8rem] tablet:mt-[6.4rem] border-t-[0.1rem] border-solid border-[var(--color-line)]">
                 {benefitDetails.map((item, index) => (

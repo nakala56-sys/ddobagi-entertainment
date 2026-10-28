@@ -42,7 +42,7 @@ export function ServicesHero() {
                     data-reveal
                 >
                     <h2 className="text-[2.0rem] font-[500]">크리에이터 매니지먼트부터 브랜드 협업까지.</h2>
-                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성을 함께합니다.</p>
+                    <p className="mt-[1.6rem] text-[1.6rem] text-[#5e655c] leading-[1.5]">최대 10:0 계약 안내부터 라이브 방송 기획·운영, 콘텐츠 제작과 크리에이터 육성까지 함께합니다.</p>
                 </div>
             </GradientWaveSettle>
         </section>

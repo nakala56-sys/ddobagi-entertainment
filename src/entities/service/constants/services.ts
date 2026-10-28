@@ -5,7 +5,7 @@ export const services: Service[] = [
         id: "management",
         title: "크리에이터 매니지먼트",
         englishTitle: "Creator Management",
-        description: "크리에이터의 개성과 방송 스타일을 바탕으로 활동 방향을 함께 찾고, 꾸준히 성장할 수 있도록 방송 활동을 관리하고 지원합니다.",
+        description: "크리에이터의 개성과 방송 스타일을 바탕으로 활동 방향을 함께 찾고, 꾸준히 성장할 수 있도록 방송 활동을 관리하고 지원합니다. 조건에 따라 최대 10:0 계약도 안내합니다.",
         image: "/images/services/management.jpg",
     },
     {

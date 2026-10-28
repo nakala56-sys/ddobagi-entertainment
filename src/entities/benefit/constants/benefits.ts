@@ -26,6 +26,12 @@ export const benefits: Benefit[] = [
 
 export const benefitDetails: Benefit[] = [
     {
+        id: "contract",
+        title: "최대 10:0 계약",
+        description: "조건에 따라 유리한 수익 분배 계약이 가능합니다. 세부 조건은 상담을 통해 안내합니다.",
+        image: "/images/services/management.jpg",
+    },
+    {
         id: "studio",
         title: "전용 방송 스튜디오 지원",
         description: "개인 방송부터 함께 만드는 라이브 콘텐츠까지, 방송과 제작에 집중할 수 있는 스튜디오 환경을 지원합니다.",
