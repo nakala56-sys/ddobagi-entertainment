@@ -946,9 +946,9 @@ function siteHeader(root: HTMLElement): Cleanup {
         // Inverse is always set (never cleared) so quick-top never falls back to white-on-white.
         if (light) {
             root.style.setProperty("--header-ink", "#ffffff");
-            root.style.setProperty("--header-ink-inverse", "#23241e");
+            root.style.setProperty("--header-ink-inverse", "#303325");
             document.documentElement.style.setProperty("--header-ink", "#ffffff");
-            document.documentElement.style.setProperty("--header-ink-inverse", "#23241e");
+            document.documentElement.style.setProperty("--header-ink-inverse", "#303325");
         } else {
             root.style.removeProperty("--header-ink");
             root.style.setProperty("--header-ink-inverse", "#ffffff");
