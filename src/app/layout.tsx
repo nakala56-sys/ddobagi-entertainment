@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import localFont from "next/font/local";
 import { GlobalErrorBoundary } from "@/app/providers/GlobalErrorBoundary";
 import { GlobalErrorListener } from "@/app/providers/GlobalErrorListener";
-import { GlobalPreviewBoundary } from "@/app/providers/GlobalPreviewBoundary";
 import { buildRootMetadata } from "@/shared/lib/seo";
 import "@/shared/styles/index.scss";
 import "@/shared/styles/global.css";
@@ -24,10 +23,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
             <body>
                 <GlobalErrorBoundary>
-                    <GlobalPreviewBoundary>
-                        <GlobalErrorListener />
-                        {children}
-                    </GlobalPreviewBoundary>
+                    <GlobalErrorListener />
+                    {children}
                 </GlobalErrorBoundary>
             </body>
         </html>
