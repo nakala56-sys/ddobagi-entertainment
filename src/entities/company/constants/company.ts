@@ -12,5 +12,5 @@ export const company: CompanyProfile = {
 
 export const studioImages = [
     { src: "/images/equipment/studio-space.jpg", alt: "회사소개서에 소개된 또바기 방송 스튜디오와 장비" },
-    { src: "/images/landing/studio3.jpg", alt: "회사소개서에 소개된 또바기 대형 방송 스튜디오" },
+    { src: "/images/landing/studio3.webp", alt: "회사소개서에 소개된 또바기 대형 방송 스튜디오" },
 ];

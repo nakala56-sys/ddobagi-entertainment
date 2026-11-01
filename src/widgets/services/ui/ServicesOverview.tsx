@@ -43,6 +43,7 @@ export function ServicesOverview() {
                                 fill
                                 unoptimized
                                 sizes="280px"
+                                loading="lazy"
                                 className="object-cover object-center"
                             />
                         </div>

@@ -41,6 +41,7 @@ export function BenefitsOverview() {
                                 fill
                                 unoptimized
                                 sizes="(min-width: 90rem) 480px, (min-width: 48rem) 420px, 100vw"
+                                loading="lazy"
                                 className="object-cover object-center"
                             />
                         </div>

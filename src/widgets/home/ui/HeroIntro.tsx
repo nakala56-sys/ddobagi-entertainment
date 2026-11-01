@@ -38,7 +38,7 @@ export function HeroIntro() {
         >
             <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 h-full">
                 <Image
-                    src="/images/home/hero-wide.png"
+                    src="/images/home/hero-wide.webp"
                     alt=""
                     width={1915}
                     height={821}
