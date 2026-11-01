@@ -42,8 +42,6 @@ export function CreatorFaq() {
     return (
         <section
             ref={sectionRef}
-            data-report-id="home-faq"
-            data-report-type="group"
             className="section relative z-10 bg-[var(--color-background)] py-[7.2rem] tablet:py-[12rem]"
             aria-labelledby="home-faq-title"
         >
@@ -69,8 +67,6 @@ export function CreatorFaq() {
                     {QUESTIONS.map((item) => (
                         <details
                             key={item.id}
-                            data-report-id={`home-faq-${item.id}`}
-                            data-report-type="item"
                             className="group border-b border-solid border-[var(--color-line)]"
                             data-reveal
                         >

@@ -22,8 +22,6 @@ export function StudioEnvironment() {
     return (
         <section
             ref={sectionRef}
-            data-report-id="equipment-studio"
-            data-report-type="group"
             className="section py-[7.2rem] tablet:py-[12rem] section-dark bg-[#20261f] text-[#f3f7ee]"
             aria-labelledby="studio-environment-title"
         >

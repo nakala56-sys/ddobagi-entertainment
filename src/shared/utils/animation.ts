@@ -916,7 +916,7 @@ function sectionNavigation(root: HTMLElement): Cleanup {
 function siteHeader(root: HTMLElement): Cleanup {
     // No scroll-linked translate: moving the fixed header up exposes a gap at the viewport top.
     const home = document.getElementById("home");
-    const hero = home?.querySelector<HTMLElement>('[data-report-id="home-hero"]');
+    const hero = home?.querySelector<HTMLElement>(".hero");
     const cta = home?.querySelector<HTMLElement>("[data-cta-wave]");
     const ink = home?.querySelector<HTMLElement>("[data-cta-ink]");
     const circle = home?.querySelector<HTMLElement>("[data-cta-circle]");

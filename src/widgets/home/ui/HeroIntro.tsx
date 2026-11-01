@@ -33,8 +33,6 @@ export function HeroIntro() {
     return (
         <section
             ref={sectionRef}
-            data-report-id="home-hero"
-            data-report-type="group"
             className="hero relative min-h-[100svh] overflow-hidden"
             aria-labelledby="home-hero-title"
         >

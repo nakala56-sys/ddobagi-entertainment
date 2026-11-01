@@ -34,8 +34,6 @@ export function SiteFooter() {
     return (
         <footer
             ref={footerRef}
-            data-report-id="site-footer"
-            data-report-type="group"
             className="site-footer relative z-10 py-[3.2rem] section-dark text-[#f3f7ee] bg-[#20261f] border-t border-t-[#ffffff10]"
         >
             <div className="content-width w-[calc(100%_-_4rem)] tablet:w-[calc(100%_-_8rem)] pc:w-[calc(100%_-_12rem)] pc:max-w-[132rem] mx-auto">

@@ -14,8 +14,6 @@ export function EquipmentHero() {
     return (
         <section
             ref={sectionRef}
-            data-report-id="equipment-hero"
-            data-report-type="group"
             className="hero relative overflow-visible"
             aria-labelledby="equipment-hero-title"
         >

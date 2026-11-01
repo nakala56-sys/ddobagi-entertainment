@@ -31,8 +31,6 @@ export function SiteHeader() {
     return (
         <header
             ref={headerRef}
-            data-report-id="site-header"
-            data-report-type="group"
             className="site-header fixed top-0 left-0 z-[20] flex h-[7.2rem] w-full items-center justify-between gap-[1.6rem] px-[2rem] py-0 text-[var(--header-ink,var(--color-text))] tablet:h-auto tablet:items-start tablet:p-[3.2rem] pc:px-[4rem]"
         >
             <GradualBlur
@@ -42,8 +40,6 @@ export function SiteHeader() {
             />
             <section className="relative z-10 mx-auto flex h-full w-full max-w-[1440px] items-center justify-between gap-[1.2rem] tablet:gap-[4rem] pc:gap-[12.2rem]">
                 <Link
-                    data-report-id="nav-home"
-                    data-report-type="item"
                     className="brand-logo flex min-w-0 flex-1 items-center justify-start gap-[1.2rem] text-[1.6rem] font-[750] leading-[1.0] tablet:items-end tablet:text-[1.8rem]"
                     href="/"
                     aria-label="또바기 엔터테인먼트 홈"
@@ -93,8 +89,6 @@ export function SiteHeader() {
                         const current = pathname === item.href;
                         return (
                             <Link
-                                data-report-id={`nav-${item.href.slice(1)}`}
-                                data-report-type="item"
                                 className={`group relative text-[2.0rem] ${current ? "text-[#92702b]" : ""}`}
                                 key={item.href}
                                 href={item.href}

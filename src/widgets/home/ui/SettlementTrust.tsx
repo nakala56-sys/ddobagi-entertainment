@@ -24,8 +24,6 @@ export function SettlementTrust() {
     return (
         <section
             ref={sectionRef}
-            data-report-id="home-settlement"
-            data-report-type="group"
             className="section relative z-10 bg-[var(--color-background)]"
             aria-labelledby="home-settlement-title"
         >

@@ -7,8 +7,6 @@ import { PageTransition } from "@/shared/ui/transition/PageTransition";
 import { ViewTransitionNavigation } from "@/shared/ui/transition/ViewTransitionNavigation";
 import { ApiLoading } from "@/widgets/layout/ApiLoading";
 import { QuickActions } from "@/widgets/layout/QuickActions";
-import { Report } from "@/widgets/layout/Report";
-import { QueryProvider } from "@/app/providers/QueryProvider";
 
 const Header = dynamic(() => import("@/widgets/layout/Header").then((module) => module.Header));
 const Footer = dynamic(() => import("@/widgets/layout/Footer").then((module) => module.Footer));
@@ -22,7 +20,7 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
 
     useEffect(() => Animation.layout.common(), []);
     return (
-        <QueryProvider>
+        <>
             <PageTransition
                 onReady={handleReady}
                 chrome={
@@ -36,7 +34,6 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
                         <Header />
                         <QuickActions />
                         <Toast />
-                        <Report />
                         <Progress />
                         <ApiLoading />
                     </>
@@ -47,6 +44,6 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
                 <Footer />
             </PageTransition>
             {introReady ? <WelcomeModal /> : null}
-        </QueryProvider>
+        </>
     );
 }

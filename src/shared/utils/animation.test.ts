@@ -253,7 +253,7 @@ function mountHeader(home = true) {
         },
     } as unknown as HTMLElement;
     const targets = new Map<string, unknown>([
-        ['[data-report-id="home-hero"]', { getBoundingClientRect: () => heroBounds }],
+        [".hero", { getBoundingClientRect: () => heroBounds }],
         ["[data-cta-wave]", { getBoundingClientRect: () => ctaBounds }],
         ["[data-cta-ink]", ink],
         ["[data-cta-circle]", { getBoundingClientRect: () => circleBounds }],
