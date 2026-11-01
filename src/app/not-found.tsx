@@ -1,14 +1,9 @@
 import Link from "next/link";
 
 import Main from "@/widgets/layout/Main";
-import { buildPageMetadata } from "@/shared/lib/seo";
+import { buildNoIndexMetadata } from "@/shared/lib/seo";
 
-export const metadata = buildPageMetadata({
-    title: "페이지를 찾을 수 없습니다 | 또바기 엔터테인먼트",
-    description: "요청하신 페이지를 찾을 수 없습니다.",
-    path: "/404",
-    noIndex: true,
-});
+export const metadata = buildNoIndexMetadata("페이지를 찾을 수 없습니다 | 또바기 엔터테인먼트", "요청하신 페이지를 찾을 수 없습니다.");
 
 export default function NotFound() {
     return (
