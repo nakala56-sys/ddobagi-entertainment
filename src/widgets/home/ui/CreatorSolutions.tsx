@@ -109,6 +109,7 @@ export function CreatorSolutions() {
                                         fill
                                         unoptimized
                                         sizes="(min-width: 64rem) 30vw, 100vw"
+                                        loading="lazy"
                                         className="object-cover"
                                     />
                                     <CardArrow />

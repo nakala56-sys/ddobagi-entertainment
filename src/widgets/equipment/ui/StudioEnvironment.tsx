@@ -53,7 +53,7 @@ export function StudioEnvironment() {
                                 aria-hidden={copy > 0 ? true : undefined}
                                 className="flex shrink-0 gap-[0.2rem] pr-[0.2rem]"
                             >
-                                {STUDIO_IMAGES.map((image) => (
+                                {STUDIO_IMAGES.map((image, imageIndex) => (
                                     <Image
                                         key={image.src}
                                         src={image.src}
@@ -61,7 +61,8 @@ export function StudioEnvironment() {
                                         width={image.width}
                                         height={image.height}
                                         unoptimized
-                                        loading="eager"
+                                        sizes="(min-width: 48rem) 40vw, 85vw"
+                                        loading={copy === 0 && imageIndex === 0 ? "eager" : "lazy"}
                                         draggable={false}
                                         className="block h-[30rem] tablet:h-[52rem] w-auto max-w-none shrink-0 pointer-events-none"
                                     />
