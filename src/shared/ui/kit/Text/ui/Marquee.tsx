@@ -1,6 +1,5 @@
-import { useAnimationFrame, useMotionValue, useScroll, useTransform, useVelocity } from "framer-motion";
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimationFrame, useMotionValue, useScroll, useTransform, useVelocity } from "motion/react";
 
 type TextMarqueeProps = {
     children: ReactNode;

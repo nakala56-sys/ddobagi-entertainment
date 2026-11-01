@@ -65,10 +65,10 @@ export function QuickActions() {
                 aria-label="인스타그램"
             >
                 <Image
-                    src="/images/common/instagram.png"
+                    src="/images/common/instagram.webp"
                     alt=""
-                    width={1000}
-                    height={1000}
+                    width={256}
+                    height={256}
                     unoptimized
                     className="size-full object-cover"
                 />

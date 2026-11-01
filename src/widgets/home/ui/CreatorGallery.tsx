@@ -15,7 +15,7 @@ const TOP_IMAGES = [
 const BOTTOM_IMAGES = [
     { src: "/images/equipment/setup-mic.jpg", alt: "마이크와 조명이 놓인 방송 데스크" },
     { src: "/images/home/moment-desk.jpg", alt: "마이크 앞에서 방송하는 크리에이터" },
-    { src: "/images/about/brand-partnership.png", alt: "상담 테이블에서 악수하는 두 사람" },
+    { src: "/images/about/brand-partnership.webp", alt: "상담 테이블에서 악수하는 두 사람" },
     { src: "/images/home/moment-script.jpg", alt: "대본을 두고 이야기하는 장면" },
     { src: "/images/equipment/setup-desk.jpg", alt: "블라인드와 분홍 책상이 있는 방송 공간" },
     { src: "/images/equipment/studio-space.jpg", alt: "분홍 조명과 거울, LED 바닥이 있는 또바기 방송 스튜디오" },
@@ -52,12 +52,12 @@ export function CreatorGallery() {
                     className="relative z-20 mx-auto aspect-[16/10] w-full max-w-[132rem] overflow-hidden rounded-[2rem] data-[gallery=true]:absolute data-[gallery=true]:left-1/2 data-[gallery=true]:top-1/2 data-[gallery=true]:m-0 data-[gallery=true]:aspect-auto data-[gallery=true]:max-w-none"
                 >
                     <Image
-                        src="/images/home/gallery-stage.jpg"
+                        src="/images/home/gallery-stage.webp"
                         alt="분홍 Butterfly LED 화면과 거울, 조명이 설치된 방송 스튜디오"
                         fill
                         unoptimized
                         sizes="100vw"
-                        loading="eager"
+                        loading="lazy"
                         className="object-cover filter-none! grayscale"
                     />
                     <div
@@ -96,6 +96,7 @@ export function CreatorGallery() {
                                     fill
                                     unoptimized
                                     sizes="(min-width: 48rem) 29vw, 50vw"
+                                    loading="lazy"
                                     className="object-cover filter-none! grayscale"
                                 />
                             ) : null}
@@ -120,6 +121,7 @@ export function CreatorGallery() {
                                 fill
                                 unoptimized
                                 sizes="(min-width: 48rem) 20vw, 50vw"
+                                loading="lazy"
                                 className="object-cover filter-none! grayscale"
                             />
                         </div>
