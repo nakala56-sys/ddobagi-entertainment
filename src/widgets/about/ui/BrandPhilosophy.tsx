@@ -24,11 +24,12 @@ export function BrandPhilosophy() {
                 >
                     <div className="portrait-image relative aspect-[1672/941] w-full overflow-clip">
                         <Image
-                            src="/images/about/brand-partnership.png"
+                            src="/images/about/brand-partnership.webp"
                             alt="상담 테이블에서 악수하는 두 사람"
                             fill
                             unoptimized
                             sizes="(min-width: 48rem) 45vw, 90vw"
+                            loading="lazy"
                             className="object-cover object-center"
                         />
                     </div>
